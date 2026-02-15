@@ -1,5 +1,5 @@
 import React, { ChangeEvent, FormEvent, MouseEvent } from "react";
-import { useParams, useSearchParams } from "react-router-dom";
+import { Navigate, useParams, useSearchParams } from "react-router-dom";
 import userService from "../../../services/user.service";
 import { AxiosResponse } from "axios";
 import User, { RoleName, RoleType } from "../../../models/User";
@@ -11,7 +11,7 @@ import StatusModal from "./modals/StatusModal";
 import WithdrawModal from "./modals/WithdrawModal";
 import PasswordModal from "./modals/PasswordModal";
 import ExposureCreditModal from "./modals/ExposureCreditModal";
-import { CustomLink } from "../../../pages/_layout/elements/custom-link";
+import { CustomLink, useNavigateCustom } from "../../../pages/_layout/elements/custom-link";
 import { useWebsocketUser } from "../../../context/webSocketUser";
 import Pdf from "react-to-pdf";
 import { saveAs } from "file-saver";
@@ -29,6 +29,16 @@ import betService from "../../../services/bet.service";
 import ReactPaginate from "react-paginate";
 
 const ListClients = () => {
+      const navigate = useNavigateCustom()
+
+  React.useEffect(() => {
+  const otpPending = localStorage.getItem('admin_otp_pending')
+
+  if (otpPending === 'true') {
+    navigate.go('/otp-verification')
+  }
+}, [])
+
   const ref: any = React.createRef();
   const userState = useAppSelector(selectUserData);
   const loading = useAppSelector(selectLoader);
@@ -492,8 +502,9 @@ const ListClients = () => {
 const td: React.CSSProperties = {
   padding: "6px",
   border: "1px solid #ddd",
-  textAlign: "center",
+  textAlign: "right",
   verticalAlign: "middle",
+  fontWeight:"bold"
 };
 
 const action: React.CSSProperties = {
@@ -1030,6 +1041,8 @@ const actionBtn: React.CSSProperties = {
 
   {isAdmin(user) && (
     <>
+    <span style={actionBtn} onClick={() => { openModal("e"); getUserDetail(user);  setModalType('EXP')}}>L</span>
+      <span style={actionBtn} onClick={() => { openModal("e"); getUserDetail(user);  setModalType('CRD') }}>C</span>
       <span style={actionBtn} onClick={() => { openModal("p"); getUserDetail(user); }}>P</span>
       <span style={actionBtn} onClick={() => { openModal("s"); getUserDetail(user); }}>S</span>
       <span style={actionBtn} onClick={() => { openModal("gs"); getUserDetail(user); }}>GS</span>

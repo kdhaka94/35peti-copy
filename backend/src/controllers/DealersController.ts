@@ -655,7 +655,7 @@ export class DealersController extends ApiController {
               doneBy: `${currentUser.username}`,
               // description: `OLD status: Login=${user.isLogin}, Bet=${user.betLock}, Bet2=${user.betLock2} | NEW status: Login=${isUserActive}, Bet=${isUserBetActive}, Bet2=${isUserBet2Active}`,
 
-              description: `OLD password change by ${username} for ${currentUser.username} `,
+              description: `OLD password change by ${currentUser.username} /  ${username}  `,
             });
 
             return this.success(res, {}, 'User password updated')

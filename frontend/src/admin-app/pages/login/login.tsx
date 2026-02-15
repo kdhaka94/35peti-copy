@@ -47,25 +47,28 @@ const Login = () => {
 
 
   React.useEffect(() => {
-  if (userState.status === 'done' && userState.user?._id) {
-    const { role, _id, authkey } = userState.user
+    if (userState.status === 'done' && userState.user?._id) {
+      const { role, _id, authkey } = userState.user
 
-    // socket login
-    socketUser.emit('login', {
-      role,
-      sessionId: userState.user.sessionId,
-      _id,
-    })
+      // socket login
+      socketUser.emit('login', {
+        role,
+        sessionId: userState.user.sessionId,
+        _id,
+      })
 
-    // 🔐 authkey = 1 → OTP
-    if (authkey === 1) {
-      return navigate.go('/otp-verification')
+      // 🔐 authkey = 1 → OTP
+      if (authkey === 1) {
+        localStorage.setItem('admin_otp_pending', 'true')
+        navigate.go('/otp-verification')
+        return
+      }
+
+
+      // ✅ authkey = 0 → Home
+      return navigate.go('/list-clients')
     }
-
-    // ✅ authkey = 0 → Home
-    return navigate.go('/list-clients')
-  }
-}, [userState])
+  }, [userState])
 
 
   const handleForm = (e: React.ChangeEvent<HTMLInputElement>) => {
