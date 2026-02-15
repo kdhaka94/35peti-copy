@@ -65,6 +65,7 @@ const AdminRoutes = () => {
       children: [
         { path: 'login', element: <Login /> },
         // { path: 'login', element: <Login2/> },
+          { path: 'otp-verification', element: <OtpVerification /> },
         {
           path: '/admin',
           element: <MainAdmin />,
@@ -108,7 +109,7 @@ const AdminRoutes = () => {
 
 
             { path: 'profitloss', element: <ProfitLossAdmin /> },
-            { path: 'otp-verification', element: <OtpVerification /> },
+          
             { path: 'unsettledbet', element: <UnsetteleBetHistoryAdmin /> },
             { path: 'unsettledbet/:type', element: <UnsetteleBetHistoryAdmin /> },
             { path: 'casino/:gameCode', element: <CasinoWrapper /> },

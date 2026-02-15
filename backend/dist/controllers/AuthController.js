@@ -350,8 +350,9 @@ class AuthController extends ApiController_1.ApiController {
     verifyotp(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const { otp1, otp2, otp3, otp4, otp5, otp6, token } = req.body;
-                const fullotp = `${otp1}${otp2}${otp3}${otp4}${otp5}${otp6}`;
+                const { otp, token } = req.body;
+                console.log(req.body, "loesh req.body");
+                const fullotp = otp;
                 const userExtract = AuthController.verifyToken(token);
                 const user = yield User_1.User.findOne({
                     username: userExtract.username,
@@ -370,16 +371,17 @@ class AuthController extends ApiController_1.ApiController {
                         return this.fail(res, message.message);
                     }
                 }
+                console.log(user, "user");
                 if (user.otp == parseInt(fullotp)) {
                     const token = AuthController.token(user);
                     user.refreshToken = bcrypt_nodejs_1.default.hashSync(user.username);
-                    user.sessionId = Date.now()
-                        // const findMessage: any = await Setting.findOne({ name: "img_desktop" }, { value: 1 })
-                        // @ts-ignore
-                        .cache(0, 'img_desktop')
-                        // const findMessage2: any = await Setting.findOne({ name: "img_mobile" }, { value: 1 })
-                        // @ts-ignore
-                        .cache(0, 'img_mobile');
+                    user.sessionId = Date.now();
+                    // const findMessage: any = await Setting.findOne({ name: "img_desktop" }, { value: 1 })
+                    // @ts-ignore
+                    // .cache(0, 'img_desktop')
+                    // const findMessage2: any = await Setting.findOne({ name: "img_mobile" }, { value: 1 })
+                    // @ts-ignore
+                    // .cache(0, 'img_mobile')
                     yield user.save();
                     return this.success(res, {
                         token,

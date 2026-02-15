@@ -231,8 +231,12 @@ import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import "./assign-agent.css";
 import userService from "../../../services/user.service";
+import { selectUserData } from "../../../redux/actions/login/loginSlice";
+import { useAppSelector } from "../../../redux/hooks";
+import User from "../../../models/User";
 
 const SecureAuth = () => {
+    const userState = useAppSelector<{ user: User }>(selectUserData)
   const [activeTab, setActiveTab] = useState("telegram");
 
   const [password, setPassword] = useState("");
@@ -299,10 +303,42 @@ const SecureAuth = () => {
       }
 
       // 👇 DIRECT ENABLE CASE
-      setIsEnabled(true);
+      
       toast.success("2-Step Verification Enabled Successfully");
     } catch (err: any) {
       toast.error(err?.response?.data?.message || "Enable failed");
+    } finally {
+      setEnableLoading(false);
+    }
+  };
+
+  const handleEnable2FA2 = async () => {
+    setEnableLoading(true);
+
+    try {
+      // const res: any = await userService.enableButton({
+      //   type: "telegram",
+      // });
+
+      // const msg = res?.data?.data?.message;
+      // console.log(msg,"lokesh")
+
+      // // 👇 OTP CASE
+      // if (msg === "Otp sent successfully") {
+      //   setShowOtpBox(true);
+      //   toast.success("OTP sent successfully");
+      //   return;
+      // }
+
+      // 👇 DIRECT ENABLE CASE
+
+   localStorage.removeItem('token-admin')
+   localStorage.removeItem('refreshToken-admin')
+
+      
+      toast.success("2-Step Verification Enabled Successfully");
+    } catch (err: any) {
+      // toast.error(err?.response?.data?.message || "Enable failed");
     } finally {
       setEnableLoading(false);
     }
@@ -333,6 +369,43 @@ const SecureAuth = () => {
     }
   };
 
+
+   const handleSubmitOtp2 = async () => {
+    if (otp.length !== 6) {
+      toast.error("Please enter valid 6 digit OTP");
+      return;
+    }
+
+    setOtpLoading(true);
+    try {
+      const token = localStorage.getItem('token-admin')
+      await userService.VerifyOtptwo({
+        otp,
+        type: "telegram",
+        token
+      });
+
+      setIsEnabled(true);
+      setShowOtpBox(false);
+      setOtp("");
+      
+      toast.success("2-Step Verification Enabled Successfully");
+
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message || "Invalid OTP");
+    } finally {
+      setOtpLoading(false);
+    }
+  };
+
+
+  React.useEffect(()=>{ if(userState.user.authkey != 1){
+   setIsEnabled(false);
+  }else{
+     setIsEnabled(true);
+  }},[])
+ 
+
   return (
     <div style={{ padding: "10px 15px 70px" }}>
       <div className="security-auth">
@@ -357,9 +430,10 @@ const SecureAuth = () => {
                 className={`nav-link ${
                   activeTab === "telegram" ? "active" : ""
                 }`}
-                onClick={() => setActiveTab("telegram")}
+                // onClick={() => setActiveTab("telegram")}
+                   onClick={handleEnable2FA}
               >
-                Enable Using Telegram
+                {isEnabled ? "Disable Using Telegram" : "Ennable Using Telegaram"}
               </a>
             </li>
           </ul>
@@ -369,7 +443,7 @@ const SecureAuth = () => {
             <div className="text-center mt-4">
 
               {/* PASSWORD INPUT */}
-              {!connectionId && (
+              {!connectionId && userState.user.authkey != 1 &&(
                 <>
                   <b>Please enter your login password to continue</b>
 
@@ -415,10 +489,10 @@ const SecureAuth = () => {
                     Then type <kbd>/connect {connectionId}</kbd>
                   </p>
 
-                  {!isEnabled && !showOtpBox && (
+                  { !showOtpBox && (
                     <button
                       className="btn btn-success mt-2"
-                      onClick={handleEnable2FA}
+                      onClick={handleEnable2FA2}
                       disabled={enableLoading}
                     >
                       {enableLoading

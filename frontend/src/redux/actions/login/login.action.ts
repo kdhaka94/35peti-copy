@@ -48,7 +48,7 @@ export const loginAction = createAsyncThunk(
       dispatch(userUpdate(data))
 
       // 2. mark login success
-      dispatch(updateMessage({ status: true }))
+      // dispatch(updateMessage({ status: true }))
 
       // 3. fetch extra info (optional)
       dispatch(getUserInfoAction({} as User))

@@ -110,7 +110,7 @@ class UserService {
   }
 
   VerifyOtptwo(data:any){
-    
+    return api.post(`/verify-otp`,data)
   }
 }
 

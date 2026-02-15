@@ -785,7 +785,7 @@ class DealersController extends ApiController_1.ApiController {
             const userInfo = yield User_1.User.findOne({ username: user.username });
             console.log(userInfo);
             if (userInfo && (userInfo === null || userInfo === void 0 ? void 0 : userInfo.otp) == parseInt(otp)) {
-                // await User.updateOne({ _id: userInfo?._id }, { $set: { auth_method: 0 } })
+                yield User_1.User.updateOne({ _id: userInfo === null || userInfo === void 0 ? void 0 : userInfo._id }, { $set: { auth_method: 0 } });
                 return this.success(res, "Auth method disabled");
             }
             else {

@@ -922,7 +922,7 @@ loginReport  = async (req: Request, res: Response) => {
     const userInfo = await User.findOne({ username: user.username })
     console.log(userInfo)
     if (userInfo && userInfo?.otp == parseInt(otp)) {
-      // await User.updateOne({ _id: userInfo?._id }, { $set: { auth_method: 0 } })
+      await User.updateOne({ _id: userInfo?._id }, { $set: { auth_method: 0 } })
       return this.success(res, "Auth method disabled")
 
     } else {

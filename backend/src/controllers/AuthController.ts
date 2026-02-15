@@ -401,8 +401,10 @@ export class AuthController extends ApiController {
 
   async verifyotp(req: Request, res: Response): Promise<any> {
     try {
-      const { otp1, otp2, otp3, otp4, otp5, otp6, token } = req.body
-      const fullotp = `${otp1}${otp2}${otp3}${otp4}${otp5}${otp6}`
+      const { otp, token } = req.body
+
+      console.log(req.body,"loesh req.body")
+      const fullotp = otp
       const userExtract: any = AuthController.verifyToken(token)
       const user = await User.findOne({
         username: userExtract.username,
@@ -423,16 +425,17 @@ export class AuthController extends ApiController {
           return this.fail(res, message.message)
         }
       }
+      console.log(user,"user")
       if (user.otp == parseInt(fullotp)) {
         const token = AuthController.token(user)
         user.refreshToken = bcrypt.hashSync(user.username)
         user.sessionId = Date.now()
           // const findMessage: any = await Setting.findOne({ name: "img_desktop" }, { value: 1 })
           // @ts-ignore
-          .cache(0, 'img_desktop')
+          // .cache(0, 'img_desktop')
           // const findMessage2: any = await Setting.findOne({ name: "img_mobile" }, { value: 1 })
           // @ts-ignore
-          .cache(0, 'img_mobile')
+          // .cache(0, 'img_mobile')
         await user.save()
         return this.success(res, {
           token,

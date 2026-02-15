@@ -1,6 +1,6 @@
 import React from 'react'
 import { useAppDispatch, useAppSelector } from '../../../redux/hooks'
-import { selectUserData } from '../../../redux/actions/login/loginSlice'
+import { selectUserData, updateMessage } from '../../../redux/actions/login/loginSlice'
 import { userUpdate } from '../../../redux/actions/login/loginSlice'
 import authService from '../../../services/auth.service'
 import { useNavigateCustom } from '../../../pages/_layout/elements/custom-link'
@@ -42,14 +42,24 @@ const OtpVerification = () => {
       setLoading(true)
       setError('')
 
-      const res = await userService.VerifyOtp({ otp })
+      const token = localStorage.getItem('token-admin')
 
-      if (res.data.data == "Auth method disabled") {
+      const res = await userService. VerifyOtptwo({ otp,token })
+      console.log(res.data)
+
+      if (res.data.code == '200') {
         // ✅ authkey remove
+       
+
+        localStorage.setItem('token-admin', res.data.data.token)
+      localStorage.setItem('userType-admin', res.data.data.role)
+       localStorage.setItem('refreshToken-admin', res.data.data.refreshToken)
+
+        dispatch(updateMessage({ status: true }))
         dispatch(
-          userUpdate({
+        userUpdate({
             ...userState.user,
-            authkey: 0,
+            authkey: 1,
           })
         )
 

@@ -32,7 +32,7 @@ const MainAdmin = () => {
   const location = useLocation();
   return (
     <div className='admin'>
-      {userState.user.authkey == '0' && <Header />}
+     <Header />
       <ToastContainer />
       <div className='main'>
         {(location.pathname.includes('odds/') || location.pathname.includes('casino/')) &&
@@ -48,7 +48,7 @@ const MainAdmin = () => {
           <Outlet></Outlet>
         }
       </div>
-     { userState.user.authkey == 0 && <Footer />}
+  <Footer />
     </div>
   )
 }
