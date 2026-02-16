@@ -198,8 +198,8 @@ class DealersController extends ApiController_1.ApiController {
                         exposerLimit,
                         userSetting: updatedUserSetting,
                         paymode,
-                        AllowCasino: AllowCasino || [],
-                        Allowsport: Allowsport || [],
+                        AllowCasino: AllowCasino || currentUser.AllowCasino,
+                        Allowsport: Allowsport || currentUser.AllowSport,
                         ctv: true,
                         stv: true
                     };
