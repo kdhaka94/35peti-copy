@@ -80,7 +80,9 @@ router.post('/api/resend-telegram-otp', new AuthController_1.AuthController().re
 router.post('/api/verify-otp', new AuthController_1.AuthController().verifyotp);
 router.get('/api/set-telegram-webhook', new AuthController_1.AuthController().setTelegramBotUrl);
 router.post('/api/telegram-webhook', new AuthController_1.AuthController().telegramwebhook);
-router.post('/api/resend-telegram-otp-after-login', Passport_1.default.authenticateJWT, new AuthController_1.AuthController().resendotp);
+router.post('/api/resend-telegram-otp-after-login', 
+// Passport.authenticateJWT,
+new AuthController_1.AuthController().resendotp);
 router.get('/api/get-business-fancy-list', new BetController_1.BetController().fancybetListSelection);
 router.post('/api/update-fancy-result', new FancyController_1.FancyController().updatefancyresultapi);
 router.get('/api/resync_bookmaker_id', new SportsController_1.default().saveMatchResyncCron);

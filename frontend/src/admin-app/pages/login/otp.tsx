@@ -9,11 +9,13 @@ import userService from '../../../services/user.service'
 import { toast } from 'react-toastify'
 import { getUserInfoAction } from '../../../redux/actions/login/login.action'
 import User from '../../../models/User'
+import { useLocation } from 'react-router-dom';
 
 const OtpVerification = () => {
     const dispatch = useAppDispatch()
     const navigate = useNavigateCustom()
     const userState = useAppSelector(selectUserData)
+    const location = useLocation();
 
     const [otp, setOtp] = React.useState('')
     const [loading, setLoading] = React.useState(false)
@@ -28,6 +30,13 @@ const OtpVerification = () => {
         }, 1000)
         return () => clearInterval(interval)
     }, [timer])
+
+   React.useEffect(() => {
+  return () => {
+    // 👈 jab OTP page se bahar jaoge (back included)
+    localStorage.setItem('force_login', 'true');
+  };
+}, [location.pathname]);
 
     // 🔒 SAFETY: direct access block
     // React.useEffect(() => {
@@ -44,7 +53,7 @@ const OtpVerification = () => {
             setLoading(true)
             setError('')
 
-            const token = localStorage.getItem('token-admin')
+            const token = localStorage.getItem('token-admin-two')
 
             const res = await userService.VerifyOtptwo({ otp, token })
             console.log(res.data)
@@ -60,9 +69,9 @@ const OtpVerification = () => {
 
                dispatch(getUserInfoAction({} as User))
 
-                navigate.go('/admin/list-clients')
-
                 navigate.go('/list-clients')
+
+                // navigate.go('/list-clients')
             } else {
                 setError('Invalid OTP')
             }
@@ -84,7 +93,8 @@ const OtpVerification = () => {
 
     React.useEffect(() => {
         const SendOtp = async () => {
-            const res = await userService.enableButton({ type: "telegaram" })
+            let token = localStorage.getItem('token-admin-two')
+            const res = await userService.enableButton({ type: "telegaram",token })
             const msg = res?.data?.data?.message;
             console.log(msg, "lokesh")
 

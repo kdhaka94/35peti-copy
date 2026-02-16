@@ -3,7 +3,7 @@ import api from '../../../utils/api'
 import { useNavigateCustom } from '../../../pages/_layout/elements/custom-link'
 import { useWebsocketUser } from '../../../context/webSocketUser'
 import { useAppDispatch, useAppSelector } from '../../../redux/hooks'
-import { selectUserData } from '../../../redux/actions/login/loginSlice'
+import { selectUserData, userUpdate } from '../../../redux/actions/login/loginSlice'
 import User from '../../../models/User'
 import { getUserInfoAction, loginAction } from '../../../redux/actions/login/login.action'
 import SubmitButton from '../../../components/SubmitButton'
@@ -54,31 +54,60 @@ const Login = () => {
   // }, [userState])
 
 
-  React.useEffect(() => {
-    if (userState.status === 'done' && userState.user?._id) {
-      const { role, _id, authkey } = userState.user
+  // React.useEffect(() => {
+  //   if (userState.status === 'done' && userState.user?._id) {
+  //     const { role, _id, authkey } = userState.user
 
 
      
-      // socket login
-      socketUser.emit('login', {
-        role,
-        sessionId: userState.user.sessionId,
-        _id,
-      })
+  //     // socket login
+  //     socketUser.emit('login', {
+  //       role,
+  //       sessionId: userState.user.sessionId,
+  //       _id,
+  //     })
 
-      // 🔐 authkey = 1 → OTP
-      if (authkey === 1) {
-        localStorage.setItem('admin_otp_pending', 'true')
-        navigate.go('/otp-verification')
-        return
-      }
-    dispatch(getUserInfoAction({} as User))
+  //     // 🔐 authkey = 1 → OTP
+  //     if (authkey === 1) {
+  //       localStorage.setItem('admin_otp_pending', 'true')
+  //       navigate.go('/otp-verification')
+  //       return
+  //     }
+  //     dispatch(getUserInfoAction({} as User))
 
-      // ✅ authkey = 0 → Home
-      return navigate.go('/list-clients')
+  //     // ✅ authkey = 0 → Home
+  //     return navigate.go('/list-clients')
+  //   }
+  // }, [userState])
+
+
+  React.useEffect(() => {
+  // 👇 BACK se aaya hai to kuch mat kar
+  if (localStorage.getItem('force_login') === 'true') {
+    localStorage.removeItem('force_login');
+      
+   return navigate.go('/login')
+  }
+
+  if (userState.status === 'done' && userState.user?._id) {
+    const { role, _id, authkey } = userState.user;
+
+    socketUser.emit('login', {
+      role,
+      sessionId: userState.user.sessionId,
+      _id,
+    });
+
+    if (authkey === 1) {
+      localStorage.setItem('admin_otp_pending', 'true');
+      navigate.go('/otp-verification');
+      return;
     }
-  }, [userState])
+
+    dispatch(getUserInfoAction({} as User));
+    navigate.go('/list-clients');
+  }
+}, [userState]);
 
 
 

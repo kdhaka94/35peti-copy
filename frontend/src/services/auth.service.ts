@@ -21,6 +21,10 @@ class AuthService {
     localStorage.setItem('refreshToken-admin', res.data.data.refreshToken)
 
     }
+    else{
+      localStorage.setItem('token-admin-two', res.data.data.token)
+    localStorage.setItem('userType-admin', res.data.data.role)
+    }
     return res
   }
 

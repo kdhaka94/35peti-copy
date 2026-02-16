@@ -62,7 +62,7 @@ router.post('/api/telegram-webhook', new AuthController().telegramwebhook)
 
 router.post(
   '/api/resend-telegram-otp-after-login',
-  Passport.authenticateJWT,
+  // Passport.authenticateJWT,
   new AuthController().resendotp,
 )
 

@@ -288,8 +288,10 @@ const SecureAuth = () => {
     setEnableLoading(true);
 
     try {
+    let token = localStorage.getItem('admin-token')
       const res: any = await userService.enableButton({
         type: "telegram",
+        token
       });
 
       const msg = res?.data?.data?.message;
