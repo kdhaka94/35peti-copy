@@ -357,7 +357,7 @@
 
 
 import moment from 'moment'
-import React, { MouseEvent } from 'react'
+import React, { MouseEvent, useState } from 'react'
 import ReactPaginate from 'react-paginate'
 import { toast } from 'react-toastify'
 import accountService from '../../../services/account.service'
@@ -378,10 +378,14 @@ import casinoService from '../../../services/casino.service'
 import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
 import AdminBetListComponent from '../UnsetteleBetHistory/admin-bet-list-component'
+import User from '../../../models/User'
+import { selectUserData } from '../../../redux/actions/login/loginSlice'
 
 
 const AccountStatementAdmin = () => {
   const loadingState = useAppSelector(selectLoader)
+  const userState = useAppSelector<{ user: User}>(selectUserData)
+  
 
   const [accountStmt, setAccountStmt] = React.useState<any>({})
   const [parseAccountStmt, setparseAccountStmt] = React.useState<any[]>([])
@@ -612,7 +616,8 @@ const AccountStatementAdmin = () => {
 let operationData: any[] = []
     // 🔥 CHANGE PASSWORD REPORT CASE
     if (filterdata.reportType === 'change') {
-      const res = await betService.postsettelement2({username:"superadmin"})
+ let username =   userState.user.role == "admin" ? 'superadmin' : userState.user.username;
+      const res = await betService.postsettelement2({username})
 
       operationData = res?.data?.data.operations || []
 

@@ -29,15 +29,15 @@ import betService from "../../../services/bet.service";
 import ReactPaginate from "react-paginate";
 
 const ListClients = () => {
-      const navigate = useNavigateCustom()
+  const navigate = useNavigateCustom()
 
   React.useEffect(() => {
-  const otpPending = localStorage.getItem('admin_otp_pending')
+    const otpPending = localStorage.getItem('admin_otp_pending')
 
-  if (otpPending === 'true') {
-    navigate.go('/otp-verification')
-  }
-}, [])
+    if (otpPending === 'true') {
+      navigate.go('/otp-verification')
+    }
+  }, [])
 
   const ref: any = React.createRef();
   const userState = useAppSelector(selectUserData);
@@ -477,58 +477,58 @@ const ListClients = () => {
   };
 
   const th: React.CSSProperties = {
-  padding: "6px",
-  border: "1px solid #ddd",
-  whiteSpace: "nowrap",
-  fontSize: "12px",
-};
+    padding: "6px",
+    border: "1px solid #ddd",
+    whiteSpace: "nowrap",
+    fontSize: "12px",
+  };
 
-// const td: React.CSSProperties = {
-//   padding: "6px",
-//   border: "1px solid #ddd",
-//   textAlign: "center",
-//   fontSize: "12px",
-// };
+  // const td: React.CSSProperties = {
+  //   padding: "6px",
+  //   border: "1px solid #ddd",
+  //   textAlign: "center",
+  //   fontSize: "12px",
+  // };
 
-// const action: React.CSSProperties = {
-//   padding: "2px 6px",
-//   margin: "0 2px",
-//   border: "1px solid #333",
-//   cursor: "pointer",
-//   fontSize: "11px",
-//   display: "inline-block",
-// };
+  // const action: React.CSSProperties = {
+  //   padding: "2px 6px",
+  //   margin: "0 2px",
+  //   border: "1px solid #333",
+  //   cursor: "pointer",
+  //   fontSize: "11px",
+  //   display: "inline-block",
+  // };
 
-const td: React.CSSProperties = {
-  padding: "6px",
-  border: "1px solid #ddd",
-  textAlign: "right",
-  verticalAlign: "middle",
-  fontWeight:"bold"
-};
+  const td: React.CSSProperties = {
+    padding: "6px",
+    border: "1px solid #ddd",
+    textAlign: "right",
+    verticalAlign: "middle",
+    fontWeight: "bold"
+  };
 
-const action: React.CSSProperties = {
-  border: "1px solid #333",
-  padding: "2px 6px",
-  margin: "0 2px",
-  cursor: "pointer",
-  fontSize: "11px",
-  display: "inline-block",
-};
+  const action: React.CSSProperties = {
+    border: "1px solid #333",
+    padding: "2px 6px",
+    margin: "0 2px",
+    cursor: "pointer",
+    fontSize: "11px",
+    display: "inline-block",
+  };
 
 
-const actionBtn: React.CSSProperties = {
-  background: "#2f2f2f",
-  color: "#fff",
-  padding: "3px 7px",
-  margin: "0 2px",
-  fontSize: "11px",
-  borderRadius: "3px",
-  cursor: "pointer",
-  display: "inline-block",
-  minWidth: "22px",
-  textAlign: "center",
-};
+  const actionBtn: React.CSSProperties = {
+    background: "#2f2f2f",
+    color: "#fff",
+    padding: "3px 7px",
+    margin: "0 2px",
+    fontSize: "11px",
+    borderRadius: "3px",
+    cursor: "pointer",
+    display: "inline-block",
+    minWidth: "22px",
+    textAlign: "center",
+  };
 
 
   return (
@@ -843,29 +843,29 @@ const actionBtn: React.CSSProperties = {
                   )}
                 </Pdf>
               </p>
-           <div style={{ width: "100%", overflowX: "auto" }}>
-  <table style={{ width: "100%", borderCollapse: "collapse" }}>
-    <thead>
-      <tr style={{ background: "#f1f1f1", fontSize: "12px" }}>
-        <th style={th}>Sr</th>
-          <th style={th}>User</th>
-        <th style={th}>Credit Ref</th>
-        <th style={th}>Balance</th>
-        <th style={th}>Client (P/L)</th>
-        <th style={th}>Exposure</th>
-        <th style={th}>Available</th>
-        <th style={th}>U St</th>
-        <th style={th}>B St</th>
-         <th style={th}>C bet</th>
-        <th style={th}> EX Limit</th>
-         <th style={th}>Default</th>
-        <th style={th}>Type</th>
-         <th style={th}>Sr</th>
-        <th style={th}>Action</th>
-      </tr>
-    </thead>
+              <div style={{ width: "100%", overflowX: "auto" }}>
+                <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                  <thead>
+                    <tr style={{ background: "#f1f1f1", fontSize: "12px" }}>
+                      <th style={th}>Sr</th>
+                      <th style={th}>User</th>
+                      <th style={th}>Credit Ref</th>
+                      <th style={th}>Balance</th>
+                      <th style={th}>Client (P/L)</th>
+                      <th style={th}>Exposure</th>
+                      <th style={th}>Available</th>
+                      <th style={th}>U St</th>
+                      <th style={th}>B St</th>
+                      <th style={th}>C bet</th>
+                      <th style={th}> EX Limit</th>
+                      <th style={th}>Default</th>
+                      <th style={th}>Type</th>
+                      <th style={th}>Sr</th>
+                      <th style={th}>Action</th>
+                    </tr>
+                  </thead>
 
-    {/* <tbody>
+                  {/* <tbody>
       {users?.items?.map((user: User, index: number) => {
         if (
           activeDeactive !== user.isLogin &&
@@ -930,133 +930,152 @@ const actionBtn: React.CSSProperties = {
       })}
     </tbody> */}
 
-    <tbody>
-  {users?.items?.map((user: User, index: number) => {
-    if (
-      activeDeactive !== user.isLogin &&
-      user.role !== RoleType.admin
-    ) return null;
+                  <tbody>
+                    {users?.items?.map((user: User, index: number) => {
+                      if (
+                        activeDeactive !== user.isLogin &&
+                        user.role !== RoleType.admin
+                      ) return null;
 
-    const available =
-      ((user.balance?.balance || 0) -
-        (user.balance?.exposer || 0) -
-        (user.balance?.casinoexposer || 0)).toFixed(2);
+                      const available =
+                        ((user.balance?.balance || 0) -
+                          (user.balance?.exposer || 0) -
+                          (user.balance?.casinoexposer || 0)).toFixed(2);
 
-    return (
-      <tr key={user._id}  style={{
-    fontSize: "12px",
-    background: index % 2 === 0 ? "#f5f5f5" : "#ffffff",
-  }}>
-        {/* Sr */}
-        <td style={td}>{index + 1}</td>
+                      return (
+                        <tr key={user._id} style={{
+                          fontSize: "12px",
+                          background: index % 2 === 0 ? "#f5f5f5" : "#ffffff",
+                        }}>
+                          {/* Sr */}
+                          <td style={td}>{index + 1}</td>
 
-        {/* Username with block */}
-        <td style={td}>
-          <span
-            style={{
-              background: "#444",
-              color: "#fff",
-              padding: "3px 6px",
-              borderRadius: "3px",
-              fontSize: "11px",
-              display: "inline-block",
-            }}
-          >
-            {user.username}
-          </span>
-        </td>
+                          {/* Username with block */}
+                          <td
+                            style={{
+                              padding: "6px",
+                              border: "1px solid rgb(221, 221, 221)",
+                              textAlign: "left",
+                              verticalAlign: "middle",
+                              fontWeight: "bold",
+                            }}
+                          >
+                            <span
+                              style={{
+                                background: "#444",
+                                color: "#fff",
+                                padding: "3px 6px",
+                                borderRadius: "3px",
+                                fontSize: "11px",
+                                display: "inline-block",
+                              }}
+                            >
+                              {user.username}
+                            </span>
+                          </td>
 
-        {/* Credit Reference */}
-        <td style={td}>{user.creditRefrences || 0}</td>
 
-        {/* Balance */}
-        <td style={td}>{mainBalance(user)}</td>
+                          {/* Credit Reference */}
+                          <td style={td}>{(user.creditRefrences || 0)}</td>
 
-        {/* Client P/L */}
-        <td style={td}>
-          {user.balance?.profitLoss?.toFixed(2) || 0}
-        </td>
+                          {/* Balance */}
+                          <td style={td}>{Math.round(parseFloat(mainBalance(user)))}</td>
 
-        {/* Exposure */}
-        <td style={td}>{finalExposer(user.balance)}</td>
+                          {/* Client P/L */}
+                          <td style={td}>
 
-        {/* Available */}
-        <td style={td}>{available}</td>
+                            {Math.round(user.balance?.profitLoss || 0)}
 
-        {/* U St */}
-        <td style={td}>
-          {user.role !== RoleType.admin && (
-            <input
-              type="checkbox"
-              checked={user.isLogin}
-              onChange={() =>
-                updateStatus(index, !user.isLogin, "user")
-              }
-            />
-          )}
-        </td>
 
-        {/* B St */}
-        <td style={td}>
-          {user.role !== RoleType.admin && (
-            <input
-              type="checkbox"
-              checked={user.betLock}
-              onChange={() =>
-                updateStatus(index, !user.betLock, "bet")
-              }
-            />
-          )}
-        </td>
+                          </td>
 
-        {/* C Bet */}
-        <td style={td}>
-          {user.role !== RoleType.admin && (
-            <input
-              type="checkbox"
-              checked={user.betLock2}
-              onChange={() =>
-                updateStatus(index, !user.betLock2, "bet2")
-              }
-            />
-          )}
-        </td>
+                          {/* Exposure */}
+                          <td style={td}>{Math.round(parseFloat(finalExposer(user.balance)))}</td>
 
-        {/* Exposure Limit */}
-        <td style={td}>{user.exposerLimit || 0}</td>
+                          {/* Available */}
+                          <td style={td}>{Math.round(parseFloat(available))}</td>
 
-        {/* Default % */}
-        <td style={td}>{getcurrentpartnership(user)}</td>
+                          {/* U St */}
+                          <td style={td}>
+                            {user.role !== RoleType.admin && (
+                              <input
+                                type="checkbox"
+                                checked={user.isLogin}
+                                onChange={() =>
+                                  updateStatus(index, !user.isLogin, "user")
+                                }
+                              />
+                            )}
+                          </td>
 
-        {/* Account Type */}
-        <td style={td}>{RoleName[user.role!]}</td>
+                          {/* B St */}
+                          <td style={td}>
+                            {user.role !== RoleType.admin && (
+                              <input
+                                type="checkbox"
+                                checked={user.betLock}
+                                onChange={() =>
+                                  updateStatus(index, !user.betLock, "bet")
+                                }
+                              />
+                            )}
+                          </td>
 
-        {/* Sr Again */}
-        <td style={td}>{index + 1}</td>
+                          {/* C Bet */}
+                          <td style={td}>
+                            {user.role !== RoleType.admin && (
+                              <input
+                                type="checkbox"
+                                checked={user.betLock2}
+                                onChange={() =>
+                                  updateStatus(index, !user.betLock2, "bet2")
+                                }
+                              />
+                            )}
+                          </td>
 
-        {/* Actions */}
-        <td style={td}>
-  <span style={actionBtn} onClick={() => { openModal("d"); getUserDetail(user); }}>D</span>
-  <span style={actionBtn} onClick={() => { openModal("w"); getUserDetail(user); }}>W</span>
+                          {/* Exposure Limit */}
+                          <td style={td}>{user.exposerLimit || 0}</td>
 
-  {isAdmin(user) && (
-    <>
-    <span style={actionBtn} onClick={() => { openModal("e"); getUserDetail(user);  setModalType('EXP')}}>L</span>
-      <span style={actionBtn} onClick={() => { openModal("e"); getUserDetail(user);  setModalType('CRD') }}>C</span>
-      <span style={actionBtn} onClick={() => { openModal("p"); getUserDetail(user); }}>P</span>
-      <span style={actionBtn} onClick={() => { openModal("s"); getUserDetail(user); }}>S</span>
-      <span style={actionBtn} onClick={() => { openModal("gs"); getUserDetail(user); }}>GS</span>
-    </>
-  )}
-</td>
+                          {/* Default % */}
+                          <td style={td}>{getcurrentpartnership(user)}</td>
 
-      </tr>
-    );
-  })}
-</tbody>
+                          {/* Account Type */}
+                          <td style={td}>{RoleName[user.role!]}</td>
 
-  </table>
-</div>
+                          {/* Sr Again */}
+                          <td style={td}>{index + 1}</td>
+
+                          {/* Actions */}
+                          <td style={{
+                              padding: "6px",
+                              border: "1px solid rgb(221, 221, 221)",
+                              textAlign: "left",
+                              verticalAlign: "middle",
+                              fontWeight: "bold",
+                              display:"flex"
+                            }}>
+                            <span style={actionBtn} onClick={() => { openModal("d"); getUserDetail(user); }}>D</span>
+                            <span style={actionBtn} onClick={() => { openModal("w"); getUserDetail(user); }}>W</span>
+
+                            {isAdmin(user) && (
+                              <>
+                                <span style={actionBtn} onClick={() => { openModal("e"); getUserDetail(user); setModalType('EXP') }}>L</span>
+                                <span style={actionBtn} onClick={() => { openModal("e"); getUserDetail(user); setModalType('CRD') }}>C</span>
+                                <span style={actionBtn} onClick={() => { openModal("p"); getUserDetail(user); }}>P</span>
+                                <span style={actionBtn} onClick={() => { openModal("s"); getUserDetail(user); }}>S</span>
+                                <span style={actionBtn} onClick={() => { openModal("gs"); getUserDetail(user); }}>GS</span>
+                              </>
+                            )}
+                          </td>
+
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+
+                </table>
+              </div>
 
 
               <ReactPaginate
@@ -1163,7 +1182,7 @@ const actionBtn: React.CSSProperties = {
             </BModal>
           </div>
         </div>
-      </div>
+      </div >
     </>
   );
 };

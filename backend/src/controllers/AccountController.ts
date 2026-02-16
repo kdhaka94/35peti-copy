@@ -433,55 +433,124 @@ export class AccountController extends ApiController {
     return bal?.profitLoss ? bal?.profitLoss : 0
   }
 
-  settelement2 = async (req: Request, res: Response) => {
-    console.log(req.body, "data from settlement");
+  // settelement2 = async (req: Request, res: Response) => {
+  //   console.log(req.body, "data from settlement");
 
+  //   const { username } = req.body;
+
+  //   const user_data = await User.findOne({username})
+
+  //   if (!username) {
+  //     return this.fail(res, "Username is required");
+  //   }
+
+  //   try {
+  //   if(username == "superadmin"){
+  //      const operations = await Operation
+  //       .find()
+  //       .sort({ createdAt: -1 });
+
+  //     if (!operations || operations.length === 0) {
+  //       return this.success(res, {
+  //         msg: "No operations found for this username",
+  //         operations: []
+  //       });
+  //     }
+  //     return this.success(res, {
+  //       msg: "Success",
+  //       operations
+  //     });
+  //   }
+  //   if(user_data.role != "user"){
+
+  //   }
+    
+
+  //     const operations = await Operation
+  //       .find({ username })
+  //       .sort({ createdAt: -1 });
+
+  //     if (!operations || operations.length === 0) {
+  //       return this.success(res, {
+  //         msg: "No operations found for this username",
+  //         operations: []
+  //       });
+  //     }
+
+  //     return this.success(res, {
+  //       msg: "Success",
+  //       operations
+  //     });
+
+  //   } catch (error: any) {
+  //     console.error(error);
+  //     return this.fail(res, "Server error: " + error.message);
+  //   }
+  // };
+
+
+
+  settelement2 = async (req: Request, res: Response) => {
+  try {
     const { username } = req.body;
 
     if (!username) {
       return this.fail(res, "Username is required");
     }
 
-    try {
-    if(username == "superadmin"){
-       const operations = await Operation
-        .find()
-        .sort({ createdAt: -1 });
+    const user_data = await User.findOne({ username });
+    if (!user_data) {
+      return this.fail(res, "User not found");
+    }
 
-      if (!operations || operations.length === 0) {
-        return this.success(res, {
-          msg: "No operations found for this username",
-          operations: []
-        });
-      }
+    // 🔹 SUPER ADMIN → ALL OPERATIONS
+    if (username === "superadmin") {
+      const operations = await Operation.find().sort({ createdAt: -1 });
+
       return this.success(res, {
-        msg: "Success",
-        operations
+        msg: operations.length ? "Success" : "No operations found",
+        operations,
       });
     }
 
+    // 🔹 NORMAL USER → ONLY OWN OPERATIONS
+    if (user_data.role === "user") {
       const operations = await Operation
         .find({ username })
         .sort({ createdAt: -1 });
 
-      if (!operations || operations.length === 0) {
-        return this.success(res, {
-          msg: "No operations found for this username",
-          operations: []
-        });
-      }
-
       return this.success(res, {
-        msg: "Success",
-        operations
+        msg: operations.length ? "Success" : "No operations found",
+        operations,
       });
-
-    } catch (error: any) {
-      console.error(error);
-      return this.fail(res, "Server error: " + error.message);
     }
-  };
 
+    // 🔹 AGENT / ADMIN / MASTER etc.
+    // 👉 find child users whose parentStr contains current user _id
+    const childUsers = await User.find({
+      parentStr: user_data._id,
+    }).select("username");
+
+    // collect usernames (children + self)
+    const usernames = [
+      user_data.username,
+      ...childUsers.map((u) => u.username),
+    ];
+
+    const operations = await Operation
+      .find({ username: { $in: usernames } })
+      .sort({ createdAt: -1 });
+
+    return this.success(res, {
+      msg: operations.length ? "Success" : "No operations found",
+      operations,
+    });
+
+  } catch (error: any) {
+    console.error(error);
+    return this.fail(res, "Server error: " + error.message);
+  }
+};
 
 
   getUserBalanceWithExposer = async (req: Request, res: Response) => {

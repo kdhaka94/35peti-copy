@@ -70,40 +70,93 @@ class AccountController extends ApiController_1.ApiController {
             // const pnl_ = bal?.profitLoss ? bal?.profitLoss + withdAmt : 0
             return (bal === null || bal === void 0 ? void 0 : bal.profitLoss) ? bal === null || bal === void 0 ? void 0 : bal.profitLoss : 0;
         });
+        // settelement2 = async (req: Request, res: Response) => {
+        //   console.log(req.body, "data from settlement");
+        //   const { username } = req.body;
+        //   const user_data = await User.findOne({username})
+        //   if (!username) {
+        //     return this.fail(res, "Username is required");
+        //   }
+        //   try {
+        //   if(username == "superadmin"){
+        //      const operations = await Operation
+        //       .find()
+        //       .sort({ createdAt: -1 });
+        //     if (!operations || operations.length === 0) {
+        //       return this.success(res, {
+        //         msg: "No operations found for this username",
+        //         operations: []
+        //       });
+        //     }
+        //     return this.success(res, {
+        //       msg: "Success",
+        //       operations
+        //     });
+        //   }
+        //   if(user_data.role != "user"){
+        //   }
+        //     const operations = await Operation
+        //       .find({ username })
+        //       .sort({ createdAt: -1 });
+        //     if (!operations || operations.length === 0) {
+        //       return this.success(res, {
+        //         msg: "No operations found for this username",
+        //         operations: []
+        //       });
+        //     }
+        //     return this.success(res, {
+        //       msg: "Success",
+        //       operations
+        //     });
+        //   } catch (error: any) {
+        //     console.error(error);
+        //     return this.fail(res, "Server error: " + error.message);
+        //   }
+        // };
         this.settelement2 = (req, res) => __awaiter(this, void 0, void 0, function* () {
-            console.log(req.body, "data from settlement");
-            const { username } = req.body;
-            if (!username) {
-                return this.fail(res, "Username is required");
-            }
             try {
-                if (username == "superadmin") {
+                const { username } = req.body;
+                if (!username) {
+                    return this.fail(res, "Username is required");
+                }
+                const user_data = yield User_1.User.findOne({ username });
+                if (!user_data) {
+                    return this.fail(res, "User not found");
+                }
+                // 🔹 SUPER ADMIN → ALL OPERATIONS
+                if (username === "superadmin") {
+                    const operations = yield Operation_1.default.find().sort({ createdAt: -1 });
+                    return this.success(res, {
+                        msg: operations.length ? "Success" : "No operations found",
+                        operations,
+                    });
+                }
+                // 🔹 NORMAL USER → ONLY OWN OPERATIONS
+                if (user_data.role === "user") {
                     const operations = yield Operation_1.default
-                        .find()
+                        .find({ username })
                         .sort({ createdAt: -1 });
-                    if (!operations || operations.length === 0) {
-                        return this.success(res, {
-                            msg: "No operations found for this username",
-                            operations: []
-                        });
-                    }
                     return this.success(res, {
-                        msg: "Success",
-                        operations
+                        msg: operations.length ? "Success" : "No operations found",
+                        operations,
                     });
                 }
+                // 🔹 AGENT / ADMIN / MASTER etc.
+                // 👉 find child users whose parentStr contains current user _id
+                const childUsers = yield User_1.User.find({
+                    parentStr: user_data._id,
+                }).select("username");
+                // collect usernames (children + self)
+                const usernames = [
+                    user_data.username,
+                    ...childUsers.map((u) => u.username),
+                ];
                 const operations = yield Operation_1.default
-                    .find({ username })
+                    .find({ username: { $in: usernames } })
                     .sort({ createdAt: -1 });
-                if (!operations || operations.length === 0) {
-                    return this.success(res, {
-                        msg: "No operations found for this username",
-                        operations: []
-                    });
-                }
                 return this.success(res, {
-                    msg: "Success",
-                    operations
+                    msg: operations.length ? "Success" : "No operations found",
+                    operations,
                 });
             }
             catch (error) {
