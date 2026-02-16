@@ -51,7 +51,7 @@ export const loginAction = createAsyncThunk(
       // dispatch(updateMessage({ status: true }))
 
       // 3. fetch extra info (optional)
-      dispatch(getUserInfoAction({} as User))
+      // dispatch(getUserInfoAction({} as User))
 
       return data
     } catch (e: any) {

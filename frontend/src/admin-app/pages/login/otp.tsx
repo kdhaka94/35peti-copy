@@ -7,6 +7,8 @@ import { useNavigateCustom } from '../../../pages/_layout/elements/custom-link'
 import SubmitButton from '../../../components/SubmitButton'
 import userService from '../../../services/user.service'
 import { toast } from 'react-toastify'
+import { getUserInfoAction } from '../../../redux/actions/login/login.action'
+import User from '../../../models/User'
 
 const OtpVerification = () => {
     const dispatch = useAppDispatch()
@@ -54,7 +56,9 @@ const OtpVerification = () => {
                 localStorage.setItem('token-admin', res.data.data.token)
                 localStorage.setItem('refreshToken-admin', res.data.data.refreshToken)
 
-                localStorage.setItem('admin_otp_pending', 'false')
+                // localStorage.setItem('admin_otp_pending', 'false')
+
+               dispatch(getUserInfoAction({} as User))
 
                 navigate.go('/admin/list-clients')
 

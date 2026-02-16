@@ -15,9 +15,12 @@ class AuthService {
   async loginAdmin(user: User) {
     const res = await api.post('login-admin', user)
     this.ipAddress()
+    if(res.data.data.authkey != 1){
     localStorage.setItem('token-admin', res.data.data.token)
     localStorage.setItem('userType-admin', res.data.data.role)
     localStorage.setItem('refreshToken-admin', res.data.data.refreshToken)
+
+    }
     return res
   }
 

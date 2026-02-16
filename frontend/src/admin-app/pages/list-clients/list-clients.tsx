@@ -31,13 +31,13 @@ import ReactPaginate from "react-paginate";
 const ListClients = () => {
   const navigate = useNavigateCustom()
 
-  React.useEffect(() => {
-    const otpPending = localStorage.getItem('admin_otp_pending')
+  // React.useEffect(() => {
+  //   const otpPending = localStorage.getItem('admin_otp_pending')
 
-    if (otpPending === 'true') {
-      navigate.go('/otp-verification')
-    }
-  }, [])
+  //   if (otpPending === 'true') {
+  //     navigate.go('/otp-verification')
+  //   }
+  // }, [])
 
   const ref: any = React.createRef();
   const userState = useAppSelector(selectUserData);

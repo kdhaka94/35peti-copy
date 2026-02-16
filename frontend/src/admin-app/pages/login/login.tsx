@@ -5,7 +5,7 @@ import { useWebsocketUser } from '../../../context/webSocketUser'
 import { useAppDispatch, useAppSelector } from '../../../redux/hooks'
 import { selectUserData } from '../../../redux/actions/login/loginSlice'
 import User from '../../../models/User'
-import { loginAction } from '../../../redux/actions/login/login.action'
+import { getUserInfoAction, loginAction } from '../../../redux/actions/login/login.action'
 import SubmitButton from '../../../components/SubmitButton'
 
 const Login = () => {
@@ -21,6 +21,14 @@ const Login = () => {
     logs: '',
     admin: true,
   })
+
+
+  
+  // React.useEffect(()=>{
+  //   localStorage.removeItem('admin-token')
+  //     localStorage.removeItem('refreshToken-admin')
+
+  // },[])
 
   React.useEffect(() => {
     api.get(`${process.env.REACT_APP_IP_API_URL}`).then((res) => {
@@ -50,6 +58,8 @@ const Login = () => {
     if (userState.status === 'done' && userState.user?._id) {
       const { role, _id, authkey } = userState.user
 
+
+     
       // socket login
       socketUser.emit('login', {
         role,
@@ -63,12 +73,15 @@ const Login = () => {
         navigate.go('/otp-verification')
         return
       }
-
+    dispatch(getUserInfoAction({} as User))
 
       // ✅ authkey = 0 → Home
       return navigate.go('/list-clients')
     }
   }, [userState])
+
+
+
 
 
   const handleForm = (e: React.ChangeEvent<HTMLInputElement>) => {
