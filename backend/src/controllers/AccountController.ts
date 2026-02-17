@@ -694,6 +694,14 @@ export class AccountController extends ApiController {
           matchId: parseInt(gameId)
         };
       }
+        if (reportType === "cgame") {
+        filter = {
+          ...filter,
+          betId: { $ne: null },
+          sportId: 5000,
+          // matchId: parseInt(gameId)
+        };
+      }
 
       if (reportType === "sgame" && gameId !== "") {
         filter = {
@@ -706,11 +714,23 @@ export class AccountController extends ApiController {
         };
       }
 
+      if (reportType === "sgame") {
+        filter = {
+          ...filter,
+          betId: { $ne: null },
+          sportId: {
+            $ne: 5000,
+            // $eq: parseInt(gameId)
+          }
+        };
+      }
+
       if (reportType == 'chip') {
         filter = { ...filter, ...{ betId: null } }
       }
 
       const matchfilter = {
+
         $match: filter,
       }
 

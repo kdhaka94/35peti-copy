@@ -798,6 +798,7 @@ let operationData: any[] = []
                       <option value='sgame'>Sport Report</option>
                       <option value='cgame'>Casino Report</option>
                       <option value='change'>Change Password Report</option>
+                      <option value='thcgame'>Thrid Party Casino</option>
                     </select>
                   </div>
 

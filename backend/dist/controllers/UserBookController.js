@@ -261,8 +261,6 @@ class UserBookController extends ApiController_1.ApiController {
                 sportList.forEach((s) => {
                     sportMap[s.sportId] = s.name;
                 });
-                /* ================= ADDITION END ================= */
-                /* ---------------- BOOK CALCULATION ---------------- */
                 let completeBookList = [];
                 const bookpromise = betlist.map((Item) => __awaiter(this, void 0, void 0, function* () {
                     const filterMarketByMatch = marketlist.filter((m) => m.matchId == Item._id);
@@ -329,7 +327,6 @@ class UserBookController extends ApiController_1.ApiController {
             }
             catch (err) {
                 console.error(err);
-                // return this.error(res, 'Something went wrong')
             }
         });
         this.getuserbook = (req, res) => __awaiter(this, void 0, void 0, function* () {
@@ -401,8 +398,8 @@ class UserBookController extends ApiController_1.ApiController {
                 const balance = ((_a = Item.balance) === null || _a === void 0 ? void 0 : _a.balance) || 0;
                 const exposer = ((_b = Item.balance) === null || _b === void 0 ? void 0 : _b.exposer) || 0;
                 const clientpl = ((_c = Item.balance) === null || _c === void 0 ? void 0 : _c.profitLoss) || 0;
-                ///upperlvell += -(balance - selflevelcredit)
-                ///totalmasterb = (balance - selflevelcredit) + currentcredit
+                //upperlvell += -(balance - selflevelcredit)
+                //totalmasterb = (balance - selflevelcredit) + currentcredit
                 downcr = downcr + +selflevelcredit;
                 downbalance = downbalance + +(selflevelcredit + +clientpl);
                 availableBalancepl += balance - exposer;

@@ -285,9 +285,7 @@ export class UserBookController extends ApiController {
       sportMap[s.sportId] = s.name
     })
 
-    /* ================= ADDITION END ================= */
 
-    /* ---------------- BOOK CALCULATION ---------------- */
     let completeBookList: any[] = []
 
     const bookpromise = betlist.map(async (Item: any) => {
@@ -393,7 +391,6 @@ export class UserBookController extends ApiController {
     return this.success(res, completeBookList)
   } catch (err) {
     console.error(err)
-    // return this.error(res, 'Something went wrong')
   }
 }
 
@@ -473,8 +470,8 @@ export class UserBookController extends ApiController {
       const balance = Item.balance?.balance || 0
       const exposer = Item.balance?.exposer || 0
       const clientpl = Item.balance?.profitLoss || 0
-      ///upperlvell += -(balance - selflevelcredit)
-      ///totalmasterb = (balance - selflevelcredit) + currentcredit
+      //upperlvell += -(balance - selflevelcredit)
+      //totalmasterb = (balance - selflevelcredit) + currentcredit
       downcr = downcr + +selflevelcredit
       downbalance = downbalance + +(selflevelcredit + +clientpl)
       availableBalancepl += balance - exposer

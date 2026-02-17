@@ -28,11 +28,12 @@ const validationSchema = Yup.object().shape({
   transactionPassword: Yup.string().required('Transaction Password is required'),
   password: Yup.string()
     .required('Password is required')
-    .min(8, 'Password must be at least 8 characters')
-    .matches(
-      /^(?=[^a-z]*[a-z])(?=[^A-Z]*[A-Z])(?=\D*\d)[A-Za-z0-9]{8,32}$/,
-      'contains at least one digit,one upper case,one lower case alphabet,',
-    ),
+    .min(8, 'Password must be at least 8 characters'),
+    // .matches(
+    //   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9])[A-Za-z\d[^A-Za-z0-9]]{8,32}$/,
+    //   'Must contain at least one digit, one uppercase, one lowercase, and one symbol'
+    // ),
+
   passwordConfirmation: Yup.string()
     .required('Confirm password is required')
     .oneOf([Yup.ref('password')], 'Passwords must match'),
@@ -58,7 +59,7 @@ const AddUser = () => {
 
   const [isUnlimited, setIsUnlimited] = React.useState(false);
   const { username } = useParams()
-  
+
   // Refs for white-label configuration
   const whiteLabelDomainRef = React.useRef<HTMLInputElement>(null);
   const whiteLabelCompanyNameRef = React.useRef<HTMLInputElement>(null);
@@ -269,10 +270,10 @@ const AddUser = () => {
       if (whiteLabelTextColorRef.current && whiteLabelTextColorRef.current.value) {
         data.whiteLabelTextColor = whiteLabelTextColorRef.current.value;
       }
-      
+
       data.whiteLabelIsActive = whiteLabelIsActiveRef.current ? whiteLabelIsActiveRef.current.value === 'true' : true;
     }
-    
+
     console.log("Final data to submit:", data);
 
     UserService.addUser(data)
@@ -290,12 +291,12 @@ const AddUser = () => {
   const roleOption = () => {
     const userRole = userData.role
     const allRoles = JSON.parse(JSON.stringify(RoleName))
-    
+
     // 'sadmin' role (Super Admin) can create 'admin' users (Admins), so don't delete admin role for Super Admin
     if (userRole !== 'sadmin') {
       delete allRoles.admin
     }
-    
+
     const options: Record<string, string> = allRoles
     if (userRole && userRole != 'admin') {
       const allOptions = Object.keys(options)
@@ -601,8 +602,9 @@ const AddUser = () => {
                           <select
                             className="form-select" id='paymode' {...register('paymode')}
                           >
-                            <option value="direct">Auto</option>
-                            <option value="manual">Manual</option>
+                            <option value="manual">Auto</option>
+                            <option value="direct">Manual</option>
+
 
                           </select>
                         </div>
@@ -834,7 +836,7 @@ const AddUser = () => {
                     </table>
                   </div>
                 </div>
-                { (<> <div className="row m-t-20">
+                {(<> <div className="row m-t-20">
                   <div className="col-md-12">
                     <h4 className="m-b-20">Sports Access</h4>
 

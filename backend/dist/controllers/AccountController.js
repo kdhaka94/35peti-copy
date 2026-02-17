@@ -294,10 +294,19 @@ class AccountController extends ApiController_1.ApiController {
                 if (reportType === "cgame" && gameId != "") {
                     filter = Object.assign(Object.assign({}, filter), { betId: { $ne: null }, sportId: 5000, matchId: parseInt(gameId) });
                 }
+                if (reportType === "cgame") {
+                    filter = Object.assign(Object.assign({}, filter), { betId: { $ne: null }, sportId: 5000 });
+                }
                 if (reportType === "sgame" && gameId !== "") {
                     filter = Object.assign(Object.assign({}, filter), { betId: { $ne: null }, sportId: {
                             $ne: 5000,
                             $eq: parseInt(gameId)
+                        } });
+                }
+                if (reportType === "sgame") {
+                    filter = Object.assign(Object.assign({}, filter), { betId: { $ne: null }, sportId: {
+                            $ne: 5000,
+                            // $eq: parseInt(gameId)
                         } });
                 }
                 if (reportType == 'chip') {

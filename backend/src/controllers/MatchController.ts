@@ -4,9 +4,9 @@ import { ApiController } from './ApiController'
 import { Market, OddsType } from '../models/Market'
 import axios from 'axios'
 
-setInterval(async ()=>{
-  await axios.get("http://localhost:3010/api/set-market-result-by-cron")
-},1000000)
+// setInterval(async ()=>{
+//   await axios.get("http://localhost:3010/api/set-market-result-by-cron")
+// },1000000)
 
 export class MatchController extends ApiController {
   activeMatches = async (req: Request, res: Response): Promise<Response> => {
