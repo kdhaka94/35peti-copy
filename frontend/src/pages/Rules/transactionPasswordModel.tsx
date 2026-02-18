@@ -33,9 +33,7 @@ const TransactionPasswordModel = (props: any) => {
               can be done only with this password and keep one thing in mind, do not share this
               password with anyone.{' '}
             </p>
-            <p style={{ fontSize: '16px', marginBottom: '10px' }}>
-              Thank you, Team {'diamondecxh99.com'}
-            </p>
+            
             <p style={{ fontSize: '24px', marginBottom: '10px', color: 'green' }}>
               Success! आपका पासवर्ड बदला जा चुका है
             </p>
@@ -47,7 +45,6 @@ const TransactionPasswordModel = (props: any) => {
               किए जा सकते है और एक बात का ध्यान रखे, इस पासवर्ड को किसी के साथ सांझा ना करे|{' '}
             </p>
             <p style={{ fontSize: '16px', marginBottom: '10px' }}>
-              धन्यवाद, टीम {'diamondexch99.com'}
             </p>
           </div>
         </div>
