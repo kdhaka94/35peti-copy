@@ -183,7 +183,7 @@ const AddUser = () => {
 
       partenershipValue.forEach((element, index) => {
         if (element !== undefined) {
-          partenershipArr[index] = element;
+          partenershipArr[0] = element;
         }
       });
 
@@ -234,15 +234,16 @@ const AddUser = () => {
     data.Allowsport = selectedSports;
     data.AllowCasino = selectedCasinos;
 
+    console.log(data.partnershipOur,'ppppp')
     // Removing keys
     delete data.maxbet;
     delete data.minbet;
     delete data.delay;
     delete data.partnershipOur;
-    if (userState?.user?.role !== RoleType.admin) {
-      delete data.Allowsport;
-      delete data.AllowCasino;
-    }
+    // if (userState?.user?.role !== RoleType.admin) {
+    //   delete data.Allowsport;
+    //   delete data.AllowCasino;
+    // }
     // Collect white-label configuration if role is admin
     if (data.role === 'sadmin') {
       // Add white-label configuration to the data
@@ -550,7 +551,7 @@ const AddUser = () => {
                               Exposer Limit {isUnlimited && "(Unlimited)"}
                             </label>
 
-                            {/* Unlimited checkbox */}
+                           
                             <div className="mb-2">
                               <input
                                 type="checkbox"
@@ -621,10 +622,10 @@ const AddUser = () => {
                           <tr>
                             <th />
                             {sportListState.sports.map((sports: ISport) =>
-                              sports.sportId === 1 || sports.sportId === 2 || sports.sportId === 4 ? (
-                                //  sports.sportId === 4 ? (
+                             sports.sportId === 4  ? (
+                                //  sports.sportId === 4 ? (   sports.sportId === 1 || sports.sportId === 2 ||
 
-                                <th key={sports._id}>{sports.name}</th>
+                                <th key={sports._id}>All Partnership</th>
                               ) : (
                                 <th key={sports._id} />
                               ),
@@ -635,8 +636,8 @@ const AddUser = () => {
                           <tr>
                             <td>Upline</td>
                             {sportListState.sports.map(({ _id, sportId }) =>
-                              sportId == 1 || sportId == 2 || sportId == 4 ? (
-                                //  sportId == 4 ? (
+                            sportId == 4 ? (
+                                //  sportId == 4 ? (   sportId == 1 || sportId == 2 || 
 
                                 <td id='taxpartnership-upline' key={`upline-${_id}`}>
                                   {userData?.partnership?.[sportId].ownRatio}
@@ -649,7 +650,8 @@ const AddUser = () => {
                           <tr>
                             <td>Downline</td>
                             {sportListState.sports?.map(({ _id, sportId }) =>
-                              sportId == 1 || sportId == 2 || sportId == 4 ? (
+                           sportId == 4 ? (
+                            //    sportId == 1 || sportId == 2 || 
                                 <td key={_id}>
                                   <input
                                     className='partnership'
@@ -690,8 +692,8 @@ const AddUser = () => {
                           <tr>
                             <td>Our</td>
                             {sportListState.sports?.map(({ _id, sportId }) =>
-                              sportId == 1 || sportId == 2 || sportId == 4 ? (
-                                //  sportId == 4 ? (
+                            sportId == 4 ? (
+                                //  sportId == 4 ? (   sportId == 1 || sportId == 2 || 
 
                                 <td id={`taxpartnership-our.${sportId}`} key={_id}>
                                   <input

@@ -148,6 +148,7 @@ class DealersController extends ApiController_1.ApiController {
             try {
                 session.startTransaction();
                 const { password, username, parent, partnership, role, fullname, city, phone, creditRefrences, exposerLimit, paymode, userSetting, transactionPassword, Allowsport, AllowCasino, } = req.body;
+                console.log(partnership);
                 const currentUser = req.user;
                 console.log(AllowCasino, Allowsport);
                 const currentUserData = yield User_1.User.findOne({ _id: currentUser._id });

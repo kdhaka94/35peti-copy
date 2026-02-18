@@ -5,8 +5,8 @@ import cachegoose from 'recachegoose'
 import paginate from 'mongoose-paginate-v2'
 
 export enum GameType {
-  Football = '1',
-  Tennis = '2',
+  // Football = '1',
+  // Tennis = '2',
   Cricket = '4',
 }
 

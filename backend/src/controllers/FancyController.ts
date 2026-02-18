@@ -275,8 +275,7 @@ export class FancyController extends ApiController {
   updatefancyresultapi = async (req: Request, res: Response): Promise<Response> => {
     try {
       const data = req.body;
-      axios.post ("https://api.bxpro99.xyz/api/update-fancy-result",data)
-        axios.post ("https://api.betbhai365.cloud/api/update-fancy-result",data)
+  
       if (data.result != '' && data.message == 'ok') {
         const findFancy: any = await Fancy.findOne({ fancyName: data.runnerName, matchId: data.matchId })
         if (findFancy?._id && !data.isRollback) {
@@ -1293,7 +1292,7 @@ export class FancyController extends ApiController {
     const parent_ratio =
       sportId == 5000
         ? user_parent?.partnership?.[4]?.allRatio
-        : user_parent?.partnership?.[sportsType]?.allRatio
+        : user_parent?.partnership?.[4]?.allRatio
     const reference_id = await this.sendcreditdebit(
       userId,
       narration,

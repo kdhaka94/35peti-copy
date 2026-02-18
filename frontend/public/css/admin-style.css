@@ -961,7 +961,7 @@ input + .slider span:last-child {
 /* Make bold text white in header */
 b, strong {
   font-weight: bolder;
-  color: white !important;
+  /* color: white !important; */
 }
 
 .username ul li a:hover {

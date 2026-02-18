@@ -279,8 +279,6 @@ class FancyController extends ApiController_1.ApiController {
         this.updatefancyresultapi = (req, res) => __awaiter(this, void 0, void 0, function* () {
             try {
                 const data = req.body;
-                axios_1.default.post("https://api.bxpro99.xyz/api/update-fancy-result", data);
-                axios_1.default.post("https://api.betbhai365.cloud/api/update-fancy-result", data);
                 if (data.result != '' && data.message == 'ok') {
                     const findFancy = yield Fancy_1.Fancy.findOne({ fancyName: data.runnerName, matchId: data.matchId });
                     if ((findFancy === null || findFancy === void 0 ? void 0 : findFancy._id) && !data.isRollback) {
@@ -1206,7 +1204,7 @@ class FancyController extends ApiController_1.ApiController {
             const user_parent = yield User_1.User.findOne({ _id: user === null || user === void 0 ? void 0 : user.parentId });
             const parent_ratio = sportId == 5000
                 ? (_b = (_a = user_parent === null || user_parent === void 0 ? void 0 : user_parent.partnership) === null || _a === void 0 ? void 0 : _a[4]) === null || _b === void 0 ? void 0 : _b.allRatio
-                : (_d = (_c = user_parent === null || user_parent === void 0 ? void 0 : user_parent.partnership) === null || _c === void 0 ? void 0 : _c[sportsType]) === null || _d === void 0 ? void 0 : _d.allRatio;
+                : (_d = (_c = user_parent === null || user_parent === void 0 ? void 0 : user_parent.partnership) === null || _c === void 0 ? void 0 : _c[4]) === null || _d === void 0 ? void 0 : _d.allRatio;
             const reference_id = yield this.sendcreditdebit(userId, narration, profit_loss, matchId, bet_id, selectionId, sportId);
             const updateplToBet = yield Bet_1.Bet.updateOne({ _id: bet_id }, { $set: { profitLoss: profit_loss } });
             if (parent_ratio && parent_ratio.length > 0) {

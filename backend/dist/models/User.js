@@ -20,8 +20,8 @@ const recachegoose_1 = __importDefault(require("recachegoose"));
 const mongoose_paginate_v2_1 = __importDefault(require("mongoose-paginate-v2"));
 var GameType;
 (function (GameType) {
-    GameType["Football"] = "1";
-    GameType["Tennis"] = "2";
+    // Football = '1',
+    // Tennis = '2',
     GameType["Cricket"] = "4";
 })(GameType = exports.GameType || (exports.GameType = {}));
 exports.userSchema = new mongoose_1.Schema({

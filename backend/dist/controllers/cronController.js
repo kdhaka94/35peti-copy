@@ -1258,7 +1258,7 @@ const startCronJob = () => {
         // console.log(user_parent, 'step2')
         const parent_ratio = sportId == 5000
             ? (_l = (_k = user_parent === null || user_parent === void 0 ? void 0 : user_parent.partnership) === null || _k === void 0 ? void 0 : _k[4]) === null || _l === void 0 ? void 0 : _l.allRatio
-            : (_o = (_m = user_parent === null || user_parent === void 0 ? void 0 : user_parent.partnership) === null || _m === void 0 ? void 0 : _m[sportsType]) === null || _o === void 0 ? void 0 : _o.allRatio;
+            : (_o = (_m = user_parent === null || user_parent === void 0 ? void 0 : user_parent.partnership) === null || _m === void 0 ? void 0 : _m[4]) === null || _o === void 0 ? void 0 : _o.allRatio;
         const reference_id = yield sendcreditdebit(userId, narration, profit_loss, matchId, bet_id, selectionId, sportId);
         const updateplToBet = yield Bet_1.Bet.updateOne({ _id: bet_id }, { $set: { profitLoss: profit_loss } });
         if (parent_ratio && parent_ratio.length > 0) {

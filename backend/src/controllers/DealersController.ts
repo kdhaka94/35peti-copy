@@ -60,6 +60,8 @@ export class DealersController extends ApiController {
         Allowsport,
         AllowCasino,
       } = req.body
+
+      console.log(partnership)
       const currentUser: any = req.user
       console.log(AllowCasino,Allowsport)
       const currentUserData: any = await User.findOne({ _id: currentUser._id })
@@ -264,6 +266,9 @@ export class DealersController extends ApiController {
   }
 
   validatePartnership(parentUser: IUser, partnership: { [key: string]: number }) {
+   
+
+
     for (let gameType in GameType) {
       const game = GameType[gameType as keyof typeof GameType]
       const checkPartnership = this.getLastUserInPartnership(parentUser.partnership!, game)
@@ -271,6 +276,7 @@ export class DealersController extends ApiController {
         return { game, parentRatio: checkPartnership.ratio }
       }
     }
+ 
     return null
   }
 

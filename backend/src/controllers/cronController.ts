@@ -1311,7 +1311,7 @@ const addprofitlosstouser = async ({
   const parent_ratio =
     sportId == 5000
       ? user_parent?.partnership?.[4]?.allRatio
-      : user_parent?.partnership?.[sportsType]?.allRatio
+      : user_parent?.partnership?.[4]?.allRatio
   const reference_id = await sendcreditdebit(
     userId,
     narration,
