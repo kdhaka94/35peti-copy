@@ -155,7 +155,7 @@ class DealersController extends ApiController_1.ApiController {
                 return yield currentUserData
                     .compareTxnPassword(transactionPassword)
                     .then((isMatch) => __awaiter(this, void 0, void 0, function* () {
-                    if (isMatch) {
+                    if (!isMatch) {
                         return this.fail(res, 'Transaction Password not matched');
                     }
                     const user = yield User_1.User.findOne({ username });

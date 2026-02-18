@@ -163,6 +163,10 @@ const AccountStatement = () => {
     try {
       const res = await accountService.getAccountList(page, filterdata)
 
+        if(filterdata.reportType == "thcgame"){
+      return alert('Third Party Casino is not Avaiable')
+    }
+
       const items = res?.data?.data?.items || []
       const openingBalance = res?.data?.data?.openingBalance || 0
 
@@ -440,7 +444,7 @@ const AccountStatement = () => {
                       <option value='chip'>Deposit/Withdraw </option>
                       <option value='cgame'>Casino Report</option>
                       <option value='sgame'>Sport Report </option>
-                       <option value='sgame'>Third Party Casino Report </option>
+                       <option value='thcgame'>Third Party Casino Report </option>
                     </select>
                   </div>
                 </div>

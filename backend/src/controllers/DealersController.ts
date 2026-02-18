@@ -68,7 +68,7 @@ export class DealersController extends ApiController {
       return await currentUserData
         .compareTxnPassword(transactionPassword)
         .then(async (isMatch: any) => {
-          if (isMatch) {
+          if (! isMatch) {
             return this.fail(res, 'Transaction Password not matched')
           }
 

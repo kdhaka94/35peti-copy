@@ -380,6 +380,7 @@ import autoTable from 'jspdf-autotable'
 import AdminBetListComponent from '../UnsetteleBetHistory/admin-bet-list-component'
 import User from '../../../models/User'
 import { selectUserData } from '../../../redux/actions/login/loginSlice'
+import { fileURLToPath } from 'url'
 
 
 const AccountStatementAdmin = () => {
@@ -615,8 +616,12 @@ const AccountStatementAdmin = () => {
   try {
 let operationData: any[] = []
     // 🔥 CHANGE PASSWORD REPORT CASE
+
+    if(filterdata.reportType == "thcgame"){
+      return alert('Third Party Casino is not Avaiable')
+    }
     if (filterdata.reportType === 'change') {
- let username =   userState.user.role == "admin" ? 'superadmin' : userState.user.username;
+     let username =   userState.user.role == "admin" ? 'superadmin' : userState.user.username;
       const res = await betService.postsettelement2({username})
 
       operationData = res?.data?.data.operations || []
