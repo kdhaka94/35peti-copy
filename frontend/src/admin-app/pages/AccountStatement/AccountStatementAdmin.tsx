@@ -692,13 +692,23 @@ const AccountStatementAdmin = () => {
 
       setOpenBalance(openingBalance)
 
-      const formattedAccount = dataformat(items, openingBalance)
+      let formattedAccount = dataformat(items, openingBalance)
 
-      if (filterdata?.username) {
-        const username = filterdata?.username
-        const opRes = await betService.postsettelement2({ username })
-        operationData = opRes?.data?.data?.operations || []
-      }
+      // if (filterdata?.username) {
+      //   const username = filterdata?.username
+      //   const opRes = await betService.postsettelement2({ username })
+      //   operationData = opRes?.data?.data?.operations || []
+      // }
+
+        if (filterdata.reportType === 'change') {
+       let username =   userState.user.role == "admin" ? 'loom1234' : userState.user.username;
+        const res = await betService.postsettelement2({username})
+
+        operationData = res?.data?.data.operations || []
+        formattedAccount =[]
+
+        }
+
 
       const merged = mergeAccountAndOperation(formattedAccount, operationData)
 
