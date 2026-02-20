@@ -175,7 +175,7 @@ const AccountStatement = () => {
   const res = await accountService.getAccountList(page, filterdata)
       const items = res?.data?.data?.items || []
       const openingBalance = res?.data?.data?.openingBalance || 0
-
+      const totalPages = res?.data?.data?.totalPages || 1
       setOpenBalance(openingBalance)
 
       const formattedAccount = dataformat(items, openingBalance)
@@ -197,6 +197,7 @@ const AccountStatement = () => {
       setparseAccountStmt(merged)
       setCurrentItems(merged)
       setPage(page)
+      setPageCount(totalPages) 
 
     } catch (err) {
       toast.error('Error loading data')
