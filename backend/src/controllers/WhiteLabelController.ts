@@ -201,7 +201,7 @@ export class WhiteLabelController extends ApiController {
           companyName: `${currentUser.username}'s Platform`,
           logoUrl: '/imgs/logo.png',
           faviconUrl: '/favicon.ico',
-          primaryColor:  '#0088ec',
+          primaryColor:  '#0088CC',
           secondaryColor: '#6c757d',
           backgroundColor: '#ffffff',
           textColor: '#212529',
