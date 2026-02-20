@@ -270,7 +270,7 @@ const Dashboard = () => {
                   />
                 )
               )}
-              {location.pathname.includes('in-play') || !isMobile ? (
+              {location.pathname.includes('in-play')  ? (
                 <div className='home-page'>
                   <div className='casino-list mt-2' style={{ marginLeft: !isMobile ? "-6px" : "" }}>
                     {/* <div className='section-title'>Live Casino</div> */}

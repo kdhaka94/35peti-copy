@@ -278,6 +278,7 @@ class AccountController extends ApiController_1.ApiController {
             try {
                 const { page } = req.query;
                 const { startDate, endDate, reportType, userId, gameId } = req.body;
+                console.log(req.body);
                 const user = req.user;
                 const options = {
                     page: page ? page : 1,
@@ -291,19 +292,27 @@ class AccountController extends ApiController_1.ApiController {
                         $lte: new Date(`${endDate} 23:59:59`),
                     },
                 };
-                if (reportType === "cgame" && gameId != "") {
-                    filter = Object.assign(Object.assign({}, filter), { betId: { $ne: null }, sportId: 5000, matchId: parseInt(gameId) });
-                }
-                if (reportType === "cgame") {
+                if (reportType === "cgame" && !gameId) {
                     filter = Object.assign(Object.assign({}, filter), { betId: { $ne: null }, sportId: 5000 });
                 }
-                if (reportType === "sgame" && gameId !== "") {
+                if (reportType === "cgame" && gameId !== "" && gameId) {
+                    filter = Object.assign(Object.assign({}, filter), { betId: { $ne: null }, sportId: 5000, matchId: parseInt(gameId) });
+                }
+                // if (reportType == "cgame") {
+                //   filter = {
+                //     ...filter,
+                //     betId: { $ne: null },
+                //     sportId: 5000
+                //   };
+                // }
+                if (reportType === "sgame" && gameId !== "" && gameId) {
                     filter = Object.assign(Object.assign({}, filter), { betId: { $ne: null }, sportId: {
                             $ne: 5000,
                             $eq: parseInt(gameId)
                         } });
                 }
-                if (reportType === "sgame") {
+                else if (reportType === "sgame") {
+                    console.log("hello world");
                     filter = Object.assign(Object.assign({}, filter), { betId: { $ne: null }, sportId: {
                             $ne: 5000,
                             // $eq: parseInt(gameId)
@@ -397,6 +406,7 @@ class AccountController extends ApiController_1.ApiController {
                 var accountStatement = yield AccountStatement_1.AccoutStatement.aggregate(aggregateFilter);
                 const datasort = accountStatement === null || accountStatement === void 0 ? void 0 : accountStatement.sort((a, b) => a.createdAt - b.createdAt);
                 var accountStatementNew = { items: datasort };
+                // console.log(accountStatement, "FGHJO")
                 const openingBalance = yield AccountStatement_1.AccoutStatement.aggregate([
                     {
                         $match: {

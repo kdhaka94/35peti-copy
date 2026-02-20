@@ -128,13 +128,14 @@ const AccountStatement = () => {
   // }
 
   const mergeAccountAndOperation = (accounts: any[], operations: any[]) => {
+    console.log(accounts,operations)
     const accMapped = accounts.map((a) => ({
       type: 'ACCOUNT',
       date: new Date(a.stmt.createdAt).getTime(), // ✅ number for sorting
       row: {
         date: moment(a.stmt.createdAt).format(dateFormat), // ✅ STRING
-        credit: a.amount > 0 ? a.amount : '',
-        debit: a.amount < 0 ? Math.abs(a.amount) : '',
+        credit: a.stmt.amount > 0 ? a.stmt.amount : '',
+        debit: a.stmt.amount < 0 ? Math.abs(a.stmt.amount) : '',
         balance: a.closing,
         from: a.stmt.txnBy,
         remark: a.narration,
@@ -180,7 +181,7 @@ const AccountStatement = () => {
       console.log(data.data.data.user, "FGHJK")
       //   const username = filterdata?.username
       const username = data.data.data.user?.username
-      console.log(user, "dfghjkl")
+      // console.log(user, "dfghjkl")
       const opRes = await betService.postsettelement2({ username })
       operationData = opRes?.data?.data?.operations || []
 
@@ -270,8 +271,11 @@ const AccountStatement = () => {
       currentItems.map((stmt: any, index: number) => {
         const row = stmt.row   // ⭐ IMPORTANT
 
+        console.log(row,"row is here ")
+
         return (
-          <tr key={index}>
+          <tr key={index} onClick={(e:any) =>
+                stmt.type === 'ACCOUNT' && getBets(e, row)}>
             <td>{index + 1}</td>
 
             {/* Date */}

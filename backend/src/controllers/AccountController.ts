@@ -464,7 +464,7 @@ export class AccountController extends ApiController {
   //   if(user_data.role != "user"){
 
   //   }
-    
+
 
   //     const operations = await Operation
   //       .find({ username })
@@ -491,66 +491,66 @@ export class AccountController extends ApiController {
 
 
   settelement2 = async (req: Request, res: Response) => {
-  try {
-    const { username } = req.body;
+    try {
+      const { username } = req.body;
 
-    if (!username) {
-      return this.fail(res, "Username is required");
-    }
+      if (!username) {
+        return this.fail(res, "Username is required");
+      }
 
-    const user_data = await User.findOne({ username });
-    if (!user_data) {
-      return this.fail(res, "User not found");
-    }
+      const user_data = await User.findOne({ username });
+      if (!user_data) {
+        return this.fail(res, "User not found");
+      }
 
-    // 🔹 SUPER ADMIN → ALL OPERATIONS
-    if (username === "superadmin") {
-      const operations = await Operation.find().sort({ createdAt: -1 });
+      // 🔹 SUPER ADMIN → ALL OPERATIONS
+      if (username === "superadmin") {
+        const operations = await Operation.find().sort({ createdAt: -1 });
 
-      return this.success(res, {
-        msg: operations.length ? "Success" : "No operations found",
-        operations,
-      });
-    }
+        return this.success(res, {
+          msg: operations.length ? "Success" : "No operations found",
+          operations,
+        });
+      }
 
-    // 🔹 NORMAL USER → ONLY OWN OPERATIONS
-    if (user_data.role === "user") {
+      // 🔹 NORMAL USER → ONLY OWN OPERATIONS
+      if (user_data.role === "user") {
+        const operations = await Operation
+          .find({ username })
+          .sort({ createdAt: -1 });
+
+        return this.success(res, {
+          msg: operations.length ? "Success" : "No operations found",
+          operations,
+        });
+      }
+
+      // 🔹 AGENT / ADMIN / MASTER etc.
+      // 👉 find child users whose parentStr contains current user _id
+      const childUsers = await User.find({
+        parentStr: user_data._id,
+      }).select("username");
+
+      // collect usernames (children + self)
+      const usernames = [
+        user_data.username,
+        ...childUsers.map((u) => u.username),
+      ];
+
       const operations = await Operation
-        .find({ username })
+        .find({ username: { $in: usernames } })
         .sort({ createdAt: -1 });
 
       return this.success(res, {
         msg: operations.length ? "Success" : "No operations found",
         operations,
       });
+
+    } catch (error: any) {
+      console.error(error);
+      return this.fail(res, "Server error: " + error.message);
     }
-
-    // 🔹 AGENT / ADMIN / MASTER etc.
-    // 👉 find child users whose parentStr contains current user _id
-    const childUsers = await User.find({
-      parentStr: user_data._id,
-    }).select("username");
-
-    // collect usernames (children + self)
-    const usernames = [
-      user_data.username,
-      ...childUsers.map((u) => u.username),
-    ];
-
-    const operations = await Operation
-      .find({ username: { $in: usernames } })
-      .sort({ createdAt: -1 });
-
-    return this.success(res, {
-      msg: operations.length ? "Success" : "No operations found",
-      operations,
-    });
-
-  } catch (error: any) {
-    console.error(error);
-    return this.fail(res, "Server error: " + error.message);
-  }
-};
+  };
 
 
   getUserBalanceWithExposer = async (req: Request, res: Response) => {
@@ -673,6 +673,7 @@ export class AccountController extends ApiController {
     try {
       const { page }: any = req.query
       const { startDate, endDate, reportType, userId, gameId }: any = req.body
+      console.log(req.body)
       const user: any = req.user
       const options = {
         page: page ? page : 1,
@@ -686,15 +687,7 @@ export class AccountController extends ApiController {
           $lte: new Date(`${endDate} 23:59:59`),
         },
       }
-      if (reportType === "cgame" && gameId != "") {
-        filter = {
-          ...filter,
-          betId: { $ne: null },
-          sportId: 5000,
-          matchId: parseInt(gameId)
-        };
-      }
-        if (reportType === "cgame") {
+      if (reportType === "cgame" && ! gameId) {
         filter = {
           ...filter,
           betId: { $ne: null },
@@ -702,8 +695,24 @@ export class AccountController extends ApiController {
           // matchId: parseInt(gameId)
         };
       }
+       if (reportType === "cgame" && gameId !== "" && gameId ) {
+        filter = {
+          ...filter,
+          betId: { $ne: null },
+          sportId: 5000,
+          matchId: parseInt(gameId)
+        };
+      }
+      // if (reportType == "cgame") {
+      //   filter = {
+      //     ...filter,
+      //     betId: { $ne: null },
+          
+      //     sportId: 5000
+      //   };
+      // }
 
-      if (reportType === "sgame" && gameId !== "") {
+      if (reportType === "sgame" && gameId !== "" && gameId) {
         filter = {
           ...filter,
           betId: { $ne: null },
@@ -713,8 +722,8 @@ export class AccountController extends ApiController {
           }
         };
       }
-
-      if (reportType === "sgame") {
+      else if (reportType === "sgame") {
+        console.log("hello world")
         filter = {
           ...filter,
           betId: { $ne: null },
@@ -722,6 +731,7 @@ export class AccountController extends ApiController {
             $ne: 5000,
             // $eq: parseInt(gameId)
           }
+          // sportId: 5000,
         };
       }
 
@@ -817,6 +827,7 @@ export class AccountController extends ApiController {
       var accountStatement = await AccoutStatement.aggregate(aggregateFilter)
       const datasort = accountStatement?.sort((a: any, b: any) => a.createdAt - b.createdAt)
       var accountStatementNew = { items: datasort }
+      // console.log(accountStatement, "FGHJO")
       const openingBalance = await AccoutStatement.aggregate([
         {
           $match: {

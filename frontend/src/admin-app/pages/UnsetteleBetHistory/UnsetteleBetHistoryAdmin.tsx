@@ -184,6 +184,33 @@ const UnsetteleBetHistoryAdmin = ({ hideHeader, matchId }: any) => {
       {!hideHeader && mobileSubheader.subheaderdesktopadmin(params.type=='deleted'?'Deleted Bet History':'Unsettled Bet History')}
       <div className='container-fluid'>
         <div className='row'>
+          <div className="col-12 col-lg-2 mbc-5">
+  <label className="label">Bet Type</label>
+  <div className="d-flex gap-2">
+    <label className="mr-2">
+      <input
+        type="radio"
+        name="bet_on_type"
+        value="sport"
+        checked={filterdata.bet_on_type === 'sport'}
+        onChange={handleformchange}
+      />{' '}
+      Sports
+    </label>
+
+    <label>
+      <input
+        type="radio"
+        name="bet_on_type"
+        value="casino"
+        checked={filterdata.bet_on_type === 'casino'}
+        onChange={handleformchange}
+      />{' '}
+      Casino
+    </label>
+  </div>
+</div>
+
           <div className={!isMobile ? 'col-md-12 mt-1' : 'col-md-12 padding-custom'}>
             <div className=''>
               <div className='card-body p15 bg-gray mb-20'>

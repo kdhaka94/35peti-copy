@@ -903,12 +903,13 @@ input + .slider span:last-child {
 .navbar > li > a {
   text-transform: capitalize;
   padding: 10px 10px;
+  /* background-color: black; */
 }
 
 .btco-hover-menu .active a,
 .btco-hover-menu .active a:focus,
 .btco-hover-menu .active a:hover,
-.btco-hover-menu li a:hover,
+
 .btco-hover-menu li a:focus,
 .navbar > .show > a,
 .navbar > .show > a:focus,
@@ -918,6 +919,9 @@ input + .slider span:last-child {
   outline: 0;
 }
 
+.btco-hover-menu li a:hover{
+background: rgb(75, 74, 74) !important;
+}
 /*submenu style start from here*/
 
 .dropdown-menu {

@@ -478,13 +478,15 @@ const SecureAuth = () => {
                   <p className="mt-2">
                     Open{" "}
                     <a
-                      href="https://t.me/two_factor_gauth_bot?start"
+                      href="https://t.me/Siyara777_bot?start"
                       target="_blank"
                       rel="noreferrer"
                     >
-                      @two_factor_gauth_bot
+                     @Siyara777_bot
                     </a>{" "}
-                    and type <kbd>/start</kbd>
+                    and type <a href="https://t.me/Siyara777_bot?start"
+                      target="_blank"
+                      rel="noreferrer">/start</a>
                   </p>
 
                   <p className="text-dark pt-3 pb-3">

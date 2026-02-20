@@ -468,6 +468,7 @@ const AccountStatementAdmin = () => {
     return response.map((stmt: any, index: number) => {
       closingbalance = closingbalance + stmt.amount
       return {
+      
         _id: stmt._id,
         sr_no: index + 1,
         date: moment(stmt.createdAt).format(dateFormat),
@@ -547,6 +548,7 @@ const AccountStatementAdmin = () => {
   }
 
   const mergeAccountAndOperation = (accounts: any[], operations: any[]) => {
+    console.log(accounts,"Lokehs",operations)
     const accMapped = accounts.map((a) => ({
       type: 'ACCOUNT',
       date: new Date(a.stmt.createdAt),
@@ -745,7 +747,8 @@ let operationData: any[] = []
     return (
       currentItems &&
       currentItems.map((item: any, index: number) => (
-        <tr key={index}>
+         <tr key={index} onClick={(e:any) =>
+               item?.row?.type=== 'pnl' && getBets(e, item.row)}>
           <td>{index + 1}</td>
           <td className="wnwrap">{item?.row?.date}</td>
           <td className="green wnwrap">{item?.row?.credit}</td>

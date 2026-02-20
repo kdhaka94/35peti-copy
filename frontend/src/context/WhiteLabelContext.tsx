@@ -86,10 +86,10 @@ export const WhiteLabelProvider: React.FC<{ children: ReactNode }> = ({ children
   //   themeData.primaryColor
   // );
 
-  document.documentElement.style.setProperty(
-    "--primary-color",
-    themeData.textColor
-  );
+  // document.documentElement.style.setProperty(
+  //   "--primary-color",
+  //   themeData.textColor
+  // );
 
     // Apply favicon
     if (themeData.faviconUrl) {
