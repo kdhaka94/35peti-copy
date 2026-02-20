@@ -65,7 +65,7 @@ const AdminBetListComponent = ({
   }, 0)
   
 
-  console.log('bethistory',)
+  console.log('bethistory',sendInfo)
 
   const trrepeat = (Item: IBet, index: number) => {
     const classdata = Item.isBack ? 'back' : 'lay'

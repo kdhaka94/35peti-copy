@@ -564,7 +564,7 @@ const AccountStatementAdmin = () => {
         balance: a.closing,
         from: a.stmt.txnBy,
         remark: a.narration,
-        allBets: a.stmt.allBets || [],
+        allBets: a.stmt.result || [],
       },
     }))
 
@@ -632,6 +632,7 @@ const AccountStatementAdmin = () => {
   //       const res = await betService.postsettelement2({username})
 
   //       operationData = res?.data?.data.operations || []
+       
 
   //       // agar pagination chahiye
   //       // setparseAccountStmt([])
@@ -652,6 +653,7 @@ const AccountStatementAdmin = () => {
 
   //     const items = res?.data?.data?.items || []
   //     const openingBalance = res?.data?.data?.openingBalance || 0
+  //       const totalPages = res?.data?.data?.totalPages || 1
 
   //     setOpenBalance(openingBalance)
 
@@ -737,8 +739,9 @@ const AccountStatementAdmin = () => {
 
   /* Bets */
   const getBetsData = (stmt: AccoutStatement, pageNumber: number) => {
-    console.log(stmt, "stmt222")
-    const betIds: any = stmt?.allBets?.map(({ betId }: any) => betId)
+    console.log(stmt.allBets, "stmt222")
+    const betIds: any = stmt?.allBets?.map(({ _id }: any) => _id)
+    console.log(betIds,"VGHJKL")
     if (betIds?.length) {
       betService.getBetListByIds(betIds, pageNumber).then((res: AxiosResponse) => {
         setIsOpen(true)
@@ -751,7 +754,7 @@ const AccountStatementAdmin = () => {
 
 
   const getBets = (e: MouseEvent<HTMLTableCellElement>, stmt: AccoutStatement) => {
-    console.log(stmt, "stmt")
+    console.log(stmt, "stmt Lokesh")
 
     e.preventDefault()
     setSelectedStmt(stmt)
@@ -786,11 +789,13 @@ const AccountStatementAdmin = () => {
   }
 
   const getAcHtml = () => {
+    console.log(currentItems,"GHJK")
     return (
       currentItems &&
       currentItems.map((item: any, index: number) => (
+      
         <tr key={index} onClick={(e: any) =>
-          item?.row?.type === 'pnl' && getBets(e, item.row)}>
+          item?.row?.type === 'ACCOUNT' && getBets(e, item.row)}>
           <td>{index + 1}</td>
           <td className="wnwrap">{item?.row?.date}</td>
           <td className="green wnwrap">{item?.row?.credit}</td>
@@ -799,7 +804,7 @@ const AccountStatementAdmin = () => {
           <td>{item?.row?.from}</td>
           {/* <td>{item?.row?.remark}</td> */}
           <td onClick={(e) => getBets(e, item.row)}>
-            <span className={item?.row?.type === 'pnl' ? 'label-button' : ''}>
+            <span className={item?.row?.type === 'ACCOUNT' ? 'label-button' : ''}>
               {item?.row?.remark}
             </span>
           </td>

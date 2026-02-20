@@ -41,7 +41,7 @@ const AccountStatement = () => {
     endDate: '',
     reportType: 'All',
   })
-  const [page, setPage] = React.useState(0)
+  const [page, setPage] = React.useState(1)
 
   const [currentItems, setCurrentItems] = useState<any>([])
   const [pageCount, setPageCount] = useState<any>(0)
@@ -53,7 +53,7 @@ const AccountStatement = () => {
     filterObj.startDate = moment().subtract(7, 'days').format('YYYY-MM-DD')
     filterObj.endDate = moment().format('YYYY-MM-DD')
     setfilterdata(filterObj)
-    getAccountStmt(0)
+    getAccountStmt(1)
   }, [])
   const [mergedList, setMergedList] = React.useState<any[]>([])
 
@@ -65,17 +65,22 @@ const AccountStatement = () => {
     }
     getuser()
   }, [])
-  React.useEffect(() => {
-    const endOffset = itemOffset + itemsPerPage
-    setCurrentItems(parseAccountStmt.slice(itemOffset, endOffset))
-    setPageCount(Math.ceil(parseAccountStmt.length / itemsPerPage))
-  }, [itemOffset, itemsPerPage, parseAccountStmt])
+  // React.useEffect(() => {
+  //   const endOffset = itemOffset + itemsPerPage
+  //   setCurrentItems(parseAccountStmt.slice(itemOffset, endOffset))
+  //   setPageCount(Math.ceil(parseAccountStmt.length / itemsPerPage))
+  // }, [itemOffset, itemsPerPage, parseAccountStmt])
 
-  const handlePageClick = (event: any) => {
-    const newOffset = (event.selected * itemsPerPage) % parseAccountStmt.length
-    setItemOffset(newOffset)
-    setPage(event.selected)
+    const handlePageClick = (event: any) => {
+    const selectedPage = event.selected + 1
+    getAccountStmt(selectedPage)
   }
+
+  // const handlePageClick = (event: any) => {
+  //   const newOffset = (event.selected * itemsPerPage) % parseAccountStmt.length
+  //   setItemOffset(newOffset)
+  //   setPage(event.selected)
+  // }
   // const getAccountStmt = (page: number) => {
   //   accountService
   //     .getAccountList(page, filterdata)
@@ -139,7 +144,7 @@ const AccountStatement = () => {
         balance: a.closing,
         from: a.stmt.txnBy,
         remark: a.narration,
-        allBets: a.stmt.allBets || [],
+        allBets: a.stmt.result || [],
       },
     }))
 
@@ -162,12 +167,12 @@ const AccountStatement = () => {
 
   var getAccountStmt = async (page: number) => {
     try {
-      const res = await accountService.getAccountList(page, filterdata)
+     
 
         if(filterdata.reportType == "thcgame"){
       return alert('Third Party Casino is not Avaiable')
     }
-
+  const res = await accountService.getAccountList(page, filterdata)
       const items = res?.data?.data?.items || []
       const openingBalance = res?.data?.data?.openingBalance || 0
 
@@ -190,6 +195,7 @@ const AccountStatement = () => {
 
       setMergedList(merged)
       setparseAccountStmt(merged)
+      setCurrentItems(merged)
       setPage(page)
 
     } catch (err) {
@@ -204,7 +210,7 @@ const AccountStatement = () => {
   }
   const handleSubmitform = (event: any) => {
     event.preventDefault()
-    getAccountStmt(0)
+    getAccountStmt(1)
   }
 
   const createSrNo = (index: number) => {
@@ -224,7 +230,7 @@ const AccountStatement = () => {
     const allbets = stmt?.allBets || []
     if (allbets.length > 0) {
       allbets.map((Item: any) => {
-        allBetsid.push(Item.betId)
+        allBetsid.push(Item._id)
       })
       const betIds = allBetsid
       betService.getBetListByIds(betIds, pageNumber).then((res: AxiosResponse) => {
@@ -266,6 +272,7 @@ const AccountStatement = () => {
   // }
 
   const getAcHtml = () => {
+    console.log(currentItems,"GHJKL")
     return (
       currentItems &&
       currentItems.map((stmt: any, index: number) => {
@@ -512,16 +519,16 @@ const AccountStatement = () => {
               </table>
             </div>
             <ReactPaginate
-              breakLabel='...'
-              nextLabel='>>'
-              onPageChange={handlePageClick}
-              pageRangeDisplayed={5}
-              pageCount={pageCount}
-              containerClassName={'pagination'}
-              activeClassName={'active'}
-              previousLabel={'<<'}
-              breakClassName={'break-me'}
-            />
+                breakLabel="..."
+                nextLabel=">>"
+                previousLabel="<<"
+                onPageChange={handlePageClick}
+                pageRangeDisplayed={5}
+                pageCount={pageCount}     // 🔥 server value
+                forcePage={page - 1}      // 🔥 sync with backend
+                containerClassName="pagination"
+                activeClassName="active"
+              />
           </div>
         </div>
       </div>
@@ -558,3 +565,219 @@ const AccountStatement = () => {
   )
 }
 export default AccountStatement
+
+
+// import moment from 'moment'
+// import React, { MouseEvent, useEffect, useState } from 'react'
+// import { toast } from 'react-toastify'
+// import accountService from '../../services/account.service'
+// import { dateFormat } from '../../utils/helper'
+// import { isMobile } from 'react-device-detect'
+// import mobileSubheader from '../_layout/elements/mobile-subheader'
+// import { AccoutStatement } from '../../models/AccountStatement'
+// import { AxiosResponse } from 'axios'
+// import betService from '../../services/bet.service'
+// import ReactModal from 'react-modal'
+// import BetListComponent from '../../admin-app/pages/UnsetteleBetHistory/bet-list.component'
+// import { useAppSelector } from '../../redux/hooks'
+// import { selectLoader } from '../../redux/actions/common/commonSlice'
+// import ReactPaginate from 'react-paginate'
+// import User from '../../models/User'
+// import { selectUserData } from '../../redux/actions/login/loginSlice'
+// import authService from '../../services/auth.service'
+// import jsPDF from 'jspdf'
+// import autoTable from 'jspdf-autotable'
+
+// const AccountStatement = () => {
+//   const loadingState = useAppSelector(selectLoader)
+//   const userState = useAppSelector<{ user: User }>(selectUserData)
+
+//   const [parseAccountStmt, setparseAccountStmt] = useState<any[]>([])
+//   const [mergedList, setMergedList] = useState<any[]>([])
+//   const [isOpen, setIsOpen] = useState(false)
+//   const [betHistory, setBetHistory] = useState<any>({})
+//   const [selectedStmt, setSelectedStmt] = useState<AccoutStatement>({} as AccoutStatement)
+
+//   const [openBalance, setOpenBalance] = useState(0)
+//   const [page, setPage] = useState(1)
+//   const [pageCount, setPageCount] = useState(0)
+//   const itemsPerPage = 50
+
+//   const [filterdata, setfilterdata] = useState<any>({
+//     startDate: '',
+//     endDate: '',
+//     reportType: 'ALL',
+//   })
+
+//   const [user, setUser] = useState<any>()
+
+//   useEffect(() => {
+//     setfilterdata({
+//       startDate: moment().subtract(7, 'days').format('YYYY-MM-DD'),
+//       endDate: moment().format('YYYY-MM-DD'),
+//       reportType: 'ALL',
+//     })
+//     getAccountStmt(1)
+//   }, [])
+
+//   useEffect(() => {
+//     authService.getUser().then((res) => {
+//       setUser(res.data.data.user)
+//     })
+//   }, [])
+
+//   const mergeAccountAndOperation = (accounts: any[], operations: any[]) => {
+//     const accMapped = accounts.map((a) => ({
+//       type: 'ACCOUNT',
+//       date: new Date(a.stmt.createdAt).getTime(),
+//       row: {
+//         date: moment(a.stmt.createdAt).format(dateFormat),
+//         credit: a.stmt.amount > 0 ? a.stmt.amount : '',
+//         debit: a.stmt.amount < 0 ? Math.abs(a.stmt.amount) : '',
+//         balance: a.closing,
+//         remark: a.narration,
+//         allBets: a.stmt.allBets || [],
+//       },
+//     }))
+
+//     const opMapped = operations.map((o) => ({
+//       type: 'OPERATION',
+//       date: new Date(o.date).getTime(),
+//       row: {
+//         date: moment(o.date).format(dateFormat),
+//         credit: '--',
+//         debit: '--',
+//         balance: o.operation,
+//         remark: o.description,
+//       },
+//     }))
+
+//     return [...accMapped, ...opMapped].sort((a, b) => b.date - a.date)
+//   }
+
+//   const dataformat = (response: any[], opening: number) => {
+//     let closing = opening
+//     return response.map((stmt, i) => {
+//       closing += stmt.amount
+//       return {
+//         stmt,
+//         closing,
+//         narration: stmt.narration,
+//       }
+//     })
+//   }
+
+//   const getAccountStmt = async (pageNo: number) => {
+//     try {
+//       if (filterdata.reportType === 'thcgame') {
+//         toast.error('Third Party Casino not available')
+//         return
+//       }
+
+//       const res = await accountService.getAccountList(pageNo, filterdata)
+//       const items = res?.data?.data?.items || []
+//       const opening = res?.data?.data?.openingBalance || 0
+//       const totalPages = res?.data?.data?.totalPages || 1
+
+//       setOpenBalance(opening)
+//       setPage(pageNo)
+//       setPageCount(totalPages)
+
+//       const formatted = dataformat(items, opening)
+
+//       const userRes = await authService.getUser()
+//       const username = userRes.data.data.user.username
+//       const opRes = await betService.postsettelement2({ username })
+//       const operations = opRes?.data?.data?.operations || []
+
+//       const merged = mergeAccountAndOperation(formatted, operations)
+
+//       setMergedList(merged)
+//       setparseAccountStmt(merged)
+//     } catch (err) {
+//       toast.error('Error loading data')
+//     }
+//   }
+
+//   const handlePageClick = (event: any) => {
+//     getAccountStmt(event.selected + 1)
+//   }
+
+//   const handleformchange = (e: any) => {
+//     setfilterdata({ ...filterdata, [e.target.name]: e.target.value })
+//   }
+
+//   const handleSubmitform = (e: any) => {
+//     e.preventDefault()
+//     getAccountStmt(1)
+//   }
+
+//   const getBets = (e: MouseEvent<HTMLTableCellElement>, stmt: any) => {
+//     e.stopPropagation()
+//     setSelectedStmt(stmt)
+//     setIsOpen(true)
+//   }
+
+//   const getAcHtml = () =>
+//     parseAccountStmt.map((item, index) => {
+//       const row = item.row || item
+//       return (
+//         <tr key={index}>
+//           <td>{(page - 1) * itemsPerPage + index + 1}</td>
+//           <td>{row.date}</td>
+//           <td>{row.credit !== '' ? Number(row.credit).toFixed(2) : '-'}</td>
+//           <td>{row.debit !== '' ? Number(row.debit).toFixed(2) : '-'}</td>
+//           <td>{Number(row.balance).toFixed(2)}</td>
+//           <td onClick={(e) => item.type === 'ACCOUNT' && getBets(e, row)}>
+//             {row.remark}
+//           </td>
+//         </tr>
+//       )
+//     })
+
+//   return (
+//     <>
+//       {mobileSubheader.subheader('Account Statements')}
+//       <div className='card-body'>
+//         <form onSubmit={handleSubmitform}>
+//           <input type='date' name='startDate' onChange={handleformchange} />
+//           <input type='date' name='endDate' onChange={handleformchange} />
+//           <select name='reportType' onChange={handleformchange}>
+//             <option value='ALL'>All</option>
+//             <option value='chip'>Deposit/Withdraw</option>
+//             <option value='cgame'>Casino</option>
+//             <option value='sgame'>Sport</option>
+//             <option value='thcgame'>Third Party Casino</option>
+//           </select>
+//           <button type='submit'>Submit</button>
+//         </form>
+
+//         <table className='table'>
+//           <thead>
+//             <tr>
+//               <th>Sr</th>
+//               <th>Date</th>
+//               <th>Credit</th>
+//               <th>Debit</th>
+//               <th>Balance</th>
+//               <th>Remark</th>
+//             </tr>
+//           </thead>
+//           <tbody>{getAcHtml()}</tbody>
+//         </table>
+
+//         <ReactPaginate
+//           previousLabel='<<'
+//           nextLabel='>>'
+//           onPageChange={handlePageClick}
+//           pageCount={pageCount}
+//           forcePage={page - 1}
+//           containerClassName='pagination'
+//           activeClassName='active'
+//         />
+//       </div>
+//     </>
+//   )
+// }
+
+// export default AccountStatement
