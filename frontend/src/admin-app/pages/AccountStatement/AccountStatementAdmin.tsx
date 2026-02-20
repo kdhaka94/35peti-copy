@@ -385,8 +385,8 @@ import { fileURLToPath } from 'url'
 
 const AccountStatementAdmin = () => {
   const loadingState = useAppSelector(selectLoader)
-  const userState = useAppSelector<{ user: User}>(selectUserData)
-  
+  const userState = useAppSelector<{ user: User }>(selectUserData)
+
 
   const [accountStmt, setAccountStmt] = React.useState<any>({})
   const [parseAccountStmt, setparseAccountStmt] = React.useState<any[]>([])
@@ -426,16 +426,21 @@ const AccountStatementAdmin = () => {
   const [casinoList, setCasinoList] = React.useState<any[]>([])
 
   /* Pagination */
-  React.useEffect(() => {
-    const endOffset = itemOffset + itemsPerPage
-    setCurrentItems(parseAccountStmt.slice(itemOffset, endOffset))
-    setPageCount(Math.ceil(parseAccountStmt.length / itemsPerPage))
-  }, [itemOffset, itemsPerPage, parseAccountStmt])
+  // React.useEffect(() => {
+  //   const endOffset = itemOffset + itemsPerPage
+  //   setCurrentItems(parseAccountStmt.slice(itemOffset, endOffset))
+  //   setPageCount(Math.ceil(parseAccountStmt.length / itemsPerPage))
+  // }, [itemOffset, itemsPerPage, parseAccountStmt])
+
+  // const handlePageClick = (event: any) => {
+  //   const newOffset = (event.selected * itemsPerPage) % parseAccountStmt.length
+  //   setItemOffset(newOffset)
+  //   setPage(event.selected)
+  // }
 
   const handlePageClick = (event: any) => {
-    const newOffset = (event.selected * itemsPerPage) % parseAccountStmt.length
-    setItemOffset(newOffset)
-    setPage(event.selected)
+    const selectedPage = event.selected + 1
+    getAccountStmt(selectedPage)
   }
 
   /* Default Date */
@@ -468,7 +473,7 @@ const AccountStatementAdmin = () => {
     return response.map((stmt: any, index: number) => {
       closingbalance = closingbalance + stmt.amount
       return {
-      
+
         _id: stmt._id,
         sr_no: index + 1,
         date: moment(stmt.createdAt).format(dateFormat),
@@ -548,7 +553,7 @@ const AccountStatementAdmin = () => {
   }
 
   const mergeAccountAndOperation = (accounts: any[], operations: any[]) => {
-    console.log(accounts,"Lokehs",operations)
+    console.log(accounts, "Lokehs", operations)
     const accMapped = accounts.map((a) => ({
       type: 'ACCOUNT',
       date: new Date(a.stmt.createdAt),
@@ -614,61 +619,98 @@ const AccountStatementAdmin = () => {
   //   }
   // }
 
+  //   const getAccountStmt = async (page: number) => {
+  //   try {
+  // let operationData: any[] = []
+  //     // 🔥 CHANGE PASSWORD REPORT CASE
+
+  //     if(filterdata.reportType == "thcgame"){
+  //       return alert('Third Party Casino is not Avaiable')
+  //     }
+  //     if (filterdata.reportType === 'change') {
+  //      let username =   userState.user.role == "admin" ? 'superadmin' : userState.user.username;
+  //       const res = await betService.postsettelement2({username})
+
+  //       operationData = res?.data?.data.operations || []
+
+  //       // agar pagination chahiye
+  //       // setparseAccountStmt([])
+  //       // setMergedList(reportData)
+  //       // setPage(page)
+
+  //     let merged = mergeAccountAndOperation([], operationData)
+
+  //     setMergedList(merged)
+  //     setparseAccountStmt(merged)
+  //     setPage(page)
+
+  //       return // ⛔ yahin se exit, neeche wali API call nahi hogi
+  //     }
+
+  //     // ✅ NORMAL ACCOUNT STATEMENT FLOW
+  //     const res = await accountService.getAccountList(page, filterdata)
+
+  //     const items = res?.data?.data?.items || []
+  //     const openingBalance = res?.data?.data?.openingBalance || 0
+
+  //     setOpenBalance(openingBalance)
+
+  //     const formattedAccount = dataformat(items, openingBalance)
+
+
+  //     if (filterdata?.username) {
+  //       const username = filterdata?.username
+  //       const opRes = await betService.postsettelement2({ username })
+  //       operationData = opRes?.data?.data?.operations || []
+  //     }
+
+  //     let merged = mergeAccountAndOperation(formattedAccount, operationData)
+
+  //     setMergedList(merged)
+  //     setparseAccountStmt(merged)
+  //     setPage(page)
+
+  //   } catch (err) {
+  //     toast.error('Error loading data')
+  //   }
+  // }
+
+
   const getAccountStmt = async (page: number) => {
-  try {
-let operationData: any[] = []
-    // 🔥 CHANGE PASSWORD REPORT CASE
+    try {
+      let operationData: any[] = []
 
-    if(filterdata.reportType == "thcgame"){
-      return alert('Third Party Casino is not Avaiable')
+      const res = await accountService.getAccountList(page, filterdata)
+
+      const items = res?.data?.data?.items || []
+      const openingBalance = res?.data?.data?.openingBalance || 0
+
+      // 🔥 ADD THIS LINE
+      const totalPages = res?.data?.data?.totalPages || 1
+
+      setOpenBalance(openingBalance)
+
+      const formattedAccount = dataformat(items, openingBalance)
+
+      if (filterdata?.username) {
+        const username = filterdata?.username
+        const opRes = await betService.postsettelement2({ username })
+        operationData = opRes?.data?.data?.operations || []
+      }
+
+      const merged = mergeAccountAndOperation(formattedAccount, operationData)
+
+      // 🔥 PAGINATION STATE SET
+      setMergedList(merged)
+      setparseAccountStmt(merged)
+      setCurrentItems(merged)   // 👈 current page ka data
+      setPageCount(totalPages)  // 👈 SERVER SE
+      setPage(page)
+
+    } catch (err) {
+      toast.error('Error loading data')
     }
-    if (filterdata.reportType === 'change') {
-     let username =   userState.user.role == "admin" ? 'superadmin' : userState.user.username;
-      const res = await betService.postsettelement2({username})
-
-      operationData = res?.data?.data.operations || []
-
-      // agar pagination chahiye
-      // setparseAccountStmt([])
-      // setMergedList(reportData)
-      // setPage(page)
-
-    let merged = mergeAccountAndOperation([], operationData)
-
-    setMergedList(merged)
-    setparseAccountStmt(merged)
-    setPage(page)
-
-      return // ⛔ yahin se exit, neeche wali API call nahi hogi
-    }
-
-    // ✅ NORMAL ACCOUNT STATEMENT FLOW
-    const res = await accountService.getAccountList(page, filterdata)
-
-    const items = res?.data?.data?.items || []
-    const openingBalance = res?.data?.data?.openingBalance || 0
-
-    setOpenBalance(openingBalance)
-
-    const formattedAccount = dataformat(items, openingBalance)
-
-    
-    if (filterdata?.username) {
-      const username = filterdata?.username
-      const opRes = await betService.postsettelement2({ username })
-      operationData = opRes?.data?.data?.operations || []
-    }
-
-    let merged = mergeAccountAndOperation(formattedAccount, operationData)
-
-    setMergedList(merged)
-    setparseAccountStmt(merged)
-    setPage(page)
-
-  } catch (err) {
-    toast.error('Error loading data')
   }
-}
 
 
 
@@ -706,7 +748,7 @@ let operationData: any[] = []
     }
   }
 
-      
+
 
   const getBets = (e: MouseEvent<HTMLTableCellElement>, stmt: AccoutStatement) => {
     console.log(stmt, "stmt")
@@ -747,8 +789,8 @@ let operationData: any[] = []
     return (
       currentItems &&
       currentItems.map((item: any, index: number) => (
-         <tr key={index} onClick={(e:any) =>
-               item?.row?.type=== 'pnl' && getBets(e, item.row)}>
+        <tr key={index} onClick={(e: any) =>
+          item?.row?.type === 'pnl' && getBets(e, item.row)}>
           <td>{index + 1}</td>
           <td className="wnwrap">{item?.row?.date}</td>
           <td className="green wnwrap">{item?.row?.credit}</td>
@@ -757,10 +799,10 @@ let operationData: any[] = []
           <td>{item?.row?.from}</td>
           {/* <td>{item?.row?.remark}</td> */}
           <td onClick={(e) => getBets(e, item.row)}>
-              <span className={item?.row?.type === 'pnl' ? 'label-button' : ''}>
-                {item?.row?.remark}
-              </span>
-            </td>
+            <span className={item?.row?.type === 'pnl' ? 'label-button' : ''}>
+              {item?.row?.remark}
+            </span>
+          </td>
         </tr>
       ))
     )
@@ -848,19 +890,19 @@ let operationData: any[] = []
                   </div>
                 </div>
               </form>
-               <div className='col-12 col-lg-2 mbc-5'>
-              <label className='label'>&nbsp;</label>
-              <button
-                type='button'
-                className='btn btn-success btn-block'
-                onClick={downloadPDF}
-              >
-                Download PDF
-              </button>
-            </div>
+              <div className='col-12 col-lg-2 mbc-5'>
+                <label className='label'>&nbsp;</label>
+                <button
+                  type='button'
+                  className='btn btn-success btn-block'
+                  onClick={downloadPDF}
+                >
+                  Download PDF
+                </button>
+              </div>
             </div>
 
-           
+
 
 
             <div className='card-body'>
@@ -882,14 +924,15 @@ let operationData: any[] = []
               </div>
 
               <ReactPaginate
-                breakLabel='...'
-                nextLabel='>>'
+                breakLabel="..."
+                nextLabel=">>"
+                previousLabel="<<"
                 onPageChange={handlePageClick}
                 pageRangeDisplayed={5}
-                pageCount={pageCount}
-                containerClassName={'pagination'}
-                activeClassName={'active'}
-                previousLabel={'<<'}
+                pageCount={pageCount}     // 🔥 server value
+                forcePage={page - 1}      // 🔥 sync with backend
+                containerClassName="pagination"
+                activeClassName="active"
               />
             </div>
           </div>

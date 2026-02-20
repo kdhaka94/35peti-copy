@@ -1208,7 +1208,6 @@ class BetController extends ApiController_1.ApiController {
                 var filter = {
                     userId: { $in: useridmap },
                     status: type ? 'deleted' : status,
-                    bet_on: { $ne: "CASINO" },
                 };
                 if (matchId) {
                     filter = Object.assign(Object.assign({}, filter), { matchId: parseInt(matchId) });

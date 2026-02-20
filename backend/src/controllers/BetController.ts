@@ -1290,7 +1290,7 @@ export class BetController extends ApiController {
       var filter: any = {
         userId: { $in: useridmap },
         status: type ? 'deleted' : status,
-        bet_on: {$ne:"CASINO"},
+   
       }
       if (matchId) {
         filter = { ...filter, matchId: parseInt(matchId) }
