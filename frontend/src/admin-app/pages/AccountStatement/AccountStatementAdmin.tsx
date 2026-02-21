@@ -804,8 +804,7 @@ const AccountStatementAdmin = () => {
       currentItems &&
       currentItems.map((item: any, index: number) => (
       
-        <tr key={index} onClick={(e: any) =>
-          item?.row?.type === 'ACCOUNT' && getBets(e, item.row)}>
+        <tr key={index} onClick={(e: any) =>getBets(e, item.row)}>
           <td>{index + 1}</td>
           <td className="wnwrap">{item?.row?.date}</td>
           <td className="green wnwrap">{item?.row?.credit}</td>
