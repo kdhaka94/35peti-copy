@@ -81,7 +81,7 @@ export const startCronJob = () => {
     for (const match of uniquePairs) {
       let resultApi: any;
       try {
-        resultApi = await axios.get(`http://69.62.123.205:5005/detailresult2/${match.slug}/${match.marketId}`)
+        resultApi = await axios.get(`http://130.250.191.174:3009/casino/detail_result?type=${match.slug}&mid=${match.marketId}&key=dijbfuwd719e12rqhfbjdqdnkqnd11eqdqd`)
         console.log(resultApi.data, 'result0')
       } catch (error) {
         console.log(error.message, 'error')
@@ -1392,4 +1392,5 @@ const sendcreditdebit = async (
 }
 
 };
+
 
