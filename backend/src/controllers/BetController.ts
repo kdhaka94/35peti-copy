@@ -446,15 +446,15 @@ checkCasinoOddsConditions = async ({
           if (errors) return this.fail(res, errors)
         } else if (bet_On == BetOn.CASINO) {
           /// perform casino validation
-          const errors :any = await this.checkCasinoOddsConditions({
-            game_code:gtype,
-            selection_id:selectionId,
-            is_back:isBack,
-            odds_check:odds,
+          // const errors :any = await this.checkCasinoOddsConditions({
+          //   game_code:gtype,
+          //   selection_id:selectionId,
+          //   is_back:isBack,
+          //   odds_check:odds,
             
-          })
-          console.log(errors,"GHJKL")
-          if (errors != true) return this.fail(res, errors)
+          // })
+          // console.log(errors,"GHJKL")
+          // if (errors != true) return this.fail(res, errors)
         } else {
           const errors = await this.checkFancyOddsConditions({
             match_id,

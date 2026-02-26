@@ -405,15 +405,14 @@ class BetController extends ApiController_1.ApiController {
                     }
                     else if (bet_On == Bet_1.BetOn.CASINO) {
                         /// perform casino validation
-                        const errors = yield this.checkCasinoOddsConditions({
-                            game_code: gtype,
-                            selection_id: selectionId,
-                            is_back: isBack,
-                            odds_check: odds,
-                        });
-                        console.log(errors, "GHJKL");
-                        if (errors != true)
-                            return this.fail(res, errors);
+                        // const errors :any = await this.checkCasinoOddsConditions({
+                        //   game_code:gtype,
+                        //   selection_id:selectionId,
+                        //   is_back:isBack,
+                        //   odds_check:odds,
+                        // })
+                        // console.log(errors,"GHJKL")
+                        // if (errors != true) return this.fail(res, errors)
                     }
                     else {
                         const errors = yield this.checkFancyOddsConditions({
