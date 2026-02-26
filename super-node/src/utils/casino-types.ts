@@ -104,4 +104,5 @@ export const eventJson: any = {
   mogambo: () => import("../event-json/mogambo.json"),
   dolidana: () => import("../event-json/dolidana.json"),
   teen62: () => import("../event-json/Vip3Patti1Day.json")
+  // lottcard:() => import("../event-json/Lottery.json")
 };

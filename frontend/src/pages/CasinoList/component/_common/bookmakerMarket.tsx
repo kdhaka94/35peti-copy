@@ -17,7 +17,8 @@ const BookmakerMarket = (props: any) => {
   const getCurrentMatch = useAppSelector(selectCasinoCurrentMatch)
   const onBet = (isBack = false, item: any) => {
     const ipAddress = authService.getIpAddress()
-    const oddVal = parseFloat(isBack ? item.b : item.l);
+    const oddVal = parseFloat(isBack ? item.odds[1].odds : item.odds[0].odds)
+    const ssid = isBack ? item.odds[1].sid: item.odds[0].sid
     const odds = oddVal.toString()
     if (userState.user.role === RoleType.user) {
       if (parseFloat(odds) <= 0 || item.status === 'SUSPENDED') return
@@ -27,15 +28,15 @@ const BookmakerMarket = (props: any) => {
           betData: {
             isBack,
             odds: parseFloat(odds),
-            volume: parseFloat(isBack ? item.bs : item.ls),
+            volume: parseFloat(isBack ?  item.odds[1].size: item.odds[0].size),
             marketId: item.mid,
             marketName: oddsMarket.MarketName,
             matchId: parseInt(lastOdds?.match_id || 0),
             selectionName: item.nat,
-            selectionId: item.sid,
+            selectionId: ssid,
             pnl: 0,
             stack: 0,
-            currentMarketOdds: isBack ? item.b : item.l,
+            currentMarketOdds: isBack ?  item.odds[1].odds: item.ods[0].odds,
             eventId: item.mid,
             exposure: -0,
             ipAddress: ipAddress,
@@ -52,7 +53,7 @@ const BookmakerMarket = (props: any) => {
   const boxLayoutCls2 = isMobile?'box-15':'box-1';
   const layoutRunner = () => {
     return oddsMarket?.Runners?.map((ItemRunner:any, keyRunner:number) => {
-    const gstatus = ItemRunner.status == 'SUSPENDED' || ItemRunner.status == 'CLOSED'? 'suspended' : '';
+    const gstatus = ItemRunner.gstatus == 'SUSPENDED' || ItemRunner.status == 'CLOSED'? 'suspended' : '';
     return <div className="table-body" key={keyRunner}>
     <div data-title={ItemRunner.status} className={`table-row ${gstatus}`}>
         <div className={`float-left country-name ${boxLayoutCls} tx-left`}>
@@ -64,12 +65,12 @@ const BookmakerMarket = (props: any) => {
         <div className={`${boxLayoutCls2} back1 back-2 float-left text-center`}>
         </div>
         <div className={`${boxLayoutCls2} back float-left back lock text-center betting-disabled`} onClick={() => { onBet(true, ItemRunner) }}>
-          {ItemRunner.b}
-          <span className="d-block">{nFormatter(ItemRunner.bs, 2)}</span>
+          {ItemRunner.odds[1].odds}
+          <span className="d-block">{nFormatter(ItemRunner.odds[1].size, 2)}</span>
         </div>
         <div className={`${boxLayoutCls2} lay float-left text-center betting-disabled`} onClick={() => { onBet(false, ItemRunner) }}>
-        {ItemRunner.l}
-          <span className="d-block">{nFormatter(ItemRunner.ls, 2)}</span>
+        {ItemRunner.odds[0].odds}
+          <span className="d-block">{nFormatter(ItemRunner.odds[0].size, 2)}</span>
         </div>
         <div className={`${boxLayoutCls2} lay2 float-left text-center`}>
         </div>

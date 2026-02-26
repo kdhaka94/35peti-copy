@@ -639,7 +639,7 @@ const LastResults = (props: any) => {
           clsname = gameWiseResultStyle['cmatch20'][Item.win]['clsname']
           shortName = gameWiseResultStyle['cmatch20'][Item.win]['shortName']
           break
-        case 'worlimatka':
+        case 'worli':
         case 'war':
         case 'teen8':
         case '3cardsj':

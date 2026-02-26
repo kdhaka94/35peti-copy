@@ -396,6 +396,7 @@ const CasinoWrapper = (props: any) => {
       case 'poison20':
         return <TeenpattiPoison1Day lastOdds={updateOdds} liveMatchData={liveMatchData} />
       case 'joker20':
+      case 'joker120':
         return <TeenpattiJoker lastOdds={updateOdds} liveMatchData={liveMatchData} />
       case '3cardj':
         return <Card3JLayout lastOdds={updateOdds} liveMatchData={liveMatchData} />
@@ -425,6 +426,7 @@ const CasinoWrapper = (props: any) => {
       case 'notenum':
         return <NoteNumber lastOdds={updateOdds} liveMatchData={liveMatchData} />
       case 'worli2':
+        case 'worli':
         return (
           <Instantworli
             lastOdds={updateOdds}

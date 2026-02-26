@@ -95,6 +95,7 @@ export default class CasinoController extends ApiController {
             //   }
             // }
             const marketData = marketFormatter(markets, cloneJsonData);
+            console.log(marketData,"matket Data")
             // console.log(tv,'tv')
             let eventData = {
               ...cloneJsonData,
@@ -105,15 +106,19 @@ export default class CasinoController extends ApiController {
               defaultMarkets: cloneJsonData.event_data.market,
               scoreCard: scoreCards,
             };
-            let mid = data?.data?.mid
-            if (type == 'superover') {
-              mid = data?.data?.t1?.gmid
+                  let mid = data?.data?.mid
+              if (type == 'superover' || type == "cricketv3") {
+              mid = t1.mid
+              //  data.data = data.data.t1
             }
-            const desc = data?.data?.rdesc
-            const autotime = data?.data?.lt
-            const min = data?.data?.sub[0]?.min
-            const max = data?.data?.sub[0]?.max
-            const cards = data?.data?.card?.split(',')
+    
+          
+            // console.log(data,"data")
+            const desc = data?.data?.rdesc || data?.data?.t1?.rdesc
+            const autotime = data?.data?.lt || data?.data?.t1?.lt
+            const min =  10000 // data?.data?.sub[0]?.min ||
+            const max = 1000000. // data?.data?.sub[0]?.max || 
+            const cards = data?.data?.card?.split(',') || data?.data?.t1?.card?.split('|')
             const score = data?.data?.score ?? ''
             const cardObj: any = {};
             const ar = data?.data?.ares ?? ''
