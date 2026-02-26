@@ -272,7 +272,7 @@ getSingleMarket = async (req: Request, res: Response) => {
       if (type === "AAA") type = "aaa";
 
       let response = await axios.get(
-        `http://69.62.123.205:3000/tabledata2/${type}`
+        `http://130.250.191.174:3009/casino/data?type=${type}&key=dijbfuwd719e12rqhfbjdqdnkqnd11eqdqd`
       );
       let data = response.data;
 
