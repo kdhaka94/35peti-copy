@@ -25,7 +25,6 @@ const Role_1 = require("../models/Role");
 const user_socket_1 = __importDefault(require("../sockets/user-socket"));
 const CasinoMatches_1 = require("../models/CasinoMatches");
 const BetLock_1 = require("../models/BetLock");
-const axios_1 = __importDefault(require("axios"));
 const ObjectId = mongoose_1.Types.ObjectId;
 const default_settings = { minBet: 100, maxBet: 100, delay: 0 };
 const defaultRatio = {
@@ -238,9 +237,7 @@ class BetController extends ApiController_1.ApiController {
         });
         this.checkCasinoOddsConditions = ({ game_code, selection_id, is_back, odds_check, }) => __awaiter(this, void 0, void 0, function* () {
             try {
-                const url = `http://localhost:3025/api/get-single-market/${game_code}/${selection_id}`;
-                console.log(url);
-                const response = yield axios_1.default.get(url);
+                const response = yield api_1.sportsApi.get(`/get-single-market/${game_code}/${selection_id}`);
                 console.log(response, "hjk");
                 if (!response.data || !response.data.data) {
                     return "data Not found";

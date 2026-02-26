@@ -256,10 +256,9 @@ checkCasinoOddsConditions = async ({
  
 }) => {
   try {
-    const url = `http://localhost:3025/api/get-single-market/${game_code}/${selection_id}`;
-    console.log(url);
+ 
 
-    const response = await axios.get(url);
+    const response = await sportsApi.get( `/get-single-market/${game_code}/${selection_id}`)
     console.log(response,"hjk")
 
     if (!response.data || !response.data.data) {
