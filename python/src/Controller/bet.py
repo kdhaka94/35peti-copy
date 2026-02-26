@@ -814,8 +814,8 @@ def checkCasinoOddsConditions(game_code, selection_id, is_back, odds_check, stac
                 return f"{odds} is not valid."
             if not is_back and float(str(odds)) > odds_check:
                 return f"{odds} is not valid."
-            if float(str(minStake))>float(str(stack)) or float(str(maxStake))<float(str(stack)):
-                return f"Check Maximum or Minimum Bet Limit"
+            # if float(str(minStake))>float(str(stack)) or float(str(maxStake))<float(str(stack)):
+            #     return f"Check Maximum or Minimum Bet Limit"
         else:
             return "Market is Suspended hello world "
 

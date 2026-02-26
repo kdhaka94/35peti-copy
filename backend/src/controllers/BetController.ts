@@ -246,32 +246,101 @@ export class BetController extends ApiController {
       }
     }
   }
+
+
+checkCasinoOddsConditions = async ({
+  game_code,
+  selection_id,
+  is_back,
+  odds_check,
+ 
+}) => {
+  try {
+    const url = `http://localhost:3025/api/get-single-market/${game_code}/${selection_id}`;
+    console.log(url);
+
+    const response = await axios.get(url);
+    console.log(response,"hjk")
+
+    if (!response.data || !response.data.data) {
+      return "data Not found";
+    }
+
+    const finalOdds = response.data.data;
+
+    let gstatus =
+      finalOdds.gstatus ||
+      finalOdds.status ||
+      finalOdds.tstatus ||
+      "";
+
+    const minStake = finalOdds.min || 0;
+    const maxStake = finalOdds.max || 0;
+
+    let odds = "";
+
+    if (gstatus === "OPEN" || gstatus === "ACTIVE" || gstatus === "True") {
+      if (is_back) {
+        if (game_code === "testtp") {
+          if (Number(selection_id) === Number(finalOdds.tsection))
+            odds = finalOdds.trate;
+          else if (Number(selection_id) === Number(finalOdds.lsection))
+            odds = finalOdds.lrate;
+          else if (Number(selection_id) === Number(finalOdds.dsectionid))
+            odds = finalOdds.drate;
+        } else {
+          odds = finalOdds.rate || finalOdds.b1 || "";
+        }
+      } else {
+        odds = finalOdds.rate || finalOdds.l1 || "";
+      }
+
+      if (!odds) return "Odds not found";
+
+      if (is_back && odds_check > Number(odds)) {
+        return `${odds} is not valid.`;
+      }
+
+      if (!is_back && Number(odds) > odds_check) {
+        return `${odds} is not valid.`;
+      }
+
+      return true
+    } else {
+      return "Market is Suspended";
+    }
+  } catch (error) {
+    console.error("API Error:", error.message);
+    return "Invalid Api Response";
+  }
+};
+  // placebet = async (req: Request, res: Response): Promise<Response> => {
+  //   try {
+  //     const betData = req.body
+  //     if (betData.stack != undefined) {
+  //       const user: any = req.user
+  //       const userId: any = user._id
+  //       betData['user_id'] = userId
+  //       const start = performance.now()
+  //       const response = await axios.post('http://127.0.0.1:5000/api/placebet', betData)
+  //       const end = performance.now()
+  //       console.log(response)
+  //       return this.success(
+  //         res,
+  //         { bet: betData, time: end - start, ...response.data },
+  //         'PLace Bet Successfully',
+  //       )
+  //     } else {
+  //       return this.fail(res, '')
+  //     }
+  //   } catch (e: any) {
+  //     return this.fail(res, e.stack)
+  //   }
+  // }
   placebet = async (req: Request, res: Response): Promise<Response> => {
     try {
       const betData = req.body
-      if (betData.stack != undefined) {
-        const user: any = req.user
-        const userId: any = user._id
-        betData['user_id'] = userId
-        const start = performance.now()
-        const response = await axios.post('http://127.0.0.1:5000/api/placebet', betData)
-        const end = performance.now()
-        console.log(response)
-        return this.success(
-          res,
-          { bet: betData, time: end - start, ...response.data },
-          'PLace Bet Successfully',
-        )
-      } else {
-        return this.fail(res, '')
-      }
-    } catch (e: any) {
-      return this.fail(res, e.stack)
-    }
-  }
-  placebetold = async (req: Request, res: Response): Promise<Response> => {
-    try {
-      const betData = req.body
+      console.log(betData)
       if (betData.stack != undefined) {
         const user: any = req.user
         const userId: any = user._id
@@ -313,6 +382,7 @@ export class BetController extends ApiController {
         let selectionId = betData.selectionId
         let isBack = betData.isBack
         let ipAddress = betData.ipAddress
+        let gtype = betData.gtype
 
         const betLock: any = await BetLock.findOne({
           matchId: parseInt(match_id),
@@ -377,14 +447,15 @@ export class BetController extends ApiController {
           if (errors) return this.fail(res, errors)
         } else if (bet_On == BetOn.CASINO) {
           /// perform casino validation
-          // const errors = await this.checkFancyOddsConditions({
-          //   match_id,
-          //   selectionId,
-          //   isBack,
-          //   odds,
-          //   selectionName,
-          // })
-          // if (errors) return this.fail(res, errors)
+          const errors :any = await this.checkCasinoOddsConditions({
+            game_code:gtype,
+            selection_id:selectionId,
+            is_back:isBack,
+            odds_check:odds,
+            
+          })
+          console.log(errors,"GHJKL")
+          if (errors != true) return this.fail(res, errors)
         } else {
           const errors = await this.checkFancyOddsConditions({
             match_id,

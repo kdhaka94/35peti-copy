@@ -95,7 +95,7 @@ export default class CasinoController extends ApiController {
             //   }
             // }
             const marketData = marketFormatter(markets, cloneJsonData);
-            console.log(marketData,"matket Data")
+            // console.log(marketData,"matket Data")
             // console.log(tv,'tv')
             let eventData = {
               ...cloneJsonData,
@@ -270,16 +270,21 @@ getSingleMarket = async (req: Request, res: Response) => {
         return this.fail(res, "selectionId is a required field");
 
       if (type === "AAA") type = "aaa";
+         if (type === "Superover") type = "superover";
+      // type == "Superover" ? "superover" :type
+      // type =="fivewicket" ? "cricketv3" :type
+
+      console.log(type,"type")
 
       let response = await axios.get(
         `http://130.250.191.174:3009/casino/data?type=${type}&key=dijbfuwd719e12rqhfbjdqdnkqnd11eqdqd`
       );
       let data = response.data;
+      console.log(data,"single")
 
-
-      let pdata = data?.data?.sub ?? [];
+      let pdata = data?.data?.sub ?? data.data.t2;
       let markets: any = pdata;
-      // console.log(markets, "markets");
+      console.log(markets, "markets");
 
       interface Market {
         sid?: string | undefined; // Ensure sid is always a string (no undefined allowed)

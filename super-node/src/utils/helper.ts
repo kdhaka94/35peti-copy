@@ -41,7 +41,7 @@ const marketFormatter = (t2: any, marketJson: any) => {
             ItemRunner.SelectionId
         )
         .map((card: any) => {
-          console.log(card,"fghjkiol")
+          // console.log(card,"fghjkiol")
           if (!card) return;
 
           if (card.rate) card.b1 = card.rate;
