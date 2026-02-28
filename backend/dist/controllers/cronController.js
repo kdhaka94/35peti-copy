@@ -75,6 +75,7 @@ const startCronJob = () => {
             }
         });
         // console.log(uniquePairs, 'unique pairs')
+        console.log(uniquePairs, "match is here");
         for (const match of uniquePairs) {
             let resultApi;
             try {
@@ -112,7 +113,7 @@ const startCronJob = () => {
                             sid50,
                             resultsids: result ? result : {},
                         });
-                        // console.log(profitLoss, 'profitloss',bet,selectionId)
+                        console.log(profitLoss, 'profitloss', bet, selectionId);
                         const narration = `${(_f = bet.matchName) !== null && _f !== void 0 ? _f : ''} / Rno-${(_g = bet.marketId) !== null && _g !== void 0 ? _g : ''}, ${profitLoss >= 0 ? 'profit' : 'loss'} [winner: ${selectionId !== null && selectionId !== void 0 ? selectionId : ''} ]`;
                         // console.log(narration,'narration')
                         // Update P&L to user
@@ -159,11 +160,11 @@ const startCronJob = () => {
         }
     }));
     const canculatePnl = ({ ItemBetList, selectionId, sid50, resultsids, data }) => {
-        var _a, _b, _c, _d, _e, _f;
+        var _a, _b, _c, _d, _e, _f, _g;
         sid50 = sid50 ? sid50.split(',') : '';
         let profit_type = 'loss', profitLossAmt = 0;
         let fancy = false;
-        // console.log(ItemBetList, 'bet1')
+        console.log(ItemBetList.slug, 'bet1');
         switch (ItemBetList.slug) {
             case 'queen':
             case 'card32':
@@ -502,9 +503,9 @@ const startCronJob = () => {
             case 'teenmuf':
             case 'trap':
             case 'race17':
-            case 'raulette11':
-            case 'raulette12':
-            case 'raulette13':
+            case 'roulette11':
+            case 'roulette12':
+            case 'roulette13':
                 if (resultsids) {
                     // if (ItemBetList.gtype === 'worliinstant' && ItemBetList.selectionId > 10) {
                     //   ItemBetList.odds = 5
@@ -512,6 +513,7 @@ const startCronJob = () => {
                     // if (ItemBetList.gtype == 'Tp1Day') {
                     //   ItemBetList.odds = ItemBetList.odds / 100 + 1
                     // }
+                    console.log("lokesh", ItemBetList.slug, resultsids);
                     if (resultsids) {
                         let result = false;
                         if (ItemBetList.slug == 'poker' || ItemBetList.slug == 'poker6' || ItemBetList.slug == 'poker20') {
@@ -725,8 +727,10 @@ const startCronJob = () => {
                             }
                         }
                         else if (ItemBetList.slug == 'trap') {
+                            console.log("hellooooooo");
                             let parts = resultsids.rdesc.split("#");
                             const winners = parts.map((part) => part.trim());
+                            console.log(winners, "winnnn");
                             if (ItemBetList.selectionName.includes('Player') && winners[0].includes(ItemBetList.selectionName)) {
                                 result = true;
                             }
@@ -759,6 +763,7 @@ const startCronJob = () => {
                         else if (ItemBetList.slug == 'race17') {
                             let parts = resultsids.rdesc.split("#");
                             const winners = parts.map((part) => part.trim());
+                            console.log(winners, "winnnn");
                             if (ItemBetList.selectionName == 'Race to 17' && winners[0].includes('Yes')) {
                                 result = true;
                             }
@@ -782,6 +787,7 @@ const startCronJob = () => {
                         }
                         else if (ItemBetList.slug == 'roulette11' || ItemBetList.slug == 'roulette12' || ItemBetList.slug == 'roulette13') {
                             const winner = resultsids.win;
+                            console.log(winner, "winner", ItemBetList.selectionName);
                             const num = parseInt(winner);
                             const red = [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, , 34, 36];
                             if (ItemBetList.selectionName == winner) {
@@ -906,9 +912,10 @@ const startCronJob = () => {
                     // }
                 }
                 break;
-            case 'race2020':
+            case 'race20':
                 if (resultsids) {
                     let parts = resultsids.rdesc.split("#");
+                    console.log("kkkkk");
                     const winners = parts.map((part) => part.trim());
                     const totalPoints = winners[1];
                     const totalCards = winners[2];
@@ -936,7 +943,8 @@ const startCronJob = () => {
                                 : profit_type;
                         fancy = true;
                     }
-                    else if (ItemBetList.marketName == 'K Market' && ItemBetList.selectionId == resultsids.win) {
+                    else if (ItemBetList.marketName == 'K Market') {
+                        console.log("i am iside k function");
                         profit_type =
                             ItemBetList.isBack == false && ItemBetList.selectionId != resultsids.win
                                 ? 'profit'
@@ -947,7 +955,8 @@ const startCronJob = () => {
                                 : profit_type;
                     }
                     else {
-                        let betval = ItemBetList.selectionId.split(' ').at(-1);
+                        console.log("HUIOGHJI", ItemBetList === null || ItemBetList === void 0 ? void 0 : ItemBetList.selectionId);
+                        let betval = (_g = ItemBetList === null || ItemBetList === void 0 ? void 0 : ItemBetList.selectionId) === null || _g === void 0 ? void 0 : _g.split(' ').at(-1);
                         profit_type =
                             ItemBetList.isBack === true && parseInt(betval) == parseInt(totalCards)
                                 ? 'profit'
@@ -984,14 +993,14 @@ const startCronJob = () => {
                     }
                 }
                 break;
-            case 'Superover':
-            case 'fivewicket':
+            case 'superover':
+            case 'cricketv3':
                 // This sids for superover
                 if ([3, 5].indexOf(parseInt(ItemBetList.selectionId.toString())) > -1) {
                     fancy = true;
                 }
                 if (ItemBetList.marketName.indexOf('Fancy Market') > -1 &&
-                    ItemBetList.gtype == 'fivewicket') {
+                    ItemBetList.gtype == 'cricketv3') {
                     fancy = true;
                 }
                 if (ItemBetList.marketName.indexOf('Fancy Market') > -1 && resultsids) {

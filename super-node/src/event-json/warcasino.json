@@ -1,7 +1,7 @@
 {
   "image": "https://dzm0kbaskt4pv.cloudfront.net/v11/static/front/img/casinoicons/img/war.jpg",
   "title": "Casino War",
-  "slug": "warcasino",
+  "slug": "war",
   "order": 13,
   "match_id": 31,
   "status": 1,
@@ -10,7 +10,8 @@
     "title": "Casino war",
     "autotime": "0",
     "remark": "",
-    "gtype": "warcasino",
+    "gtype": "war",
+    "match_id":31,
     "min": 100,
     "max": 100000,
     "C1": "1",

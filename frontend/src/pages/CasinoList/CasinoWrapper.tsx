@@ -357,6 +357,7 @@ const CasinoWrapper = (props: any) => {
         return <Sixplayerpoker lastOdds={updateOdds} liveMatchData={liveMatchData} />
       case 'superover':
       case 'cricketv3':
+      case 'superover':
         return <SuperOver lastOdds={updateOdds} liveMatchData={liveMatchData} />
       case 'trap':
         return <TheTrap lastOdds={updateOdds} liveMatchData={liveMatchData} />
@@ -405,6 +406,7 @@ const CasinoWrapper = (props: any) => {
       case 'war':
         return <Casinowar lastOdds={updateOdds} liveMatchData={liveMatchData} />
       case 'ab20':
+        case 'ab3':
         return <AndarBhar lastOdds={updateOdds} liveMatchData={casinoMatchData} />
       case 'abj':
         return <AndarBhar2 lastOdds={updateOdds} liveMatchData={liveMatchData} />

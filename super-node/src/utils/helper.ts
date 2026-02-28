@@ -8,7 +8,7 @@ const marketFormatter = (t2: any, marketJson: any) => {
     };
     // console.log(ItemMarket,"GHJK")
     ItemMarket.Runners.map((ItemRunner: any) => {
-      if (marketJson.slug !== "worliinstant" && marketJson.slug !==  "Superover" && marketJson.slug !== "fivewicket") {
+      if (marketJson.slug !== "worliinstant" && marketJson.slug !==  "superover" && marketJson.slug !== "cricketv3") {
         console.log(t2)
         t2.filter(
           ({ sid, sectionId, tsection,i}: any) =>
@@ -32,7 +32,7 @@ const marketFormatter = (t2: any, marketJson: any) => {
         });
       }
       // console.log(marketJson.slug)
-    if (marketJson.slug === "Superover" || marketJson.slug === "fivewicket") {
+    if (marketJson.slug === "superover" || marketJson.slug === "cricketv3") {
     t2.forEach((item: any) => {
       item.section
         ?.filter(

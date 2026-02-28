@@ -431,9 +431,9 @@ checkCasinoOddsConditions = async ({
           return this.fail(res, 'Check Maximum or Minimum Bet Limit')
         }
 
-        if (market_name == 'Match Odds') {
-          await delay((parseInt(settings.delay) - 5) * 1000)
-        }
+        // if (market_name == 'Match Odds') {
+        //   await delay((parseInt(settings.delay) - 5) * 1000)
+        // }
         if (market_name != 'Fancy' && bet_On != BetOn.CASINO) {
           const errors = await this.checkMarketOddsConditions({
             market_id,
@@ -469,8 +469,9 @@ checkCasinoOddsConditions = async ({
         let matchName = ''
         let runners = []
         if (bet_On == BetOn.CASINO) {
-          const matchdata: any = await Casino.findOne({ match_id: match_id })
+          const matchdata: any = await Casino.findOne({ slug:betData.gtype})
           matchName = matchdata != null ? matchdata.title : ''
+          console.log(matchdata,"GHJK")
           if (matchdata.status == 0) {
             return this.fail(res, 'Match Is Not In Play')
           }
@@ -851,6 +852,7 @@ checkCasinoOddsConditions = async ({
                   if (Item.match_id == 33) {
                     profit = await this.getCmetercasinoexposer(betlist, Item)
                   } else {
+                    console.log("exposer for superover")
                     profit = await this.getmatchcasinoexposer(betlist, Item)
                   }
                   console.log(profit, 'profitprofitprofit')
@@ -1120,7 +1122,7 @@ checkCasinoOddsConditions = async ({
           const markets: any = await Casino.findOne({
             match_id: matchId,
           })
-          console.log(JSON.stringify(markets), 'marketsmarketsmarketsmarkets')
+          // console.log(JSON.stringify(markets), 'marketsmarketsmarketsmarkets')
           const profitlist = this.getcasinooddsprofit(bets, markets.event_data.market, markets)
           return this.success(res, { bets: bets, odds_profit: profitlist })
         }

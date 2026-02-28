@@ -112,6 +112,7 @@ import { isMobile } from "react-device-detect";
 
 const BookmakerMarket = (props: any) => {
   const { oddsMarket, lastOdds, max } = props;
+  console.log(lastOdds,"lastodds")
   const dispatch = useAppDispatch()
   const userState = useAppSelector(selectUserData)
   const getCurrentMatch = useAppSelector(selectCasinoCurrentMatch)
@@ -128,15 +129,15 @@ const BookmakerMarket = (props: any) => {
             isBack,
             odds: parseFloat(odds),
             volume: parseFloat(isBack ? item.bs1 : item.ls1),
-            marketId: item.mid,
+            marketId: lastOdds?.match_id,
             marketName: oddsMarket.MarketName,
-            matchId: parseInt(lastOdds?.match_id || 0),
+            matchId: parseInt(lastOdds?.event_data?.match_id || 0),
             selectionName: item.nat,
             selectionId: item.sid,
             pnl: 0,
             stack: 0,
             currentMarketOdds: isBack ? item.b1 : item.l1,
-            eventId: item.mid,
+            eventId: lastOdds?.match_id,
             exposure: -0,
             ipAddress: ipAddress,
             type: IBetType.Match,

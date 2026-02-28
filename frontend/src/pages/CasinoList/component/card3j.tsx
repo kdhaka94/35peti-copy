@@ -56,7 +56,7 @@ const Card3JLayout = (props: any) => {
             volume: 100,
             marketId: item.mid,
             marketName: item.MarketName,
-            matchId: parseInt(liveMatchData?.match_id) || 0,
+            matchId: parseInt(liveMatchData?.event_data?.match_id) || 0,
             selectionName: `${item.nat} ${CardSelection.cards.join('')}`,
             selectionId: parseInt(item.sid),
             pnl: 0,

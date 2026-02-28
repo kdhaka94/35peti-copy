@@ -28,6 +28,8 @@ const RaceSeventeen = ({ lastOdds, liveMatchData }: any) => {
   if (userState.user.role !== RoleType.user) return;
   if (item.gstatus !== "OPEN") return; // item should be liveItem
 
+  console.log(item,"VGHJK")
+
   const oddsVal = Number(isBack ? item.b : item.l);
   if (oddsVal <= 0) return;
 
@@ -39,14 +41,14 @@ const RaceSeventeen = ({ lastOdds, liveMatchData }: any) => {
         odds: oddsVal,
         volume: isBack ? item.bs : item.ls,
         marketName,
-        marketId: item.sid,
+        marketId: item.marketId,
         matchId: liveMatchData?.event_data?.match_id || 0,
         selectionName: item.nat,
         selectionId: item.sid,
         pnl: 0,
         stack: 0,
         currentMarketOdds: oddsVal,
-        eventId: item.sid,
+        eventId: item.marketId,
         exposure: 0,
         ipAddress: authService.getIpAddress(),
         type: IBetType.Match,
@@ -60,6 +62,7 @@ const RaceSeventeen = ({ lastOdds, liveMatchData }: any) => {
 
 
   const marketRow = (item: any, marketName: string) => {
+    console.log(item,"iemm is here")
     const suspended =
       item.gstatus !== "OPEN" || item.visible !== 1 ? "suspended" : "";
 
@@ -78,7 +81,7 @@ const RaceSeventeen = ({ lastOdds, liveMatchData }: any) => {
           onClick={() => onBet(false, item, marketName)}
         >
           <span className="casino-odds-box-odd">{item.l}</span>
-          <span className="fw-12 laysize">{item.ls}</span>
+          <span className="fw-12 laysize">{item.ls}yuiop</span>
         </div>
       </div>
     );
@@ -89,11 +92,11 @@ const RaceSeventeen = ({ lastOdds, liveMatchData }: any) => {
       <div className="card-content" style={{ padding: "10px" }}>
         <div className="row row5">
           {lastOdds?.market?.map((market: any) =>
-  market.Runners?.map((item: any) => {
+        market.Runners?.map((item: any) => {
     const odds = lastOdds?.market
       ?.flatMap((m: any) => m.Runners)
       .find((r: any) => r.sid === item.sid);
-
+    console.log(lastOdds,"last odds")
     const liveItem = {
       ...item,
       nat: odds?.nat ?? item.nat,
@@ -103,6 +106,7 @@ const RaceSeventeen = ({ lastOdds, liveMatchData }: any) => {
       ls: odds?.ls ?? item.ls,
       gstatus: odds?.gstatus ?? item.gstatus,
       visible: odds?.visible ?? item.visible,
+    marketId: lastOdds?.[item.sid]?.mid
     };
 
     return (

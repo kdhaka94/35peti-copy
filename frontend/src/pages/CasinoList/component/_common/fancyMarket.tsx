@@ -165,7 +165,7 @@ const FancyMarket = (props: any) => {
             volume: parseFloat(isBack ? item.bs1 : item.ls1),
             marketId: item.mid,
             marketName: oddsMarket.MarketName,
-            matchId: parseInt(lastOdds?.match_id || 0),
+            matchId: parseInt(lastOdds?.event_data?.match_id || 0),
             selectionName: item.nat,
             selectionId: item.sid,
             pnl: 0,

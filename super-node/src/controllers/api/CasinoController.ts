@@ -74,6 +74,7 @@ export default class CasinoController extends ApiController {
       return eventJson[type == '3cardj' ? 'Cards3J' : type]()
         .then(async (jsonData: any) => {
           const cloneJsonData = JSON.parse(JSON.stringify(jsonData.default));
+          console.log(cloneJsonData,"clonse")
           if (type != "teen91") {
 
             if (type === "cricketv3") {
@@ -108,7 +109,9 @@ export default class CasinoController extends ApiController {
             };
                   let mid = data?.data?.mid
               if (type == 'superover' || type == "cricketv3") {
-              mid = t1.mid
+                console.log(data.data.t1)
+              mid = data.data.t1.gmid
+              // console.log(mid,"mid")
               //  data.data = data.data.t1
             }
     

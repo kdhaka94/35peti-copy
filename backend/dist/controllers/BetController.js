@@ -388,9 +388,9 @@ class BetController extends ApiController_1.ApiController {
                     if ((settings && settings.minBet > stake) || (settings && settings.maxBet < stake)) {
                         return this.fail(res, 'Check Maximum or Minimum Bet Limit');
                     }
-                    if (market_name == 'Match Odds') {
-                        yield delay((parseInt(settings.delay) - 5) * 1000);
-                    }
+                    // if (market_name == 'Match Odds') {
+                    //   await delay((parseInt(settings.delay) - 5) * 1000)
+                    // }
                     if (market_name != 'Fancy' && bet_On != Bet_1.BetOn.CASINO) {
                         const errors = yield this.checkMarketOddsConditions({
                             market_id,
@@ -428,8 +428,9 @@ class BetController extends ApiController_1.ApiController {
                     let matchName = '';
                     let runners = [];
                     if (bet_On == Bet_1.BetOn.CASINO) {
-                        const matchdata = yield CasinoMatches_1.Casino.findOne({ match_id: match_id });
+                        const matchdata = yield CasinoMatches_1.Casino.findOne({ slug: betData.gtype });
                         matchName = matchdata != null ? matchdata.title : '';
+                        console.log(matchdata, "GHJK");
                         if (matchdata.status == 0) {
                             return this.fail(res, 'Match Is Not In Play');
                         }
@@ -753,6 +754,7 @@ class BetController extends ApiController_1.ApiController {
                                             profit = yield this.getCmetercasinoexposer(betlist, Item);
                                         }
                                         else {
+                                            console.log("exposer for superover");
                                             profit = yield this.getmatchcasinoexposer(betlist, Item);
                                         }
                                         console.log(profit, 'profitprofitprofit');
@@ -1023,7 +1025,7 @@ class BetController extends ApiController_1.ApiController {
                         const markets = yield CasinoMatches_1.Casino.findOne({
                             match_id: matchId,
                         });
-                        console.log(JSON.stringify(markets), 'marketsmarketsmarketsmarkets');
+                        // console.log(JSON.stringify(markets), 'marketsmarketsmarketsmarkets')
                         const profitlist = this.getcasinooddsprofit(bets, markets.event_data.market, markets);
                         return this.success(res, { bets: bets, odds_profit: profitlist });
                     }
