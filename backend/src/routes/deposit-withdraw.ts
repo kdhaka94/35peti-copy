@@ -78,12 +78,27 @@ export class DepositWithdrawRoutes {
       this.DepositWithdrawController.getDepositWithdraw,
     )
 
-    this.router.post(
-      '/update-deposit-withdraw-status',
+    // this.router.post(
+    //   '/update-deposit-withdraw-status',
+    //   Passport.authenticateJWT,
+    //   updateDepositWithdraw,
+    //   Http.validateRequest,
+    //   this.DepositWithdrawController.updateDepositWithdraw,
+    // )
+
+    this.router.get(
+      '/staff-list',
       Passport.authenticateJWT,
-      updateDepositWithdraw,
+     
       Http.validateRequest,
-      this.DepositWithdrawController.updateDepositWithdraw,
+      this.DepositWithdrawController.StaffList,
+    )
+    this.router.post(
+      '/delete-staff',
+      Passport.authenticateJWT,
+
+      Http.validateRequest,
+      this.DepositWithdrawController.DeleteStaff,
     )
   }
 }

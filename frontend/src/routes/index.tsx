@@ -13,6 +13,7 @@ import RG from '../pages/withdrawstatement/RG'
 import AviatorList from '../pages/CasinoList/AviatorList'
 import { element } from 'prop-types'
 import TvSettings from '../pages/Updatetv/updatetv'
+import StaffRoutes from '../staff-app/staffRoutes'
 
 const AccountStatement = React.lazy(() => import('../pages/AccountStatement/AccountStatement'))
 const BetHistory = React.lazy(() => import('../pages/BetHistory/BetHistory'))
@@ -104,6 +105,7 @@ const Routers = () => {
           ],
         },
         ...AdminRoutes(),
+        ...StaffRoutes(),
       ],
     },
     { path: '*', element: <Page404 /> },

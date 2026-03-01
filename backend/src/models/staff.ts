@@ -19,6 +19,10 @@ const StaffSchema = new Schema<IStaff>(
       type: String,
       required: true,
     },
+    clientId: {
+      type: String,
+      required: true,
+    },
     password: {
       type: String,
       required: true,

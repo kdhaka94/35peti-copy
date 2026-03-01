@@ -37,6 +37,15 @@ export class UserRoutes {
       this.dealerController.signUp,
     )
 
+
+     this.router.post(
+      '/create-staff',
+      // signupValidation,
+      Http.validateRequest,
+      Passport.authenticateJWT,
+      this.dealerController.createStaff,
+    )
+
     this.router.post(
       '/refresh-token',
       refreshTokenValidation,

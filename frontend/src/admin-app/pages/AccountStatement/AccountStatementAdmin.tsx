@@ -624,9 +624,9 @@ const AccountStatementAdmin = () => {
   // let operationData: any[] = []
   //     // 🔥 CHANGE PASSWORD REPORT CASE
 
-  //     if(filterdata.reportType == "thcgame"){
-  //       return alert('Third Party Casino is not Avaiable')
-  //     }
+      // if(filterdata.reportType == "thcgame"){
+      //   return alert('Third Party Casino is not Avaiable')
+      // }
   //     if (filterdata.reportType === 'change') {
   //      let username =   userState.user.role == "admin" ? 'superadmin' : userState.user.username;
   //       const res = await betService.postsettelement2({username})
@@ -681,6 +681,10 @@ const AccountStatementAdmin = () => {
   const getAccountStmt = async (page: number) => {
     try {
       let operationData: any[] = []
+
+           if(filterdata.reportType == "thcgame"){
+        return alert('Third Party Casino is not Avaiable')
+        }
 
       const res = await accountService.getAccountList(page, filterdata)
 

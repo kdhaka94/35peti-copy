@@ -23,7 +23,7 @@ import { FancyController } from './FancyController'
 import UserSocket from '../sockets/user-socket'
 import { UserLog } from '../models/UserLog'
 import Operation from '../models/Operation'
-
+import Staff from '../models/staff'
 export class DealersController extends ApiController {
   constructor() {
     super()
@@ -37,6 +37,7 @@ export class DealersController extends ApiController {
     this.updateUserWallet = this.updateUserWallet.bind(this)
     this.updateUserWhatsapp = this.updateUserWhatsapp.bind(this)
     this.disableTelegramOtp = this.disableTelegramOtp.bind(this)
+    this.createStaff = this.createStaff.bind(this)
   }
 
   async signUp(req: Request, res: Response): Promise<Response> {
@@ -936,4 +937,38 @@ loginReport  = async (req: Request, res: Response) => {
 
     }
   }
+
+  // staff 
+async createStaff(req:Request,res:Response){
+ 
+ const {clientId,confirmPassword,role,password,username} = req.body;
+  //@ts-ignore
+ const currentUser :any = req.user
+ try {
+  if(confirmPassword != password){
+    return this.fail(res, "confirm password not match")
+  }
+  const checkUsername = await Staff.findOne({clientId})
+  if(checkUsername){
+    return this.fail(res,"This ClientId alreday exist!")
+  }
+
+  await Staff.create({
+    ParentId:currentUser._id,
+    username,
+    password,
+    clientId,
+    role,
+  })
+
+
+  this.success(res,"Staff Created sucessfully !")
+
+
+ } catch (error) {
+  this.fail(res,"error")
+ }
+
+}
+
 }

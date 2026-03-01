@@ -23,6 +23,9 @@ class UserRoutes {
         this.router.get('/user-info', Passport_1.default.authenticateJWT, this.authController.getUser);
         /* Dealer Routes */
         this.router.post('/register', user_validation_1.signupValidation, Http_1.default.validateRequest, Passport_1.default.authenticateJWT, this.dealerController.signUp);
+        this.router.post('/create-staff', 
+        // signupValidation,
+        Http_1.default.validateRequest, Passport_1.default.authenticateJWT, this.dealerController.createStaff);
         this.router.post('/refresh-token', user_validation_1.refreshTokenValidation, Http_1.default.validateRequest, this.authController.refreshToken);
         this.router.get('/get-user-list', Passport_1.default.authenticateJWT, this.dealerController.getUserList);
         this.router.get('/get-user-detail', Passport_1.default.authenticateJWT, this.dealerController.getUserDetail);

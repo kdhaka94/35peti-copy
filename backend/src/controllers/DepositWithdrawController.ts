@@ -8,6 +8,7 @@ import { RoleType } from '../models/Role'
 import { AccountController } from './AccountController'
 import { Balance } from '../models/Balance'
 import { Upi } from '../models/Upi'
+import Staff from '../models/staff'
 
 export class DepositWithdrawController extends ApiController {
   addBankAccount = async (req: Request, res: Response): Promise<any> => {
@@ -138,6 +139,103 @@ export class DepositWithdrawController extends ApiController {
     }
   }
 
+
+  //  getDepositWithdrawtwo = async (req: Request, res: Response): Promise<any> => {
+  //   try {
+  //     let { startDate, endDate, username, reportType, } = req.body
+  //     const user = req.user as IUserModel
+  //     let query: any = {
+  //       userId:Types.ObjectId(req.body.parentId),
+  //       type: req.body.type,
+  //     }
+  //     // if (user.role !== RoleType.user) {
+  //     //   delete query.userId
+  //     //   query.parentStr = { $elemMatch: { $eq: Types.ObjectId(user._id) } }
+  //     // }
+
+  //     if (username) query.username = username
+
+  //     if (startDate) {
+  //       query.createdAt = {
+  //         $gte: startDate.includes('T')
+  //           ? `${startDate.replace('T', ' ')}:00`
+  //           : `${startDate} 00:00:00`,
+  //       }
+  //     }
+  //     if (endDate) {
+  //       query.createdAt = {
+  //         ...query.createdAt,
+  //         $lte: endDate.includes('T') ? `${endDate.replace('T', ' ')}:00` : `${endDate} 23:59:59`,
+  //       }
+  //     }
+
+  //     if (reportType && reportType != 'ALL') {
+  //       query.status = reportType
+  //     }
+  //     console.log('query', query)
+  //     const data = await DepositWithdraw.find(query).exec()
+
+  //     return this.success(res, data)
+  //   } catch (e: any) {
+  //     return this.fail(res, e)
+  //   }
+  // }
+
+getDepositWithdrawtwo = async (req: Request, res: Response): Promise<any> => {
+  try {
+    const { startDate, endDate, username, reportType, parentId, type } = req.body;
+
+    const query: any = {};
+
+    if (parentId) {
+      query.$or = [
+        { parentId: new Types.ObjectId(parentId) },
+        { parentStr: { $elemMatch: { $eq: new Types.ObjectId(parentId) } } }
+      ];
+    }
+
+    if (type) {
+      query.type = type;
+    }
+
+    if (username) {
+      query.username = username;
+    }
+
+    if (startDate || endDate) {
+      query.createdAt = {};
+
+      if (startDate) {
+        query.createdAt.$gte = new Date(
+          startDate.includes("T") ? startDate : `${startDate}T00:00:00`
+        );
+      }
+
+      if (endDate) {
+        query.createdAt.$lte = new Date(
+          endDate.includes("T") ? endDate : `${endDate}T23:59:59`
+        );
+      }
+    }
+
+    if (reportType && reportType !== "ALL") {
+      query.status = reportType;
+    }
+
+    console.log("Final Query:", query);
+
+    const data = await DepositWithdraw
+      .find(query)
+      .sort({ createdAt: -1 })
+      .lean();
+
+    return this.success(res, data);
+
+  } catch (e: any) {
+    return this.fail(res, e.message);
+  }
+};
+
   updateDepositWithdraw = async (req: Request, res: Response): Promise<any> => {
     try {
       const user = req.user as IUserModel
@@ -175,6 +273,28 @@ export class DepositWithdrawController extends ApiController {
       // await DepositWithdraw.findOneAndUpdate({ _id: id }, { ...rest })
     } catch (e: any) {
       return this.fail(res, e)
+    }
+  }
+
+  StaffList = async(req:Request,res:Response) : Promise<any> =>{
+    try {
+      const currentUser:any = req.user
+      let staffList = await Staff.find({ParentId:Types.ObjectId(currentUser._id)})
+      this.success(res,staffList)
+    } catch (error) {
+      this.fail(res,error)
+    }
+  }
+
+ DeleteStaff = async(req:Request,res:Response) : Promise<any> =>{
+  const {id} = req.body
+  console.log(id,req.body,"id id id id")
+    try {
+      const currentUser:any = req.user
+      let staffList = await Staff.deleteOne({ParentId:Types.ObjectId(currentUser._id),_id:Types.ObjectId(id)})
+      this.success(res,"staff delete sucessfully !")
+    } catch (error) {
+      this.fail(res,error)
     }
   }
 }

@@ -54,6 +54,8 @@ const deposit_withdraw_1 = require("./deposit-withdraw");
 const intcasino_1 = require("./intcasino");
 const white_label_1 = require("./white-label");
 const WhiteLabelController_1 = require("../controllers/WhiteLabelController");
+const DepositWithdrawController_1 = require("../controllers/DepositWithdrawController");
+const deposit_withdraw_validation_1 = require("../validations/deposit-withdraw.validation");
 const router = express_1.default.Router();
 exports.routes = router;
 router.get('/api/t10', function (req, res) {
@@ -62,6 +64,7 @@ router.get('/api/t10', function (req, res) {
 });
 router.post('/api/login', new AuthController_1.AuthController().login);
 router.post('/api/login-admin', new AuthController_1.AuthController().loginAdmin);
+router.post('/api/login-staff', new AuthController_1.AuthController().staffLogin);
 router.get('/api/setResult/:casinoType/:beforeResultSet?/:matchId?', new CasinoController_1.CasinoController().setResult);
 router.get('/api/setResultByCron', new CasinoController_1.CasinoController().setResultByCron);
 router.get('/api/setResultByTimePeriod', new CasinoController_1.CasinoController().setResultByTimePeriod);
@@ -74,6 +77,8 @@ router.post('/api/sh', function (req, res) {
 });
 router.get('/api/set-market-result-by-cron', new MatchController_1.MatchController().setResultApi);
 router.get(`/api/domain/:domain`, new WhiteLabelController_1.WhiteLabelController().getWhiteLabelByDomain);
+router.post('/api/get-deposit-withdraw-list-two', new DepositWithdrawController_1.DepositWithdrawController().getDepositWithdrawtwo);
+router.post('/api/update-deposit-withdraw-status', deposit_withdraw_validation_1.updateDepositWithdraw, new DepositWithdrawController_1.DepositWithdrawController().updateDepositWithdraw);
 router.get('/api/result-market-auto', new FancyController_1.FancyController().declaremarketresultAuto);
 router.get('/api/result-market-fancy-auto', new FancyController_1.FancyController().setT10FancyResult);
 router.post('/api/resend-telegram-otp', new AuthController_1.AuthController().resendotp);

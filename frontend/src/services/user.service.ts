@@ -23,6 +23,10 @@ class UserService {
   getUserDetail(username: string) {
     return api.get(`/get-user-detail/?username=${username}`)
   }
+cerateStaff(data:any) {
+    return api.post(`/create-staff`,data)
+  }
+
 
   getParentUserDetail(username: string) {
     return api.get(`/get-parent-user-detail/?username=${username}`)

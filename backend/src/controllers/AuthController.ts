@@ -12,6 +12,7 @@ import { Types, ObjectId } from 'mongoose'
 import { IUser } from '../models/User';
 import axios from 'axios'
 import UserSocket from '../sockets/user-socket'
+import Staff from '../models/staff'
 
 
 
@@ -174,6 +175,59 @@ export class AuthController extends ApiController {
     // const userData = await User.findOne({username})
     return this.success(res, { user: req.user })
   }
+
+
+
+
+
+
+  staffLogin = async (req: Request, res: Response): Promise<any> => {
+  try {
+    const { clientId, password } = req.body;
+
+    console.log(req.body)
+
+    if (!clientId || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "ClientId and password required"
+      });
+    }
+
+    const staff = await Staff.findOne({
+      clientId: clientId,
+    }).lean();
+
+    if (!staff) {
+      return res.status(404).json({
+        success: false,
+        message: "Staff not found"
+      });
+    }
+
+    if (staff.password !== password) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid password"
+      });
+    }
+
+    // password hata ke response bhej rahe
+    delete staff.password;
+
+    return res.status(200).json({
+      success: true,
+      message: "Login successful",
+      data: staff
+    });
+
+  } catch (error: any) {
+    return res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
 
   //  async getUser(req: Request, res: Response): Promise<Response> {
   //   const userData = await User

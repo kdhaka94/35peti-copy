@@ -19,6 +19,9 @@ var __rest = (this && this.__rest) || function (s, e) {
         }
     return t;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DepositWithdrawController = void 0;
 const BankAccount_1 = require("../models/BankAccount");
@@ -30,6 +33,7 @@ const Role_1 = require("../models/Role");
 const AccountController_1 = require("./AccountController");
 const Balance_1 = require("../models/Balance");
 const Upi_1 = require("../models/Upi");
+const staff_1 = __importDefault(require("../models/staff"));
 class DepositWithdrawController extends ApiController_1.ApiController {
     constructor() {
         super(...arguments);
@@ -133,6 +137,81 @@ class DepositWithdrawController extends ApiController_1.ApiController {
                 return this.fail(res, e);
             }
         });
+        //  getDepositWithdrawtwo = async (req: Request, res: Response): Promise<any> => {
+        //   try {
+        //     let { startDate, endDate, username, reportType, } = req.body
+        //     const user = req.user as IUserModel
+        //     let query: any = {
+        //       userId:Types.ObjectId(req.body.parentId),
+        //       type: req.body.type,
+        //     }
+        //     // if (user.role !== RoleType.user) {
+        //     //   delete query.userId
+        //     //   query.parentStr = { $elemMatch: { $eq: Types.ObjectId(user._id) } }
+        //     // }
+        //     if (username) query.username = username
+        //     if (startDate) {
+        //       query.createdAt = {
+        //         $gte: startDate.includes('T')
+        //           ? `${startDate.replace('T', ' ')}:00`
+        //           : `${startDate} 00:00:00`,
+        //       }
+        //     }
+        //     if (endDate) {
+        //       query.createdAt = {
+        //         ...query.createdAt,
+        //         $lte: endDate.includes('T') ? `${endDate.replace('T', ' ')}:00` : `${endDate} 23:59:59`,
+        //       }
+        //     }
+        //     if (reportType && reportType != 'ALL') {
+        //       query.status = reportType
+        //     }
+        //     console.log('query', query)
+        //     const data = await DepositWithdraw.find(query).exec()
+        //     return this.success(res, data)
+        //   } catch (e: any) {
+        //     return this.fail(res, e)
+        //   }
+        // }
+        this.getDepositWithdrawtwo = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { startDate, endDate, username, reportType, parentId, type } = req.body;
+                const query = {};
+                if (parentId) {
+                    query.$or = [
+                        { parentId: new mongoose_1.Types.ObjectId(parentId) },
+                        { parentStr: { $elemMatch: { $eq: new mongoose_1.Types.ObjectId(parentId) } } }
+                    ];
+                }
+                if (type) {
+                    query.type = type;
+                }
+                if (username) {
+                    query.username = username;
+                }
+                if (startDate || endDate) {
+                    query.createdAt = {};
+                    if (startDate) {
+                        query.createdAt.$gte = new Date(startDate.includes("T") ? startDate : `${startDate}T00:00:00`);
+                    }
+                    if (endDate) {
+                        query.createdAt.$lte = new Date(endDate.includes("T") ? endDate : `${endDate}T23:59:59`);
+                    }
+                }
+                if (reportType && reportType !== "ALL") {
+                    query.status = reportType;
+                }
+                console.log("Final Query:", query);
+                const data = yield DepositWithdraw_1.DepositWithdraw
+                    .find(query)
+                    .sort({ createdAt: -1 })
+                    .lean();
+                return this.success(res, data);
+            }
+            catch (e) {
+                return this.fail(res, e.message);
+            }
+        });
         this.updateDepositWithdraw = (req, res) => __awaiter(this, void 0, void 0, function* () {
             try {
                 const user = req.user;
@@ -166,6 +245,28 @@ class DepositWithdrawController extends ApiController_1.ApiController {
             }
             catch (e) {
                 return this.fail(res, e);
+            }
+        });
+        this.StaffList = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                const currentUser = req.user;
+                let staffList = yield staff_1.default.find({ ParentId: mongoose_1.Types.ObjectId(currentUser._id) });
+                this.success(res, staffList);
+            }
+            catch (error) {
+                this.fail(res, error);
+            }
+        });
+        this.DeleteStaff = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const { id } = req.body;
+            console.log(id, req.body, "id id id id");
+            try {
+                const currentUser = req.user;
+                let staffList = yield staff_1.default.deleteOne({ ParentId: mongoose_1.Types.ObjectId(currentUser._id), _id: mongoose_1.Types.ObjectId(id) });
+                this.success(res, "staff delete sucessfully !");
+            }
+            catch (error) {
+                this.fail(res, error);
             }
         });
     }

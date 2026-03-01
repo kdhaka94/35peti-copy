@@ -32,6 +32,11 @@ class AuthService {
     return api.get('user-info')
   }
 
+ staffLogin(data:any){
+return api.post('login-staff',data)
+ }
+
+
   refreshToken(token: string) {
     return api.post('refresh-token', { token })
   }

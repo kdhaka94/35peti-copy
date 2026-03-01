@@ -24,6 +24,7 @@ const UserLog_1 = require("../models/UserLog");
 const Operation_1 = __importDefault(require("../models/Operation"));
 const axios_1 = __importDefault(require("axios"));
 const user_socket_1 = __importDefault(require("../sockets/user-socket"));
+const staff_1 = __importDefault(require("../models/staff"));
 class AuthController extends ApiController_1.ApiController {
     constructor() {
         super();
@@ -69,6 +70,46 @@ class AuthController extends ApiController_1.ApiController {
             }
             catch (e) {
                 return this.fail(res, e);
+            }
+        });
+        this.staffLogin = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { clientId, password } = req.body;
+                console.log(req.body);
+                if (!clientId || !password) {
+                    return res.status(400).json({
+                        success: false,
+                        message: "ClientId and password required"
+                    });
+                }
+                const staff = yield staff_1.default.findOne({
+                    clientId: clientId,
+                }).lean();
+                if (!staff) {
+                    return res.status(404).json({
+                        success: false,
+                        message: "Staff not found"
+                    });
+                }
+                if (staff.password !== password) {
+                    return res.status(401).json({
+                        success: false,
+                        message: "Invalid password"
+                    });
+                }
+                // password hata ke response bhej rahe
+                delete staff.password;
+                return res.status(200).json({
+                    success: true,
+                    message: "Login successful",
+                    data: staff
+                });
+            }
+            catch (error) {
+                return res.status(500).json({
+                    success: false,
+                    message: error.message
+                });
             }
         });
         this.updatePassword = (req, res) => __awaiter(this, void 0, void 0, function* () {

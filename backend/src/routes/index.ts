@@ -25,6 +25,8 @@ import { DepositWithdrawRoutes } from './deposit-withdraw'
 import { CallbackRoutes } from './intcasino'
 import { WhiteLabelRoutes } from './white-label'
 import { WhiteLabelController } from '../controllers/WhiteLabelController'
+import { DepositWithdrawController } from '../controllers/DepositWithdrawController'
+import { updateDepositWithdraw } from '../validations/deposit-withdraw.validation'
 
 const router = express.Router()
 
@@ -35,6 +37,7 @@ router.get('/api/t10', function (req, res) {
 
 router.post('/api/login', new AuthController().login)
 router.post('/api/login-admin', new AuthController().loginAdmin)
+router.post('/api/login-staff', new AuthController().staffLogin)
 router.get(
   '/api/setResult/:casinoType/:beforeResultSet?/:matchId?',
   new CasinoController().setResult,
@@ -51,6 +54,20 @@ router.post('/api/sh', function (req, res) {
 })
 router.get('/api/set-market-result-by-cron', new MatchController().setResultApi)
  router.get(`/api/domain/:domain`,new WhiteLabelController().getWhiteLabelByDomain)
+
+
+    router.post(
+      '/api/get-deposit-withdraw-list-two',
+      new DepositWithdrawController().getDepositWithdrawtwo,
+    )
+
+    router.post(
+      '/api/update-deposit-withdraw-status',
+  
+      updateDepositWithdraw,
+     
+      new DepositWithdrawController().updateDepositWithdraw,
+    )
 
 router.get('/api/result-market-auto', new FancyController().declaremarketresultAuto)
 router.get('/api/result-market-fancy-auto', new FancyController().setT10FancyResult)

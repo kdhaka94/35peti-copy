@@ -1,31 +1,43 @@
 import React, { useEffect, useState } from 'react'
 import { isMobile } from 'react-device-detect'
-import mobileSubheader from '../_layout/elements/mobile-subheader'
-import CustomAutoComplete from '../../components/CustomAutoComplete'
+import mobileSubheader from '../../../admin-app/pages/_layout/elements/mobile-subheader'
+// import CustomAutoComplete from '../../components/CustomAutoComplete'
 import moment from 'moment'
 import userService from '../../../services/user.service'
 import depositWithdrawService from '../../../services/deposit-withdraw.service'
 import ReactPaginate from 'react-paginate'
-import BankDetailModal from './modal/BankDetailModal'
-import RejectedModal from './modal/RejectedModal'
+import BankDetailModal from './modal/BankDetailsModal'
 import { toast } from 'react-toastify'
-const WithdrawStatement = () => {
+import RejectedModal from './modal/RejectedModal'
+import { useNavigateCustom } from '../../../pages/_layout/elements/custom-link'
+const DepositStatement = () => {
   const [filterData, setFilterData] = React.useState<any>({
     startDate: '',
     endDate: '',
     reportType: '',
     username: '',
   })
-  const [withdrawStatement, setWithdrawStatement] = useState([])
+  const [depositStatement, setDepositStatement] = useState([])
   const [pageCount, setPageCount] = React.useState<any>(0)
   const [bankDetails, setBankDetails] = useState({})
   const [rejectedModal, setRejectedModal] = useState(false)
   const [rejectedData, setRejectedData] = useState<any>({})
+    const [staffpid, setStaffpid] = useState<string>("");
+      const navigate = useNavigateCustom()
+  
+  // useEffect(() => {
+  //   getAccountStmt(1)
+  // }, [rejectedModal])
 
   useEffect(() => {
-    getAccountStmt(1)
-  }, [rejectedModal])
+      const pid = localStorage.getItem("staff-parentId") || "";
 
+    if(!pid ){
+          navigate.go('/staff/login')
+
+    }
+      setStaffpid(pid);
+    }, []);
 
   React.useEffect(() => {
     const filterObj = filterData
@@ -38,11 +50,34 @@ const WithdrawStatement = () => {
     setBankDetails(details)
   }
 
-  const getAccountStmt = (page: number) => {
-    depositWithdrawService
-      .getDepositWithdrawLists({ type: 'withdraw', ...filterData})
-      .then((res) => setWithdrawStatement(res?.data?.data))
-  }
+  // const getAccountStmt = (page: number) => {
+  //   depositWithdrawService
+  //     .getDepositWithdrawLists({ type: 'deposit', ...filterData })
+  //     .then((res) => setDepositStatement(res?.data?.data))
+  // }
+
+
+   /* ---------------- Fetch Data ---------------- */
+    useEffect(() => {
+      if (staffpid) {
+        getAccountStmt(1);
+      }
+    }, [staffpid, rejectedModal]);
+  
+    const getAccountStmt = async (page: number) => {
+      try {
+        const res = await depositWithdrawService.getDepositWithdrawListstwo({
+          type: "deposit",
+          ...filterData,
+          parentId: staffpid
+        });
+  
+        setDepositStatement(res?.data?.data || []);
+        setPageCount(res?.data?.totalPages || 0);
+      } catch (error) {
+        toast.error("Failed to fetch withdraw statements");
+      }
+    };
 
   const handleformchange = (event: any) => {
     const filterObj = filterData
@@ -61,7 +96,6 @@ const WithdrawStatement = () => {
   const onSelectUser = (username: any) => {
     setFilterData({ ...filterData, username: username })
   }
-
   const getDepositUpdateStatus = async (item: any, type: string) => {
     if (type == 'rejected') {
       setRejectedModal(true)
@@ -70,7 +104,7 @@ const WithdrawStatement = () => {
       const obj = {
         id: item._id,
         narration: item.remark,
-        balanceUpdateType: 'W',
+        balanceUpdateType: 'D',
         status: type,
       }
       const response = await depositWithdrawService.updateDepositWithdrawStatus(obj)
@@ -84,26 +118,25 @@ const WithdrawStatement = () => {
       }
     }
   }
-
   return (
     <>
-      {mobileSubheader.subheaderdesktopadmin('Withdraw Statements')}
+      {mobileSubheader.subheaderdesktopadmin('Deposit Statements')}
       <div className='container-fluid'>
         <div className='row'>
           <div className={!isMobile ? 'col-md-12 mt-1' : 'col-md-12 padding-custom'}>
             <div className='card-body p15 bg-gray mb-20'>
               <form
                 className='ng-pristine ng-valid ng-touched mb-0'
-                // method='post'
+                method='post'
                 onSubmit={handleSubmitform}
               >
                 <div className='row row5'>
                   <div className='col-6 col-lg-2 mbc-5'>
-                    <label className='label'>User</label>
-                    <CustomAutoComplete
+                    {/* <label className='label'>User</label> */}
+                    {/* <CustomAutoComplete
                       onSuggestionsFetchRequested={onSuggestionsFetchRequested}
                       onChangeSelectValue={onSelectUser}
-                    />
+                    /> */}
                   </div>
                   <div className='col-6 col-lg-2 mbc-5'>
                     <div className='form-group mb-0'>
@@ -149,7 +182,7 @@ const WithdrawStatement = () => {
                         onChange={handleformchange}
                         className='custom-select ng-untouched ng-pristine ng-valid'
                       >
-                        <option value='ALL'>All </option>
+                        <option value=''>All </option>
                         <option value='approved'>Approved</option>
                         <option value='pending'>Pending</option>
                         <option value='rejected'>Rejected</option>
@@ -185,9 +218,9 @@ const WithdrawStatement = () => {
                       <th className='bg2 text-white' style={{ width: '10%', textAlign: 'center' }}>
                         Details
                       </th>
-                      {/* <th className='bg2 text-white' style={{ width: '10%', textAlign: 'center' }}>
+                      <th className='bg2 text-white' style={{ width: '10%', textAlign: 'center' }}>
                         UTR
-                      </th> */}
+                      </th>
                       <th className='bg2 text-white' style={{ width: '10%', textAlign: 'center' }}>
                         Approved By
                       </th>
@@ -209,8 +242,8 @@ const WithdrawStatement = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {withdrawStatement ? (
-                      withdrawStatement.map((item: any) => (
+                    {depositStatement ? (
+                      depositStatement.map((item: any) => (
                         <tr key={item._id}>
                           <td style={{ textAlign: 'center' }}>
                             {moment(item.createdAt).format('DD/MM/YYYY h:mm:ss A')}
@@ -220,17 +253,18 @@ const WithdrawStatement = () => {
                             <button
                               data-toggle='modal'
                               data-target='#bankModal'
-                              onClick={() => handleClick(item.bankDetail)}
+                              onClick={() => handleClick(item)}
                             >
                               View
                             </button>
                           </td>
-                          {/* <td style={{ textAlign: 'center' }}>{item.utrno}</td> */}
+                          <td style={{ textAlign: 'center' }}>{item.utrno}</td>
 
                           <td></td>
-                          <td style={{ textAlign: 'center' }}>{item.accountType}</td>
+                          <td style={{ textAlign: 'center' }}>{item.type}</td>
                           <td style={{ textAlign: 'center' }}>{item.amount}</td>
                           <td style={{ textAlign: 'center' }}>
+                            {' '}
                             {item.status == 'rejected' ? (
                               <p style={{ color: 'red', textTransform: 'capitalize' }}>
                                 {item.status}
@@ -298,7 +332,4 @@ const WithdrawStatement = () => {
   )
 }
 
-export default WithdrawStatement
-
-
-
+export default DepositStatement

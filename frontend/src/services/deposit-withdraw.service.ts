@@ -27,6 +27,29 @@ class DepositWithdrawService {
   }) {
     return api.post(`get-deposit-withdraw-list`, obj)
   }
+
+   getDepositWithdrawListstwo(obj: {
+    type: string
+    username?: string
+    startDate?: string
+    endDate?: string
+    reportType?: string
+    parentId?:String
+  }) {
+    return api.post(`get-deposit-withdraw-list-two`, obj)
+  }
+
+
+  staffList(){
+    return api.get('staff-list')
+  }
+
+  deleteStaff(data:any){
+    return api.post('delete-staff',data)
+  }
+
+
+
   getBankAndUpiLists() {
     return api.get('get-bank-and-upi-list')
   }

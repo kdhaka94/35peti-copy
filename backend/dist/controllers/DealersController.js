@@ -29,6 +29,7 @@ const FancyController_1 = require("./FancyController");
 const user_socket_1 = __importDefault(require("../sockets/user-socket"));
 const UserLog_1 = require("../models/UserLog");
 const Operation_1 = __importDefault(require("../models/Operation"));
+const staff_1 = __importDefault(require("../models/staff"));
 class DealersController extends ApiController_1.ApiController {
     constructor() {
         super();
@@ -141,6 +142,7 @@ class DealersController extends ApiController_1.ApiController {
         this.updateUserWallet = this.updateUserWallet.bind(this);
         this.updateUserWhatsapp = this.updateUserWhatsapp.bind(this);
         this.disableTelegramOtp = this.disableTelegramOtp.bind(this);
+        this.createStaff = this.createStaff.bind(this);
     }
     signUp(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -791,6 +793,34 @@ class DealersController extends ApiController_1.ApiController {
             }
             else {
                 return this.fail(res, "Otp Does Not Match");
+            }
+        });
+    }
+    // staff 
+    createStaff(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { clientId, confirmPassword, role, password, username } = req.body;
+            //@ts-ignore
+            const currentUser = req.user;
+            try {
+                if (confirmPassword != password) {
+                    return this.fail(res, "confirm password not match");
+                }
+                const checkUsername = yield staff_1.default.findOne({ clientId });
+                if (checkUsername) {
+                    return this.fail(res, "This ClientId alreday exist!");
+                }
+                yield staff_1.default.create({
+                    ParentId: currentUser._id,
+                    username,
+                    password,
+                    clientId,
+                    role,
+                });
+                this.success(res, "Staff Created sucessfully !");
+            }
+            catch (error) {
+                this.fail(res, "error");
             }
         });
     }

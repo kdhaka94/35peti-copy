@@ -12,6 +12,10 @@ const StaffSchema = new mongoose_1.Schema({
         type: String,
         required: true,
     },
+    clientId: {
+        type: String,
+        required: true,
+    },
     password: {
         type: String,
         required: true,

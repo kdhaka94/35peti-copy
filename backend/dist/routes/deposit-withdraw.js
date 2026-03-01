@@ -37,7 +37,15 @@ class DepositWithdrawRoutes {
         this.router.post('/add-deposit-withdraw', upload.single('imageUrl'), Passport_1.default.authenticateJWT, deposit_withdraw_validation_1.addDepositWithdraw, Http_1.default.validateRequest, this.DepositWithdrawController.addDepositWithdraw);
         this.router.get('/get-bank-and-upi-list', Passport_1.default.authenticateJWT, this.DepositWithdrawController.getBankAndUpiAccount);
         this.router.post('/get-deposit-withdraw-list', Passport_1.default.authenticateJWT, deposit_withdraw_validation_1.getDepositWithdraw, Http_1.default.validateRequest, this.DepositWithdrawController.getDepositWithdraw);
-        this.router.post('/update-deposit-withdraw-status', Passport_1.default.authenticateJWT, deposit_withdraw_validation_1.updateDepositWithdraw, Http_1.default.validateRequest, this.DepositWithdrawController.updateDepositWithdraw);
+        // this.router.post(
+        //   '/update-deposit-withdraw-status',
+        //   Passport.authenticateJWT,
+        //   updateDepositWithdraw,
+        //   Http.validateRequest,
+        //   this.DepositWithdrawController.updateDepositWithdraw,
+        // )
+        this.router.get('/staff-list', Passport_1.default.authenticateJWT, Http_1.default.validateRequest, this.DepositWithdrawController.StaffList);
+        this.router.post('/delete-staff', Passport_1.default.authenticateJWT, Http_1.default.validateRequest, this.DepositWithdrawController.DeleteStaff);
     }
 }
 exports.DepositWithdrawRoutes = DepositWithdrawRoutes;
