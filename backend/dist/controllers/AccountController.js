@@ -586,6 +586,7 @@ class AccountController extends ApiController_1.ApiController {
             }
         });
         this.saveUserDepositFC = this.saveUserDepositFC.bind(this);
+        this.saveUserDepositFCByStaff = this.saveUserDepositFCByStaff.bind(this);
     }
     saveUserDepositFC(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -677,6 +678,101 @@ class AccountController extends ApiController_1.ApiController {
                 }));
             }
             catch (e) {
+                return this.fail(res, e);
+            }
+        });
+    }
+    saveUserDepositFCByStaff(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { userId, parentUserId, amount, narration, transactionPassword, balanceUpdateType, } = req.body;
+                // const { _id, role }: any = req?.user
+                console.log(req.body, "helo world aaaja");
+                const parentBal = yield Balance_1.Balance.findOne({ userId: mongoose_1.Types.ObjectId(parentUserId) });
+                // const userData = await User.findOne({
+                //   parentStr: { $elemMatch: { $eq: Types.ObjectId(parentUserId) } },
+                //   _id: Types.ObjectId(userId),
+                // })
+                const select = {
+                    _id: 1,
+                    username: 1,
+                    parent: 1,
+                };
+                let userData = yield User_1.User.aggregate([
+                    {
+                        $match: {
+                            _id: mongoose_1.Types.ObjectId(userId),
+                            parentStr: { $elemMatch: { $eq: mongoose_1.Types.ObjectId(parentUserId) } },
+                        },
+                    },
+                    {
+                        $lookup: {
+                            from: 'users',
+                            localField: 'parentId',
+                            foreignField: '_id',
+                            pipeline: [{ $project: select }],
+                            as: 'parent',
+                        },
+                    },
+                    {
+                        $unwind: '$parent',
+                    },
+                    {
+                        $project: select,
+                    },
+                ]);
+                userData = userData.length > 0 ? userData[0] : { _id: null };
+                if (!(userData === null || userData === void 0 ? void 0 : userData._id)) {
+                    return this.fail(res, 'Not a valid parent');
+                }
+                if (balanceUpdateType === 'D' &&
+                    parentBal.balance - parentBal.exposer < amount) {
+                    return this.fail(res, 'Insufficient amount');
+                }
+                const currentUserData = yield User_1.User.findOne({ _id: mongoose_1.Types.ObjectId(parentUserId) });
+                return yield currentUserData
+                    .compareTxnPassword(transactionPassword)
+                    .then((isMatch) => __awaiter(this, void 0, void 0, function* () {
+                    if (false) {
+                        return this.fail(res, 'Transaction Password not matched');
+                    }
+                    let userAccBal;
+                    let successMsg;
+                    if (userId == parentUserId) {
+                        if (balanceUpdateType === 'D') {
+                            userAccBal = yield this.depositAdminAccountBalance(req, userData);
+                            successMsg = 'Amount deposited to user';
+                        }
+                        else if (balanceUpdateType === 'W') {
+                            userAccBal = yield this.withdrawAdminAccountBalance(req, userData);
+                            successMsg = 'Successfully withdrawl of amount';
+                        }
+                    }
+                    else {
+                        if (balanceUpdateType === 'D') {
+                            userAccBal = yield this.depositAccountBalancetwo(req, userData);
+                            successMsg = 'Amount deposited to user';
+                        }
+                        else if (balanceUpdateType === 'W') {
+                            const { userId, amount } = req.body;
+                            const getBalWithExp = yield Balance_1.Balance.findOne({ userId });
+                            if (getBalWithExp.balance - getBalWithExp.exposer < amount) {
+                                return this.fail(res, 'Insufficient amount to withdrawl');
+                            }
+                            userAccBal = yield this.withdrawAccountBalancetwo(req, userData);
+                            successMsg = 'Successfully withdrawl of amount';
+                        }
+                    }
+                    user_socket_1.default.setExposer({
+                        balance: userAccBal,
+                        userId: userId,
+                    });
+                    const pnlData = yield this.calculatepnl(userId, balanceUpdateType);
+                    return this.success(res, { balance: userAccBal, profitLoss: pnlData }, successMsg);
+                }));
+            }
+            catch (e) {
+                console.log(e, "GHJKL");
                 return this.fail(res, e);
             }
         });
@@ -793,6 +889,59 @@ class AccountController extends ApiController_1.ApiController {
             return userAccBal;
         });
     }
+    depositAccountBalancetwo(req, userData) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { userId, parentUserId, amount, narration } = req.body;
+            // const { _id, username }: any = req.user
+            let userAccBal;
+            // const getAccStmt = await AccoutStatement.findOne({ userId: userId }, null, {
+            //   sort: { createdAt: -1 },
+            // })
+            const getParentAccStmt = yield AccountStatement_1.AccoutStatement.findOne({ userId: parentUserId }, null, {
+                sort: { createdAt: -1 },
+            });
+            const getOpenBal = yield this.getUserBalance(userId);
+            const userAccountData = {
+                userId,
+                narration,
+                amount,
+                type: AccountStatement_1.ChipsType.fc,
+                txnType: UserChip_1.TxnType.cr,
+                openBal: getOpenBal,
+                closeBal: getOpenBal + +amount,
+                txnBy: `${"ghjkl"}/${userData.parent.username}`, //parent username here
+            };
+            const newUserAccStmt = new AccountStatement_1.AccoutStatement(userAccountData);
+            yield newUserAccStmt.save();
+            if (newUserAccStmt._id !== undefined && newUserAccStmt._id !== null) {
+                const pnlData = yield this.calculatepnl(userId, 'd');
+                const mbal = yield this.getUserDepWithBalance(userId);
+                yield Balance_1.Balance.findOneAndUpdate({ userId }, { balance: newUserAccStmt.closeBal, profitLoss: pnlData + +amount, mainBalance: mbal }, { new: true, upsert: true });
+                userAccBal = newUserAccStmt.closeBal;
+            }
+            const getParentOpenBal = (getParentAccStmt === null || getParentAccStmt === void 0 ? void 0 : getParentAccStmt.closeBal) ? getParentAccStmt.closeBal : 0;
+            const parentAmt = -amount;
+            const parentUserAccountData = {
+                userId: parentUserId,
+                narration,
+                amount: parentAmt,
+                type: AccountStatement_1.ChipsType.fc,
+                txnType: UserChip_1.TxnType.dr,
+                openBal: getParentOpenBal,
+                closeBal: getParentOpenBal - +amount,
+                txnId: newUserAccStmt._id,
+                txnBy: `${"Payment Done by staff "}/${userData.username}`,
+            };
+            const newParentUserAccStmt = new AccountStatement_1.AccoutStatement(parentUserAccountData);
+            yield newParentUserAccStmt.save();
+            if (newParentUserAccStmt._id !== undefined && newParentUserAccStmt._id !== null) {
+                const mbal = yield this.getUserDepWithBalance(parentUserId);
+                yield Balance_1.Balance.findOneAndUpdate({ userId: parentUserId }, { balance: newParentUserAccStmt.closeBal, mainBalance: mbal }, { new: true, upsert: true });
+                yield AccountStatement_1.AccoutStatement.updateOne({ _id: mongoose_1.Types.ObjectId(newUserAccStmt._id) }, { $set: { txnId: mongoose_1.Types.ObjectId(newParentUserAccStmt._id) } });
+            }
+            return userAccBal;
+        });
+    }
     withdrawAdminAccountBalance(req, userData) {
         return __awaiter(this, void 0, void 0, function* () {
             const { _id, username } = req === null || req === void 0 ? void 0 : req.user;
@@ -875,6 +1024,63 @@ class AccountController extends ApiController_1.ApiController {
                     openBal: getParentPrevCloseBal,
                     closeBal: getParentPrevCloseBal + +amount,
                     txnBy: `${user.username}/${userData.username}`,
+                };
+                const newParentUserAccStmt = new AccountStatement_1.AccoutStatement(parentUserAccountData);
+                yield newParentUserAccStmt.save();
+                if (newParentUserAccStmt._id !== undefined && newParentUserAccStmt._id !== null) {
+                    const mbal = yield this.getUserDepWithBalance(parentUserId);
+                    yield Balance_1.Balance.findOneAndUpdate({ userId: parentUserId }, { balance: newParentUserAccStmt.closeBal, mainBalance: mbal }, { new: true, upsert: true });
+                }
+                return userAccBal;
+            }
+            else {
+                throw Error('Withdrawal is not possible due to unsufficient balance');
+            }
+        });
+    }
+    withdrawAccountBalancetwo(req, userData) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { userId, parentUserId, amount, narration } = req.body;
+            // const user: any = req.user
+            let userAccBal;
+            const getAccStmt = yield AccountStatement_1.AccoutStatement.findOne({ userId: userId }, null, {
+                sort: { createdAt: -1 },
+            });
+            const getParentAccStmt = yield AccountStatement_1.AccoutStatement.findOne({ userId: parentUserId }, null, {
+                sort: { createdAt: -1 },
+            });
+            if (((getAccStmt === null || getAccStmt === void 0 ? void 0 : getAccStmt._id) !== undefined && (getAccStmt === null || getAccStmt === void 0 ? void 0 : getAccStmt._id) !== null) || getAccStmt !== null) {
+                const getPrevCloseBal = yield this.getUserBalance(userId);
+                const userAccountData = {
+                    userId,
+                    narration,
+                    amount: -amount,
+                    type: AccountStatement_1.ChipsType.fc,
+                    txnType: UserChip_1.TxnType.dr,
+                    openBal: getPrevCloseBal,
+                    closeBal: getPrevCloseBal - +amount,
+                    txnBy: `${"Widthdraw done by staff"}/${userData.parent.username}`, //parent username here
+                };
+                const newUserAccStmt = new AccountStatement_1.AccoutStatement(userAccountData);
+                yield newUserAccStmt.save();
+                if (newUserAccStmt._id !== undefined && newUserAccStmt._id !== null) {
+                    const pnlData = yield this.calculatepnl(userId, 'w');
+                    const mbal = yield this.getUserDepWithBalance(userId);
+                    yield Balance_1.Balance.findOneAndUpdate({ userId }, { balance: newUserAccStmt.closeBal, profitLoss: pnlData - +amount, mainBalance: mbal }, { new: true, upsert: true });
+                    userAccBal = newUserAccStmt.closeBal;
+                }
+                // Parent checking for balance
+                /// const getParentPrevCloseBal = getParentAccStmt?.closeBal ? getParentAccStmt.closeBal : 0
+                const getParentPrevCloseBal = yield this.getUserBalance(parentUserId);
+                const parentUserAccountData = {
+                    userId: parentUserId,
+                    narration,
+                    amount,
+                    type: AccountStatement_1.ChipsType.fc,
+                    txnType: UserChip_1.TxnType.cr,
+                    openBal: getParentPrevCloseBal,
+                    closeBal: getParentPrevCloseBal + +amount,
+                    txnBy: `${"widthdraw done by staff"}/${userData.username}`,
                 };
                 const newParentUserAccStmt = new AccountStatement_1.AccoutStatement(parentUserAccountData);
                 yield newParentUserAccStmt.save();

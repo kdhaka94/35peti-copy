@@ -30,7 +30,7 @@ interface Stats {
     pendingCount: number;
 }
 
-const Txn = () => {
+const TxnManual = () => {
     const [depositStats, setDepositStats] = useState<Stats | null>(null);
     const [withdrawStats, setWithdrawStats] = useState<Stats | null>(null);
 
@@ -50,18 +50,13 @@ const Txn = () => {
 
         }
 
-        if (paymode != "direct") {
+        if (paymode == "direct") {
             navigate.go('/staff/dashborad/manual')
         }
 
         setStaffpid(pid);
         setStaffrole(role);
     }, []);
-
-    const handleLogout = () => {
-        localStorage.clear(); // sab clear karega
-        navigate.go('/staff/login');
-    };
 
     /* ---------------- Calculate Stats ---------------- */
     const calculateStats = (data: TxnItem[]): Stats => {
@@ -130,6 +125,11 @@ const Txn = () => {
         }
     };
 
+    const handleLogout = () => {
+        localStorage.clear(); // sab clear karega
+        navigate.go('/staff/login');
+    };
+
     /* ---------------- Load Based On Role ---------------- */
     useEffect(() => {
         if (!staffpid || !staffrole) return;
@@ -146,6 +146,7 @@ const Txn = () => {
 
     return (
         <div className="container-fluid p-4 bg-light">
+
             <div className="d-flex justify-content-end mb-3">
                 <button
                     className="btn btn-danger btn-sm"
@@ -154,15 +155,16 @@ const Txn = () => {
                     Logout
                 </button>
             </div>
+
             {/* Top Buttons */}
             <div className="row g-3 mb-4">
 
-                {(staffrole === "both" || staffrole === "deposit") && (
+                {(staffrole === "both" || staffrole === "deposit" || staffrole === "withdraw") && (
                     <div className="col-xl-3 col-lg-4 col-md-6">
                         <div className="card shadow-sm p-2">
                             <div className="card-body">
-                                <div className="fw-semibold">Deposit List</div>
-                                <CustomLink to="/staff/deposit">
+                                <div className="fw-semibold">Action List</div>
+                                <CustomLink to="/staff/deposit/manual">
                                     <button className="btn btn-primary btn-sm mt-2 text-white">
                                         CLICK HERE
                                     </button>
@@ -172,12 +174,12 @@ const Txn = () => {
                     </div>
                 )}
 
-                {(staffrole === "both" || staffrole === "withdraw") && (
+                {/* {(staffrole === "both" || staffrole === "withdraw") && (
                     <div className="col-xl-3 col-lg-4 col-md-6">
                         <div className="card shadow-sm p-2">
                             <div className="card-body">
                                 <div className="fw-semibold">Withdraw List</div>
-                                <CustomLink to="/staff/withdraw">
+                                <CustomLink to="/staff/withdraw/manual">
                                     <button className="btn btn-success btn-sm mt-2 text-white">
                                         CLICK HERE
                                     </button>
@@ -185,67 +187,67 @@ const Txn = () => {
                             </div>
                         </div>
                     </div>
-                )}
+                )} */}
             </div>
 
             {/* Stats Section */}
-            <div className="row g-3">
+            {/* <div className="row g-3">
 
-                {/* Deposit Cards */}
-                {(staffrole === "both" || staffrole === "deposit") && (
-                    <>
-                        <StatCard
-                            color="primary"
-                            value={depositStats?.totalAmount ?? 0}
-                            label={`Total Deposits : ${depositStats?.totalCount ?? 0}`}
-                            link="/depositstatement"
-                        />
-                        <StatCard
-                            color="success"
-                            value={depositStats?.approvedAmount ?? 0}
-                            label={`Approved Deposits : ${depositStats?.approvedCount ?? 0}`}
-                            link="/depositstatement"
-                        />
-                        <StatCard
-                            color="danger"
-                            value={depositStats?.rejectedAmount ?? 0}
-                            label={`Rejected Deposits : ${depositStats?.rejectedCount ?? 0}`}
-                            link="/depositstatement"
-                        />
-                    </>
-                )}
+    
+        {(staffrole === "both" || staffrole === "deposit") && (
+          <>
+            <StatCard
+              color="primary"
+              value={depositStats?.totalAmount ?? 0}
+              label={`Total Deposits : ${depositStats?.totalCount ?? 0}`}
+              link="/depositstatement"
+            />
+            <StatCard
+              color="success"
+              value={depositStats?.approvedAmount ?? 0}
+              label={`Approved Deposits : ${depositStats?.approvedCount ?? 0}`}
+              link="/depositstatement"
+            />
+            <StatCard
+              color="danger"
+              value={depositStats?.rejectedAmount ?? 0}
+              label={`Rejected Deposits : ${depositStats?.rejectedCount ?? 0}`}
+              link="/depositstatement"
+            />
+          </>
+        )}
 
-                {/* Withdraw Cards */}
-                {(staffrole === "both" || staffrole === "withdraw") && (
-                    <>
-                        <StatCard
-                            color="info"
-                            value={withdrawStats?.totalAmount ?? 0}
-                            label={`Total Withdrawals : ${withdrawStats?.totalCount ?? 0}`}
-                            link="/withdrawstatement"
-                        />
-                        <StatCard
-                            color="warning"
-                            value={withdrawStats?.pendingAmount ?? 0}
-                            label={`Pending Withdrawals : ${withdrawStats?.pendingCount ?? 0}`}
-                            link="/withdrawstatement"
-                        />
-                        <StatCard
-                            color="success"
-                            value={withdrawStats?.approvedAmount ?? 0}
-                            label={`Approved Withdrawals : ${withdrawStats?.approvedCount ?? 0}`}
-                            link="/withdrawstatement"
-                        />
-                        <StatCard
-                            color="danger"
-                            value={withdrawStats?.rejectedAmount ?? 0}
-                            label={`Rejected Withdrawals : ${withdrawStats?.rejectedCount ?? 0}`}
-                            link="/withdrawstatement"
-                        />
-                    </>
-                )}
 
-            </div>
+        {(staffrole === "both" || staffrole === "withdraw") && (
+          <>
+            <StatCard
+              color="info"
+              value={withdrawStats?.totalAmount ?? 0}
+              label={`Total Withdrawals : ${withdrawStats?.totalCount ?? 0}`}
+              link="/withdrawstatement"
+            />
+            <StatCard
+              color="warning"
+              value={withdrawStats?.pendingAmount ?? 0}
+              label={`Pending Withdrawals : ${withdrawStats?.pendingCount ?? 0}`}
+              link="/withdrawstatement"
+            />
+            <StatCard
+              color="success"
+              value={withdrawStats?.approvedAmount ?? 0}
+              label={`Approved Withdrawals : ${withdrawStats?.approvedCount ?? 0}`}
+              link="/withdrawstatement"
+            />
+            <StatCard
+              color="danger"
+              value={withdrawStats?.rejectedAmount ?? 0}
+              label={`Rejected Withdrawals : ${withdrawStats?.rejectedCount ?? 0}`}
+              link="/withdrawstatement"
+            />
+          </>
+        )}
+
+      </div> */}
         </div>
     );
 };
@@ -264,4 +266,4 @@ const StatCard: React.FC<StatCardProps> = ({ color, value, label }) => {
     );
 };
 
-export default Txn;
+export default TxnManual;

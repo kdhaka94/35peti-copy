@@ -24,6 +24,9 @@ const StaffSchema = new mongoose_1.Schema({
         type: String,
         required: true,
     },
+    paymethod: {
+        type: String,
+    }
 }, {
     timestamps: true,
 });

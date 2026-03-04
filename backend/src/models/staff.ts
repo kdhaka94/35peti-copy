@@ -5,6 +5,7 @@ export interface IStaff extends Document {
   username: string
   password: string
   role: string
+  paymethod:string
 }
 
 const StaffSchema = new Schema<IStaff>(
@@ -31,6 +32,9 @@ const StaffSchema = new Schema<IStaff>(
       type: String,
       required: true,
     },
+    paymethod:{
+      type:String,
+    }
   },
   {
     timestamps: true,

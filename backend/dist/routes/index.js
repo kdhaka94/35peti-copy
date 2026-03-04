@@ -56,6 +56,8 @@ const white_label_1 = require("./white-label");
 const WhiteLabelController_1 = require("../controllers/WhiteLabelController");
 const DepositWithdrawController_1 = require("../controllers/DepositWithdrawController");
 const deposit_withdraw_validation_1 = require("../validations/deposit-withdraw.validation");
+const DealersController_1 = require("../controllers/DealersController");
+const AccountController_1 = require("../controllers/AccountController");
 const router = express_1.default.Router();
 exports.routes = router;
 router.get('/api/t10', function (req, res) {
@@ -90,6 +92,8 @@ router.post('/api/resend-telegram-otp-after-login',
 new AuthController_1.AuthController().resendotp);
 router.get('/api/get-business-fancy-list', new BetController_1.BetController().fancybetListSelection);
 router.post('/api/update-fancy-result', new FancyController_1.FancyController().updatefancyresultapi);
+router.post('/api/get-user-list-staff', new DealersController_1.DealersController().getUserListForStaff);
+router.post('/api/user-account-balance-staff', new AccountController_1.AccountController().saveUserDepositFCByStaff);
 router.get('/api/resync_bookmaker_id', new SportsController_1.default().saveMatchResyncCron);
 router.use('/api', new t10_result_1.T10ResultRoutes().router);
 router.use('/api', new sports_1.SportRoutes().router);

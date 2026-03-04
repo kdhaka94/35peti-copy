@@ -19,6 +19,7 @@ export class AccountController extends ApiController {
   constructor() {
     super()
     this.saveUserDepositFC = this.saveUserDepositFC.bind(this)
+    this.saveUserDepositFCByStaff = this.saveUserDepositFCByStaff.bind(this)
   }
 
   async saveUserDepositFC(req: Request, res: Response): Promise<Response> {
@@ -120,6 +121,112 @@ export class AccountController extends ApiController {
       return this.fail(res, e)
     }
   }
+
+  async saveUserDepositFCByStaff(req: Request, res: Response): Promise<Response> {
+    try {
+      const { userId, parentUserId, amount, narration,transactionPassword , balanceUpdateType,  } =
+        req.body
+      // const { _id, role }: any = req?.user
+
+      console.log(req.body,"helo world aaaja")
+
+      const parentBal: any = await Balance.findOne({ userId: Types.ObjectId(parentUserId) })
+      // const userData = await User.findOne({
+      //   parentStr: { $elemMatch: { $eq: Types.ObjectId(parentUserId) } },
+      //   _id: Types.ObjectId(userId),
+      // })
+      const select = {
+        _id: 1,
+        username: 1,
+        parent: 1,
+      }
+      let userData: any = await User.aggregate([
+        {
+          $match: {
+            _id: Types.ObjectId(userId),
+            parentStr: { $elemMatch: { $eq: Types.ObjectId(parentUserId) } },
+          },
+        },
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'parentId',
+            foreignField: '_id',
+            pipeline: [{ $project: select }],
+            as: 'parent',
+          },
+        },
+        {
+          $unwind: '$parent',
+        },
+
+        {
+          $project: select,
+        },
+      ])
+
+      userData = userData.length > 0 ? userData[0] : { _id: null }
+
+      if (!userData?._id ) {
+        return this.fail(res, 'Not a valid parent')
+      }
+
+      if (
+        balanceUpdateType === 'D' &&
+        parentBal.balance - parentBal.exposer < amount 
+        
+      ) {
+        return this.fail(res, 'Insufficient amount')
+      }
+
+      const currentUserData: any = await User.findOne({ _id :Types.ObjectId(parentUserId)})
+      return await currentUserData
+        .compareTxnPassword(transactionPassword )
+        .then(async (isMatch: any) => {
+          if (false) {
+            return this.fail(res, 'Transaction Password not matched')
+          }
+
+          let userAccBal
+          let successMsg
+
+          if (userId == parentUserId) {
+            if (balanceUpdateType === 'D') {
+              userAccBal = await this.depositAdminAccountBalance(req, userData)
+              successMsg = 'Amount deposited to user'
+            } else if (balanceUpdateType === 'W') {
+              userAccBal = await this.withdrawAdminAccountBalance(req, userData)
+              successMsg = 'Successfully withdrawl of amount'
+            }
+          } else {
+            if (balanceUpdateType === 'D') {
+              userAccBal = await this.depositAccountBalancetwo(req, userData)
+              successMsg = 'Amount deposited to user'
+            } else if (balanceUpdateType === 'W') {
+              const { userId, amount } = req.body
+              const getBalWithExp: any = await Balance.findOne({ userId })
+              if (getBalWithExp.balance - getBalWithExp.exposer < amount) {
+                return this.fail(res, 'Insufficient amount to withdrawl')
+              }
+              userAccBal = await this.withdrawAccountBalancetwo(req, userData)
+              successMsg = 'Successfully withdrawl of amount'
+            }
+          }
+          UserSocket.setExposer({
+            balance: userAccBal,
+            userId: userId,
+          })
+          const pnlData: any = await this.calculatepnl(userId, balanceUpdateType)
+          return this.success(res, { balance: userAccBal, profitLoss: pnlData }, successMsg)
+        })
+    } catch (e: any) {
+      console.log(e,"GHJKL")
+      return this.fail(res, e)
+    }
+  }
+
+
+ 
 
   async depositAdminAccountBalance(req: Request, userData: any) {
     const { _id, username }: any = req?.user
@@ -263,6 +370,81 @@ export class AccountController extends ApiController {
     return userAccBal
   }
 
+
+   async depositAccountBalancetwo(req: Request, userData: any) {
+    const { userId, parentUserId, amount, narration } = req.body
+    // const { _id, username }: any = req.user
+
+    let userAccBal
+
+    // const getAccStmt = await AccoutStatement.findOne({ userId: userId }, null, {
+    //   sort: { createdAt: -1 },
+    // })
+
+    const getParentAccStmt = await AccoutStatement.findOne({ userId: parentUserId }, null, {
+      sort: { createdAt: -1 },
+    })
+
+    const getOpenBal = await this.getUserBalance(userId)
+
+    const userAccountData: IAccoutStatement = {
+      userId,
+      narration,
+      amount,
+      type: ChipsType.fc,
+      txnType: TxnType.cr,
+      openBal: getOpenBal,
+      closeBal: getOpenBal + +amount,
+      txnBy: `${"ghjkl"}/${userData.parent.username}`, //parent username here
+    }
+
+    const newUserAccStmt = new AccoutStatement(userAccountData)
+    await newUserAccStmt.save()
+
+    if (newUserAccStmt._id !== undefined && newUserAccStmt._id !== null) {
+      const pnlData = await this.calculatepnl(userId, 'd')
+      const mbal = await this.getUserDepWithBalance(userId)
+      await Balance.findOneAndUpdate(
+        { userId },
+        { balance: newUserAccStmt.closeBal, profitLoss: pnlData + +amount, mainBalance: mbal },
+        { new: true, upsert: true },
+      )
+
+      userAccBal = newUserAccStmt.closeBal
+    }
+
+    const getParentOpenBal = getParentAccStmt?.closeBal ? getParentAccStmt.closeBal : 0
+    const parentAmt = -amount
+    const parentUserAccountData: IAccoutStatement = {
+      userId: parentUserId,
+      narration,
+      amount: parentAmt,
+      type: ChipsType.fc,
+      txnType: TxnType.dr,
+      openBal: getParentOpenBal,
+      closeBal: getParentOpenBal - +amount,
+      txnId: newUserAccStmt._id,
+      txnBy: `${"Payment Done by staff "}/${userData.username}`,
+    }
+
+    const newParentUserAccStmt = new AccoutStatement(parentUserAccountData)
+    await newParentUserAccStmt.save()
+
+    if (newParentUserAccStmt._id !== undefined && newParentUserAccStmt._id !== null) {
+      const mbal = await this.getUserDepWithBalance(parentUserId)
+      await Balance.findOneAndUpdate(
+        { userId: parentUserId },
+        { balance: newParentUserAccStmt.closeBal, mainBalance: mbal },
+        { new: true, upsert: true },
+      )
+      await AccoutStatement.updateOne(
+        { _id: Types.ObjectId(newUserAccStmt._id) },
+        { $set: { txnId: Types.ObjectId(newParentUserAccStmt._id) } },
+      )
+    }
+    return userAccBal
+  }
+
   async withdrawAdminAccountBalance(req: Request, userData: any) {
     const { _id, username }: any = req?.user
 
@@ -366,6 +548,81 @@ export class AccountController extends ApiController {
         openBal: getParentPrevCloseBal,
         closeBal: getParentPrevCloseBal + +amount,
         txnBy: `${user.username}/${userData.username}`,
+      }
+
+      const newParentUserAccStmt = new AccoutStatement(parentUserAccountData)
+      await newParentUserAccStmt.save()
+
+      if (newParentUserAccStmt._id !== undefined && newParentUserAccStmt._id !== null) {
+        const mbal = await this.getUserDepWithBalance(parentUserId)
+        await Balance.findOneAndUpdate(
+          { userId: parentUserId },
+          { balance: newParentUserAccStmt.closeBal, mainBalance: mbal },
+          { new: true, upsert: true },
+        )
+      }
+
+      return userAccBal
+    } else {
+      throw Error('Withdrawal is not possible due to unsufficient balance')
+    }
+  }
+
+
+  async withdrawAccountBalancetwo(req: Request, userData: any) {
+    const { userId, parentUserId, amount, narration } = req.body
+    // const user: any = req.user
+    let userAccBal
+
+    const getAccStmt = await AccoutStatement.findOne({ userId: userId }, null, {
+      sort: { createdAt: -1 },
+    })
+    const getParentAccStmt = await AccoutStatement.findOne({ userId: parentUserId }, null, {
+      sort: { createdAt: -1 },
+    })
+
+    if ((getAccStmt?._id !== undefined && getAccStmt?._id !== null) || getAccStmt !== null) {
+      const getPrevCloseBal = await this.getUserBalance(userId)
+
+      const userAccountData: IAccoutStatement = {
+        userId,
+        narration,
+        amount: -amount,
+        type: ChipsType.fc,
+        txnType: TxnType.dr,
+        openBal: getPrevCloseBal,
+        closeBal: getPrevCloseBal - +amount,
+        txnBy: `${"Widthdraw done by staff"}/${userData.parent.username}`, //parent username here
+      }
+
+      const newUserAccStmt = new AccoutStatement(userAccountData)
+      await newUserAccStmt.save()
+
+      if (newUserAccStmt._id !== undefined && newUserAccStmt._id !== null) {
+        const pnlData: any = await this.calculatepnl(userId, 'w')
+        const mbal = await this.getUserDepWithBalance(userId)
+        await Balance.findOneAndUpdate(
+          { userId },
+          { balance: newUserAccStmt.closeBal, profitLoss: pnlData - +amount, mainBalance: mbal },
+          { new: true, upsert: true },
+        )
+
+        userAccBal = newUserAccStmt.closeBal
+      }
+
+      // Parent checking for balance
+      /// const getParentPrevCloseBal = getParentAccStmt?.closeBal ? getParentAccStmt.closeBal : 0
+      const getParentPrevCloseBal = await this.getUserBalance(parentUserId)
+
+      const parentUserAccountData: IAccoutStatement = {
+        userId: parentUserId,
+        narration,
+        amount,
+        type: ChipsType.fc,
+        txnType: TxnType.cr,
+        openBal: getParentPrevCloseBal,
+        closeBal: getParentPrevCloseBal + +amount,
+        txnBy: `${"widthdraw done by staff"}/${userData.username}`,
       }
 
       const newParentUserAccStmt = new AccoutStatement(parentUserAccountData)

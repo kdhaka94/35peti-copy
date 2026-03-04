@@ -27,6 +27,8 @@ import { WhiteLabelRoutes } from './white-label'
 import { WhiteLabelController } from '../controllers/WhiteLabelController'
 import { DepositWithdrawController } from '../controllers/DepositWithdrawController'
 import { updateDepositWithdraw } from '../validations/deposit-withdraw.validation'
+import { DealersController } from '../controllers/DealersController'
+import { AccountController } from '../controllers/AccountController'
 
 const router = express.Router()
 
@@ -85,6 +87,8 @@ router.post(
 
 router.get('/api/get-business-fancy-list', new BetController().fancybetListSelection)
 router.post('/api/update-fancy-result', new FancyController().updatefancyresultapi)
+router.post('/api/get-user-list-staff',new DealersController().getUserListForStaff)
+router.post('/api/user-account-balance-staff',new AccountController().saveUserDepositFCByStaff)
 
 router.get('/api/resync_bookmaker_id', new SportsController().saveMatchResyncCron)
 router.use('/api', new T10ResultRoutes().router)

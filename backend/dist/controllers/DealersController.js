@@ -143,6 +143,7 @@ class DealersController extends ApiController_1.ApiController {
         this.updateUserWhatsapp = this.updateUserWhatsapp.bind(this);
         this.disableTelegramOtp = this.disableTelegramOtp.bind(this);
         this.createStaff = this.createStaff.bind(this);
+        this.getUserListForStaff = this.getUserListForStaff.bind(this);
     }
     signUp(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -421,6 +422,24 @@ class DealersController extends ApiController_1.ApiController {
             }
             const users = yield User_1.User.aggregate(filters).collation({ locale: 'en', numericOrdering: true });
             return this.success(res, Object.assign({}, users[0]));
+        });
+    }
+    getUserListForStaff(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const id = req.body.id;
+            try {
+                const userData = yield User_1.User.find({
+                    parentId: mongoose_1.Types.ObjectId(id),
+                    role: Role_1.RoleType.user
+                });
+                if (userData) {
+                    return this.success(res, userData);
+                }
+                this.success(res, []);
+            }
+            catch (error) {
+                this.fail(res, error);
+            }
         });
     }
     getUser(username) {
@@ -806,6 +825,7 @@ class DealersController extends ApiController_1.ApiController {
                 if (confirmPassword != password) {
                     return this.fail(res, "confirm password not match");
                 }
+                const currentUserData = yield User_1.User.findOne({ _id: mongoose_1.Types.ObjectId(currentUser._id) });
                 const checkUsername = yield staff_1.default.findOne({ clientId });
                 if (checkUsername) {
                     return this.fail(res, "This ClientId alreday exist!");
@@ -816,6 +836,7 @@ class DealersController extends ApiController_1.ApiController {
                     password,
                     clientId,
                     role,
+                    paymethod: currentUserData === null || currentUserData === void 0 ? void 0 : currentUserData.paymode
                 });
                 this.success(res, "Staff Created sucessfully !");
             }

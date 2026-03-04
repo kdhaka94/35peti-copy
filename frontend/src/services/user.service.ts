@@ -27,6 +27,10 @@ cerateStaff(data:any) {
     return api.post(`/create-staff`,data)
   }
 
+  userListforStaff(data:any){
+    return api.post('get-user-list-staff',data)
+  }
+
 
   getParentUserDetail(username: string) {
     return api.get(`/get-parent-user-detail/?username=${username}`)
@@ -53,6 +57,10 @@ cerateStaff(data:any) {
 
   updateDepositBalance(data: any) {
     return api.post('/user-account-balance', data)
+  }
+
+  updateDepositBalanceStaff(data: any) {
+    return api.post('/user-account-balance-staff', data)
   }
 
   updateUserExposureAndCreditLimit(data: any) {

@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
 import { AccoutStatement, ChipsType, IAccoutStatement } from '../models/AccountStatement'
 import { Balance } from '../models/Balance'
-import { RoleType } from '../models/Role'
+import { Role, RoleType } from '../models/Role'
 import {
   User,
   IUser,
@@ -38,6 +38,7 @@ export class DealersController extends ApiController {
     this.updateUserWhatsapp = this.updateUserWhatsapp.bind(this)
     this.disableTelegramOtp = this.disableTelegramOtp.bind(this)
     this.createStaff = this.createStaff.bind(this)
+    this.getUserListForStaff = this.getUserListForStaff.bind(this)
   }
 
   async signUp(req: Request, res: Response): Promise<Response> {
@@ -64,12 +65,12 @@ export class DealersController extends ApiController {
 
       console.log(partnership)
       const currentUser: any = req.user
-      console.log(AllowCasino,Allowsport)
+      console.log(AllowCasino, Allowsport)
       const currentUserData: any = await User.findOne({ _id: currentUser._id })
       return await currentUserData
         .compareTxnPassword(transactionPassword)
         .then(async (isMatch: any) => {
-          if (! isMatch) {
+          if (!isMatch) {
             return this.fail(res, 'Transaction Password not matched')
           }
 
@@ -128,8 +129,8 @@ export class DealersController extends ApiController {
             paymode,
             AllowCasino: AllowCasino || currentUser.AllowCasino,
             Allowsport: Allowsport || currentUser.AllowSport,
-            ctv:true,
-            stv:true
+            ctv: true,
+            stv: true
           }
 
           const newUser = new User(userData)
@@ -141,13 +142,13 @@ export class DealersController extends ApiController {
               { balance: 0, exposer: 0, profitLoss: -creditRefrences, mainBalance: 0 },
               { new: true, upsert: true, session },
             )
-            
+
             // Automatically create a white-label for admin users
             if (role === RoleType.sadmin) {
               // Create a default domain based on the admin's username
               const defaultDomain = req.body.whiteLabelDomain || `${username}.example.com`;
               const defaultCompanyName = req.body.whiteLabelCompanyName || `${fullname || username}'s Platform`;
-              
+
               const whiteLabelData: IWhiteLabel = {
                 userId: newUser._id,
                 domain: defaultDomain,
@@ -167,15 +168,15 @@ export class DealersController extends ApiController {
                 createdAt: new Date(),
                 updatedAt: new Date(),
               };
-              
+
               const createdWhiteLabel = await WhiteLabel.create(whiteLabelData);
-              
+
               // Update the user with the white-label ID
-              await User.findByIdAndUpdate(newUser._id, { 
-                whiteLabelId: createdWhiteLabel._id 
+              await User.findByIdAndUpdate(newUser._id, {
+                whiteLabelId: createdWhiteLabel._id
               }, { session });
             }
-            
+
             if (role === RoleType.user) {
               // const parentStack: any = await UserBetStake.findOne({
               //   userId: parentUser._id,
@@ -267,7 +268,7 @@ export class DealersController extends ApiController {
   }
 
   validatePartnership(parentUser: IUser, partnership: { [key: string]: number }) {
-   
+
 
 
     for (let gameType in GameType) {
@@ -277,7 +278,7 @@ export class DealersController extends ApiController {
         return { game, parentRatio: checkPartnership.ratio }
       }
     }
- 
+
     return null
   }
 
@@ -395,7 +396,7 @@ export class DealersController extends ApiController {
         if (role !== 'admin') {
           filters = paginationPipeLine(
             pageNo,
-            [{ $match: { parentId: Types.ObjectId(_id) } }, ...aggregateFilter ,  { $sort: { username: 1 } },],
+            [{ $match: { parentId: Types.ObjectId(_id) } }, ...aggregateFilter, { $sort: { username: 1 } },],
             pageLimit,
           )
         } else {
@@ -410,6 +411,25 @@ export class DealersController extends ApiController {
     }
     const users = await User.aggregate(filters).collation({ locale: 'en', numericOrdering: true })
     return this.success(res, { ...users[0] })
+  }
+
+
+  async getUserListForStaff(req: Request, res: Response): Promise<Response> {
+    const id = req.body.id;
+    try {
+      const userData = await User.find({
+        parentId: Types.ObjectId(id),
+        role:RoleType.user
+      
+      });
+      if (userData) {
+        return this.success(res, userData)
+
+      }
+      this.success(res, [])
+    } catch (error) {
+      this.fail(res, error)
+    }
   }
 
   async getUser(username: any) {
@@ -458,8 +478,8 @@ export class DealersController extends ApiController {
       'parentBalance.balance': 1,
       userSetting: 1,
       phone: 1,
-      ctv:1,
-      stv:1
+      ctv: 1,
+      stv: 1
     }
 
     return await User.aggregate([
@@ -526,8 +546,8 @@ export class DealersController extends ApiController {
       'parentBalance.balance': 1,
       userSetting: 1,
       phone: 1,
-      stv:1,
-      ctv:1
+      stv: 1,
+      ctv: 1
     }
 
     return await User.aggregate([
@@ -677,7 +697,7 @@ export class DealersController extends ApiController {
 
   async updateUserStatus(req: Request, res: Response): Promise<Response> {
     try {
-      const { username, isUserActive, isUserBetActive, isUserBet2Active , transactionPassword, single } = req.body
+      const { username, isUserActive, isUserBetActive, isUserBet2Active, transactionPassword, single } = req.body
       const currentUser: any = req.user
       const currentUserData: any = await User.findOne({ _id: currentUser._id })
       if (!single) {
@@ -702,15 +722,15 @@ export class DealersController extends ApiController {
           },
         )
         // Create operation log
-      await Operation.create({
-        username: username,
-        operation: "Status Change",
-        doneBy: `${currentUser.username}`,
-        description: `OLD status Disable, NEW status Active`,
-      });
+        await Operation.create({
+          username: username,
+          operation: "Status Change",
+          doneBy: `${currentUser.username}`,
+          description: `OLD status Disable, NEW status Active`,
+        });
 
         return this.success(res, {}, 'User status updated')
-        
+
       } else {
         return this.fail(res, 'User does not exist!')
       }
@@ -874,20 +894,20 @@ export class DealersController extends ApiController {
     }
   }
 
-loginReport  = async (req: Request, res: Response) => {
+  loginReport = async (req: Request, res: Response) => {
     // const session = await Database.getInstance().startSession();
     console.log(req.body, "req.body for loin report");
-  
+
     try {
       // session.startTransaction();
       const { _id } = req.body;
-  
+
       if (!_id) {
         // await session.abortTransaction();
         // session.endSession();
         return this.fail(res, "User ID is required");
       }
-  
+
       // Step 1: Pehle check karo ki user exist karta hai ya nahi
       const userLoginReport: any = await User.findById(_id)
       if (!userLoginReport) {
@@ -895,28 +915,28 @@ loginReport  = async (req: Request, res: Response) => {
         // session.endSession();
         return this.fail(res, "User not found");
       }
-  
+
       // Step 2: Purane logs delete kar do (before Aug 2025)
       await UserLog.deleteMany({
         userId: _id,
         createdAt: { $lt: new Date("2026-01-20T00:00:00Z") }
       })
-  
+
       // Step 2: Ab userLogs collection se sab logs le lo
       const userLogs = await UserLog.find({ userId: _id }).sort({ createdAt: -1 })
-  
+
       if (!userLogs || userLogs.length === 0) {
-        
+
         return this.success(res, [], "No logs found for this user");
       }
-  
 
-  
+
+
       // Step 3: Response me logs bhejo
       return this.success(res, userLogs, "User Login Report fetched successfully");
-  
+
     } catch (e: any) {
-     
+
       return this.fail(res, "Server error: " + e.message);
     }
   }
@@ -924,8 +944,8 @@ loginReport  = async (req: Request, res: Response) => {
   async disableTelegramOtp(req: Request, res: Response): Promise<Response> {
     const user: any = req.user
     const payload = req.body
-    console.log(payload,"lokesh")
-    const otp =  req.body.otp //`${payload.otp1}${payload.otp2}${payload.otp3}${payload.otp4}${payload.otp5}${payload.otp6}`
+    console.log(payload, "lokesh")
+    const otp = req.body.otp //`${payload.otp1}${payload.otp2}${payload.otp3}${payload.otp4}${payload.otp5}${payload.otp6}`
     const userInfo = await User.findOne({ username: user.username })
     console.log(userInfo)
     if (userInfo && userInfo?.otp == parseInt(otp)) {
@@ -939,36 +959,39 @@ loginReport  = async (req: Request, res: Response) => {
   }
 
   // staff 
-async createStaff(req:Request,res:Response){
- 
- const {clientId,confirmPassword,role,password,username} = req.body;
-  //@ts-ignore
- const currentUser :any = req.user
- try {
-  if(confirmPassword != password){
-    return this.fail(res, "confirm password not match")
+  async createStaff(req: Request, res: Response) {
+
+    const { clientId, confirmPassword, role, password, username } = req.body;
+    //@ts-ignore
+    const currentUser: any = req.user
+    try {
+      if (confirmPassword != password) {
+        return this.fail(res, "confirm password not match")
+      }
+
+      const currentUserData = await User.findOne({ _id: Types.ObjectId(currentUser._id) })
+      const checkUsername = await Staff.findOne({ clientId })
+      if (checkUsername) {
+        return this.fail(res, "This ClientId alreday exist!")
+      }
+
+      await Staff.create({
+        ParentId: currentUser._id,
+        username,
+        password,
+        clientId,
+        role,
+        paymethod: currentUserData?.paymode
+      })
+
+
+      this.success(res, "Staff Created sucessfully !")
+
+
+    } catch (error) {
+      this.fail(res, "error")
+    }
+
   }
-  const checkUsername = await Staff.findOne({clientId})
-  if(checkUsername){
-    return this.fail(res,"This ClientId alreday exist!")
-  }
-
-  await Staff.create({
-    ParentId:currentUser._id,
-    username,
-    password,
-    clientId,
-    role,
-  })
-
-
-  this.success(res,"Staff Created sucessfully !")
-
-
- } catch (error) {
-  this.fail(res,"error")
- }
-
-}
 
 }

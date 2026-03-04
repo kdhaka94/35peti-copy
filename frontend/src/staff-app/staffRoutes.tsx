@@ -5,6 +5,8 @@ import { element } from 'prop-types'
 import Txn from './pages/txn/Txn'
 import DepositStatement from './pages/txn/DepositStatementAdmin'
 import WithdrawStatement from './pages/txn/WithdrawStatementsAdmin'
+import DepositStatementManual from './pages/txn/DepositManual'
+import TxnManual from './pages/txn/Txnmanual'
 const StaffRoutes = () => {
   return [
     {
@@ -26,6 +28,14 @@ const StaffRoutes = () => {
         { 
             path:"withdraw",
             element:<WithdrawStatement/>
+        },
+        {
+            path:"deposit/manual",
+            element:<DepositStatementManual/>
+        },
+        {
+            path:"dashborad/manual",
+            element:<TxnManual/>
         }
 
       ],
