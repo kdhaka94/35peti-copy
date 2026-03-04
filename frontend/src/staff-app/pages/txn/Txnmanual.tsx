@@ -147,7 +147,9 @@ const TxnManual = () => {
     return (
         <div className="container-fluid p-4 bg-light">
 
-            <div className="d-flex justify-content-end mb-3">
+            <div style={{justifyContent:"space-between"}} className="d-flex mb-3">
+
+                <CustomLink  className="btn btn-success btn-sm" to={"/staff/dashborad/manual"} >Home</CustomLink>
                 <button
                     className="btn btn-danger btn-sm"
                     onClick={handleLogout}

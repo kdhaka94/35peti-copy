@@ -9,6 +9,7 @@ import ReactPaginate from 'react-paginate'
 import BankDetailModal from './modal/BankDetailModal'
 import RejectedModal from './modal/RejectedModal'
 import { toast } from 'react-toastify'
+import { useParams } from 'react-router-dom'
 const WithdrawStatement = () => {
   const [filterData, setFilterData] = React.useState<any>({
     startDate: '',
@@ -16,6 +17,7 @@ const WithdrawStatement = () => {
     reportType: '',
     username: '',
   })
+  const { payStatus } = useParams()
   const [withdrawStatement, setWithdrawStatement] = useState([])
   const [pageCount, setPageCount] = React.useState<any>(0)
   const [bankDetails, setBankDetails] = useState({})
@@ -24,30 +26,52 @@ const WithdrawStatement = () => {
 
   useEffect(() => {
     getAccountStmt(1)
-  }, [rejectedModal])
+  }, [rejectedModal, payStatus])
 
 
-  React.useEffect(() => {
-    const filterObj = filterData
-    filterObj.startDate = moment().subtract(7, 'days').format('YYYY-MM-DD')
-    filterObj.endDate = moment().format('YYYY-MM-DD')
-    setFilterData(filterObj)
+  useEffect(() => {
+    setFilterData((prev: any) => ({
+      ...prev,
+      startDate: moment().subtract(7, 'days').format('YYYY-MM-DD'),
+      endDate: moment().format('YYYY-MM-DD'),
+    }))
   }, [])
+
+  useEffect(() => {
+    if (payStatus) {
+      setFilterData((prev: any) => ({
+        ...prev,
+        reportType: payStatus,
+      }))
+    }
+  }, [payStatus])
 
   const handleClick = (details: any) => {
     setBankDetails(details)
   }
 
   const getAccountStmt = (page: number) => {
+    const payload: any = {
+      type: 'withdraw',
+      ...filterData,
+    }
+  
+    // Agar URL me payStatus aaya hai toh status override karega
+    if (payStatus) {
+      payload.reportType = payStatus
+    }
+  
     depositWithdrawService
-      .getDepositWithdrawLists({ type: 'withdraw', ...filterData})
+      .getDepositWithdrawLists(payload)
       .then((res) => setWithdrawStatement(res?.data?.data))
   }
 
   const handleformchange = (event: any) => {
-    const filterObj = filterData
-    filterObj[event.target.name] = event.target.value
-    setFilterData(filterObj)
+    const { name, value } = event.target
+    setFilterData((prev: any) => ({
+      ...prev,
+      [name]: value,
+    }))
   }
 
   const handleSubmitform = (event: any) => {

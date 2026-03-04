@@ -9,6 +9,7 @@ import ReactPaginate from 'react-paginate'
 import BankDetailModal from './modal/BankDetailModal'
 import { toast } from 'react-toastify'
 import RejectedModal from './modal/RejectedModal'
+import { useParams } from 'react-router-dom'
 const DepositStatement = () => {
   const [filterData, setFilterData] = React.useState<any>({
     startDate: '',
@@ -21,9 +22,13 @@ const DepositStatement = () => {
   const [bankDetails, setBankDetails] = useState({})
   const [rejectedModal, setRejectedModal] = useState(false)
   const [rejectedData, setRejectedData] = useState<any>({})
+  const {payStatus} = useParams()
   useEffect(() => {
     getAccountStmt(1)
-  }, [rejectedModal])
+  }, [rejectedModal,payStatus])
+
+  
+  console.log(payStatus,"egbdfg")
 
   React.useEffect(() => {
     const filterObj = filterData
@@ -32,13 +37,32 @@ const DepositStatement = () => {
     setFilterData(filterObj)
   }, [])
 
+  useEffect(() => {
+    if (payStatus) {
+      setFilterData((prev: any) => ({
+        ...prev,
+        reportType: payStatus,
+      }))
+    }
+  }, [payStatus])
+
   const handleClick = (details: any) => {
     setBankDetails(details)
   }
 
   const getAccountStmt = (page: number) => {
+    const payload: any = {
+      type: 'deposit',
+      ...filterData,
+    }
+  
+    // Agar payStatus URL se aa raha hai toh status override karega
+    if (payStatus) {
+      payload.reportType = payStatus
+    }
+  
     depositWithdrawService
-      .getDepositWithdrawLists({ type: 'deposit', ...filterData })
+      .getDepositWithdrawLists(payload)
       .then((res) => setDepositStatement(res?.data?.data))
   }
 

@@ -158,6 +158,75 @@ const Txn = () => {
 
 
 
+{/* Winbu Header Card */}
+<div className="card shadow mb-4 border-0 col-6" 
+     style={{
+       background: "linear-gradient(to right, #c88a0a, #e0a81a)",
+       color: "#fff",
+       borderRadius: "12px"
+     }}>
+
+  <div className="card-body">
+
+    {/* Logo */}
+    <div className="text-center mb-3">
+      <h4 className="fw-bold m-0">
+      <img className="h-4 w-4" src="/imgs/logo.png"/>
+      </h4>
+    </div>
+
+    {/* Username */}
+    <div className="text-center fw-semibold mb-4">
+      {userState?.user?.username} (35peti)
+    </div>
+
+    {/* Stats */}
+    <div className="row g-2 text-center">
+      
+      <div className="col-4">
+        <div className="border rounded p-2" 
+             style={{borderColor: "rgba(255,255,255,0.6)"}}>
+          <small>BALANCE</small>
+          <div className="fw-bold">469226.95</div>
+        </div>
+      </div>
+
+      <div className="col-4">
+        <div className="border rounded p-2"
+             style={{borderColor: "rgba(255,255,255,0.6)"}}>
+          <small>P/L</small>
+          <div className="fw-bold">771174.71</div>
+        </div>
+      </div>
+
+      <div className="col-4">
+        <div className="border rounded p-2"
+             style={{borderColor: "rgba(255,255,255,0.6)"}}>
+          <small>CLIENT WALLET</small>
+          <div className="fw-bold">1463191.63</div>
+        </div>
+      </div>
+
+    </div>
+
+    {/* Search */}
+    <div className="mt-4 mb-4 d-flex items-center">
+      <input
+        type="text"
+        className="form-control"
+        placeholder="🔍 Search"
+        style={{
+          background: "rgba(255,255,255,0.2)",
+          border: "none",
+          color: "#fff"
+        }}
+      />
+    </div>
+
+  </div>
+</div>
+
+
 
 
       {/* Top Action Cards */}
@@ -214,14 +283,14 @@ const Txn = () => {
           color="success"
           value={depositStats?.approvedAmount ?? 0}
           label={`Approved Deposits : ${depositStats?.approvedCount ?? 0}`}
-           link="/depositstatement"
+           link="/depositstatement/approved"
         />
 
         <StatCard
           color="danger"
           value={depositStats?.rejectedAmount ?? 0}
           label={`Rejected Deposits : ${depositStats?.rejectedCount ?? 0}`}
-           link="/depositstatement"
+           link="/depositstatement/rejected"
         />
 
         <StatCard
@@ -235,21 +304,21 @@ const Txn = () => {
           color="warning"
           value={withdrawStats?.pendingAmount ?? 0}
           label={`Pending Withdrawals : ${withdrawStats?.pendingCount ?? 0}`}
-           link="/withdrawstatement"
+           link="/withdrawstatement/pending"
         />
 
         <StatCard
           color="success"
           value={withdrawStats?.approvedAmount ?? 0}
           label={`Approved Withdrawals : ${withdrawStats?.approvedCount ?? 0}`}
-           link="/withdrawstatement"
+           link="/withdrawstatement/approved"
         />
 
         <StatCard
           color="danger"
           value={withdrawStats?.rejectedAmount ?? 0}
           label={`Rejected Withdrawals : ${withdrawStats?.rejectedCount ?? 0}`}
-           link="/withdrawstatement"
+           link="/withdrawstatement/rejected"
         />
       </div>
     </div>

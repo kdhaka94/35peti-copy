@@ -19,7 +19,7 @@ const subheaderdesktop = (title: string) => {
 }
 const subheaderdesktopadmin = (title: string, subtitle = '') => {
   return (
-    <div className='card-header card-header-admin mb-20'>
+    <div className='card-header card-header-admin mb-20 text-center'>
       <h4 className='mb-0'>{title}</h4>
       {subtitle != '' ? <div className='m-t-5'>{subtitle}</div> : ''}
     </div>

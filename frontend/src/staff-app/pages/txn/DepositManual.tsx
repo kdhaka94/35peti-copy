@@ -237,7 +237,7 @@ import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import userService from "../../../services/user.service";
 import mobileSubheader from "../../../admin-app/pages/_layout/elements/mobile-subheader";
-import { useNavigateCustom } from "../../../pages/_layout/elements/custom-link";
+import { CustomLink, useNavigateCustom } from "../../../pages/_layout/elements/custom-link";
 
 const DepositStatementManual = () => {
   const [staffUsers, setStaffUsers] = useState<any[]>([]);
@@ -339,9 +339,25 @@ const DepositStatementManual = () => {
     }
   };
 
+  const handleLogout = () => {
+    localStorage.clear(); // sab clear karega
+    navigate.go('/staff/login');
+};
+
   return (
     <>
       {mobileSubheader.subheaderdesktopadmin("Manual Deposit / Withdraw")}
+
+           <div style={{justifyContent:"space-between"}} className="d-flex mb-3 mx-3 mt-2">
+      
+                      <CustomLink  className="btn btn-success btn-sm" to={"/staff/dashborad/manual"} >Home</CustomLink>
+                      <button
+                          className="btn btn-danger btn-sm"
+                          onClick={handleLogout}
+                      >
+                          Logout
+                      </button>
+                  </div>
 
       <div className="container-fluid">
         <div className="card-body bg-gray mt-3">

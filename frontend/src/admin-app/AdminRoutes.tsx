@@ -117,6 +117,8 @@ const AdminRoutes = () => {
             { path: 'game-reports', element: <GameReportAdmin /> },
             { path: 'depositstatement', element: <DepositStatementAdmin /> },
             { path: 'withdrawstatement', element: <WithdrawStatementAdmin /> },
+            { path: 'depositstatement/:payStatus', element: <DepositStatementAdmin /> },
+            { path: 'withdrawstatement/:payStatus', element: <WithdrawStatementAdmin /> },
             { path: 'payment-method', element: <Paymethod /> },
             { path: 'update-whatsapp', element: <UpdateWhatsapp /> },
             { path: "deleted-bets", element: <DeletedBetsUndo /> },
