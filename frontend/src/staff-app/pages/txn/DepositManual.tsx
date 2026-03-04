@@ -350,7 +350,7 @@ const DepositStatementManual = () => {
 
            <div style={{justifyContent:"space-between"}} className="d-flex mb-3 mx-3 mt-2">
       
-                      <CustomLink  className="btn btn-success btn-sm" to={"/staff/dashborad/manual"} >Home</CustomLink>
+                      <CustomLink  className="btn btn-success btn-sm" to={"/staff/dashboard"} >Home</CustomLink>
                       <button
                           className="btn btn-danger btn-sm"
                           onClick={handleLogout}

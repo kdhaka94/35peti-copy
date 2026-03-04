@@ -9,7 +9,7 @@ import ReactPaginate from 'react-paginate'
 import BankDetailModal from './modal/BankDetailsModal'
 import { toast } from 'react-toastify'
 import RejectedModal from './modal/RejectedModal'
-import { useNavigateCustom } from '../../../pages/_layout/elements/custom-link'
+import { CustomLink, useNavigateCustom } from '../../../pages/_layout/elements/custom-link'
 const DepositStatement = () => {
   const [filterData, setFilterData] = React.useState<any>({
     startDate: '',
@@ -118,9 +118,25 @@ const DepositStatement = () => {
       }
     }
   }
+  const handleLogout = () => {
+    localStorage.clear(); // sab clear karega
+    navigate.go('/staff/login');
+};
+
   return (
     <>
       {mobileSubheader.subheaderdesktopadmin('Deposit Statements')}
+        <div style={{justifyContent:"space-between"}} className="d-flex mb-3 mx-3 mt-2">
+            
+                                                  <CustomLink  className="btn btn-success btn-sm" to={"/staff/dashboard"} >Home</CustomLink>
+                            
+                            <button
+                                className="btn btn-danger btn-sm"
+                                onClick={handleLogout}
+                            >
+                                Logout
+                            </button>
+                        </div>
       <div className='container-fluid'>
         <div className='row'>
           <div className={!isMobile ? 'col-md-12 mt-1' : 'col-md-12 padding-custom'}>
@@ -131,13 +147,13 @@ const DepositStatement = () => {
                 onSubmit={handleSubmitform}
               >
                 <div className='row row5'>
-                  <div className='col-6 col-lg-2 mbc-5'>
+                  {/* <div className='col-6 col-lg-2 mbc-5'> */}
                     {/* <label className='label'>User</label> */}
                     {/* <CustomAutoComplete
                       onSuggestionsFetchRequested={onSuggestionsFetchRequested}
                       onChangeSelectValue={onSelectUser}
                     /> */}
-                  </div>
+                  {/* </div> */}
                   <div className='col-6 col-lg-2 mbc-5'>
                     <div className='form-group mb-0'>
                       <label className='label'>Start Date</label>
@@ -198,7 +214,7 @@ const DepositStatement = () => {
                 </div>
               </form>
             </div>
-            <div className='card-body'>
+            <div style={{zoom:"0.4"}}>
               <div className='table-responsive'>
                 <table className='table table-bordered' id='customers1'>
                   <thead>

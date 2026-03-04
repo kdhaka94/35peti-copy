@@ -146,14 +146,17 @@ const Txn = () => {
 
     return (
         <div className="container-fluid p-4 bg-light">
-            <div className="d-flex justify-content-end mb-3">
-                <button
-                    className="btn btn-danger btn-sm"
-                    onClick={handleLogout}
-                >
-                    Logout
-                </button>
-            </div>
+             <div style={{justifyContent:"space-between"}} className="d-flex mb-3 mx-3 mt-2">
+                              
+                                                                <CustomLink  className="btn btn-success btn-sm" to={"/staff/dashboard"} >Home</CustomLink>
+                                          
+                                              <button
+                                                  className="btn btn-danger btn-sm"
+                                                  onClick={handleLogout}
+                                              >
+                                                  Logout
+                                              </button>
+                                          </div>
             {/* Top Buttons */}
             <div className="row g-3 mb-4">
 

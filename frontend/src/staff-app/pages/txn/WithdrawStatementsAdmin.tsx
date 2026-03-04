@@ -9,7 +9,7 @@ import { toast } from "react-toastify";
 import BankDetailModal from "./modal/BankDetailsModal";
 import RejectedModal from "./modal/RejectedModal";
 import mobileSubheader from '../../../admin-app/pages/_layout/elements/mobile-subheader'
-import { useNavigateCustom } from "../../../pages/_layout/elements/custom-link";
+import { CustomLink, useNavigateCustom } from "../../../pages/_layout/elements/custom-link";
 
 const WithdrawStatement = () => {
   const [filterData, setFilterData] = useState<any>({
@@ -108,9 +108,25 @@ const WithdrawStatement = () => {
     }
   };
 
+  const handleLogout = () => {
+    localStorage.clear(); // sab clear karega
+    navigate.go('/staff/login');
+};
+
   return (
     <>
       {mobileSubheader.subheaderdesktopadmin("Withdraw Statements")}
+        <div style={{justifyContent:"space-between"}} className="d-flex mb-3 mx-3 mt-2">
+                  
+                                                    <CustomLink  className="btn btn-success btn-sm" to={"/staff/dashboard"} >Home</CustomLink>
+                              
+                                  <button
+                                      className="btn btn-danger btn-sm"
+                                      onClick={handleLogout}
+                                  >
+                                      Logout
+                                  </button>
+                              </div>
       <div className="container-fluid">
         <div className="row">
           <div className={!isMobile ? "col-md-12 mt-1" : "col-md-12 padding-custom"}>
@@ -128,7 +144,7 @@ const WithdrawStatement = () => {
                     /> */}
                   </div>
 
-                  <div className="col-lg-2 mbc-5">
+                  <div className=" col-6 col-lg-2 mbc-5">
                     <label>Start Date</label>
                     <input
                       name="startDate"
@@ -139,7 +155,7 @@ const WithdrawStatement = () => {
                     />
                   </div>
 
-                  <div className="col-lg-2 mbc-5">
+                  <div className=" col-6 col-lg-2 mbc-5">
                     <label>End Date</label>
                     <input
                       name="endDate"
@@ -177,18 +193,25 @@ const WithdrawStatement = () => {
             </div>
 
             {/* Table */}
-            <div className="card-body">
+            <div style={{zoom:"0.4"}}>
               <div className="table-responsive">
                 <table className="table table-bordered">
                   <thead>
                     <tr>
-                      <th>Date</th>
-                      <th>User</th>
-                      <th>Details</th>
-                      <th>Request Type</th>
-                      <th>Amount</th>
-                      <th>Status</th>
-                      <th>Action</th>
+                      <th  className='bg2 text-white'
+                        style={{ width: '10%', textAlign: 'center', whiteSpace: 'nowrap' }}>Date</th>
+                      <th  className='bg2 text-white'
+                        style={{ width: '10%', textAlign: 'center', whiteSpace: 'nowrap' }}>User</th>
+                      <th  className='bg2 text-white'
+                        style={{ width: '10%', textAlign: 'center', whiteSpace: 'nowrap' }}>Details</th>
+                      <th className='bg2 text-white'
+                        style={{ width: '10%', textAlign: 'center', whiteSpace: 'nowrap' }}> Request Type</th>
+                      <th className='bg2 text-white'
+                        style={{ width: '10%', textAlign: 'center', whiteSpace: 'nowrap' }}>Amount</th>
+                      <th className='bg2 text-white'
+                        style={{ width: '10%', textAlign: 'center', whiteSpace: 'nowrap' }}>Status</th>
+                      <th className='bg2 text-white'
+                        style={{ width: '10%', textAlign: 'center', whiteSpace: 'nowrap' }}>Action</th>
                     </tr>
                   </thead>
                   <tbody>
