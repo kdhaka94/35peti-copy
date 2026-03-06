@@ -257,9 +257,9 @@ const DepositStatementManual = () => {
     const role = localStorage.getItem("staff-role") || "";
     const type = localStorage.getItem("staff-paymode");
 
-    if (type === "direct") {
-      navigate.go("/staff/dashborad");
-    }
+    // if (type === "direct") {
+    //   navigate.go("/staff/dashborad");
+    // }
 
     setStaffRole(role);
     getStaffUsers();

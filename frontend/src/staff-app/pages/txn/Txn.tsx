@@ -44,18 +44,22 @@ const Txn = () => {
         const pid = localStorage.getItem("staff-parentId") || "";
         const role = localStorage.getItem("staff-role") || "";
         const paymode = localStorage.getItem('staff-paymode') || "";
+        setStaffpid(pid);
+        setStaffrole(role);
 
         if (!pid || !role) {
             navigate.go('/staff/login')
 
         }
 
-        if (paymode != "direct") {
-            navigate.go('/staff/dashborad/manual')
+        if (paymode == "manual") {
+            // navigate.go('/staff/dashborad/manual')
+            navigate.go('/staff/dashboard')
+            return
         }
+        navigate.go('/staff/dashborad/manual')
 
-        setStaffpid(pid);
-        setStaffrole(role);
+      
     }, []);
 
     const handleLogout = () => {
@@ -173,7 +177,7 @@ const Txn = () => {
                             </div>
                         </div>
                     </div>
-                )}
+               )}
 
                 {(staffrole === "both" || staffrole === "withdraw") && (
                     <div className="col-xl-3 col-lg-4 col-md-6">

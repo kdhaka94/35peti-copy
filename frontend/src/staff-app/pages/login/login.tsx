@@ -35,16 +35,16 @@ const [loginForm, setLoginForm] = useState({
       localStorage.setItem('staff-clientId', res.data.data.clientId)
       localStorage.setItem('staff-parentId', res.data.data.ParentId)
       localStorage.setItem('staff-role', res.data.data.role)
-      localStorage.setItem('staff-paymode', res.data.data.paymode)
+      localStorage.setItem('staff-paymode', res.data.data.paymethod)
 
-    let paymode = res.data.data.paymode
+    let paymode = res.data.data.paymethod
       // redirect
-      if(paymode != "direct"){
+      if (paymode == "manual"){
         navigate.go('/staff/dashboard')
         return
       }
 
-      navigate.go('/staff/dashboard/manual')
+      navigate.go('/staff/dashborad/manual')
 
     } catch (err: any) {
       setError(

@@ -50,9 +50,11 @@ const TxnManual = () => {
 
         }
 
-        if (paymode == "direct") {
-            navigate.go('/staff/dashborad/manual')
-        }
+        if (paymode == "manual") {
+            navigate.go('/staff/dashboard')
+            return
+        }       
+        navigate.go('/staff/dashborad/manual')
 
         setStaffpid(pid);
         setStaffrole(role);
