@@ -150,7 +150,7 @@ const AddUser = () => {
     formState: { errors },
   } = useForm<User>({
     resolver: yupResolver(validationSchema), defaultValues: {
-      paymode: 'direct', // ✅ DEFAULT VALUE
+      paymode: 'manual', // ✅ DEFAULT VALUE
       betLock: true,     // ✅ Sports
       betLock2: true,
     },
@@ -596,20 +596,22 @@ const AddUser = () => {
                       )}
 
 
-                      {userState.user.role == "admin" && (<div className="col-md-6">
-                        <div className="form-group">
-                          <label htmlFor="paymode"> Transaction Type</label>
-                          <span className="text-danger">*</span>
-                          <select
-                            className="form-select" id='paymode' {...register('paymode')}
-                          >
-                            <option value="manual">Auto</option>
-                            <option value="direct">Manual</option>
-
-
-                          </select>
+                      {userState.user.role === "admin" && (
+                        <div className="col-md-6">
+                          <div className="form-group">
+                            <label htmlFor="paymode">Transaction Type</label>
+                            <span className="text-danger">*</span>
+                            <select
+                              className="form-control"
+                              id="paymode"
+                              {...register('paymode')}
+                            >
+                              <option value="manual">Manual</option>
+                              <option value="direct">Auto</option>
+                            </select>
+                          </div>
                         </div>
-                      </div>)}
+                      )}
                     </div>
                   </div>
                 </div>
