@@ -149,7 +149,7 @@ export class AuthController extends ApiController {
       }
 
       return await user.comparePassword(req.body.password).then(async (isMatch = true) => {
-        if (isMatch = true) {
+        if (isMatch) {
           const token = AuthController.token(user)
           user.refreshToken = bcrypt.hashSync(user.username)
           await user.save()

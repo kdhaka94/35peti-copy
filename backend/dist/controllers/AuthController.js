@@ -51,7 +51,7 @@ class AuthController extends ApiController_1.ApiController {
                     }
                 }
                 return yield user.comparePassword(req.body.password).then((isMatch = true) => __awaiter(this, void 0, void 0, function* () {
-                    if (isMatch = true) {
+                    if (isMatch) {
                         const token = AuthController.token(user);
                         user.refreshToken = bcrypt_nodejs_1.default.hashSync(user.username);
                         yield user.save();

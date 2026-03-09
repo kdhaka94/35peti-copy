@@ -44,7 +44,7 @@ exports.userSchema = new mongoose_1.Schema({
     phone: String,
     creditRefrences: String,
     exposerLimit: String,
-    paymode: String,
+    paymode: { type: String, default: 'manual' },
     userSetting: Object,
     changePassAndTxn: { type: Boolean, default: false },
     transactionPassword: String,
