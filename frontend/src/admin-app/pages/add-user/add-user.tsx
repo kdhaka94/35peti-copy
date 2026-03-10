@@ -150,7 +150,7 @@ const AddUser = () => {
     formState: { errors },
   } = useForm<User>({
     resolver: yupResolver(validationSchema), defaultValues: {
-      paymode: 'manual', // ✅ DEFAULT VALUE
+      paymode: 'direct', // ✅ DEFAULT VALUE
       betLock: true,     // ✅ Sports
       betLock2: true,
     },
@@ -606,8 +606,8 @@ const AddUser = () => {
                               id="paymode"
                               {...register('paymode')}
                             >
-                              <option value="manual">Manually(By User Request)</option>
-                              <option value="direct">Auto(Through Admin/Parent)</option>
+                              <option value="manual">Manually(User Request Dep./Wid.(AUTO))</option>
+                              <option value="direct">Auto(Through Admin/Parent(DIRECT))</option>
                             </select>
                           </div>
                         </div>

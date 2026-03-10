@@ -736,11 +736,11 @@ const LastResults = (props: any) => {
                 {'Last Result'}
                 <span
                   className='float-right'
-                // onClick={() => {
-                //   navigate(`/casino/result/${gameId}`)
-                // }}
+                onClick={() => {
+                  navigate(`/casino/result/${gameId}`)
+                }}
                 >
-                  {/* View All{' '} */}
+                  View All{' '}
                 </span>
               </h6>
             </div>

@@ -678,7 +678,7 @@ const CasinoWrapper = (props: any) => {
                 )}
               </div>
               {marketDataList.stake && <PlaceBetBox stake={marketDataList.stake} />}
-              {isMobileRoulette ? (
+              {/* {isMobileRoulette ? (
                 <div className='d-flex justify-content-end'>
                   <RouletteFrame liveMatchData={liveMatchData} lastOdds={updateOdds} />
                   <div>
@@ -687,7 +687,8 @@ const CasinoWrapper = (props: any) => {
                 </div>
               ) : (
                 <LastResults lastResult={casinoMatchData} gameId={gameCode} />
-              )}
+              )} */}
+               <LastResults lastResult={casinoMatchData} gameId={gameCode} />
               {gameCode == 'onedaypoker' && <OnedaypokerRules />}
               {gameCode == 'opentp' && <Openteenpatti />}
               {gameCode == 'fivewicket' && <Cricketv />}
