@@ -418,7 +418,7 @@ const Header = () => {
                         sgameList.map((Item: any, key: number) => {
                           return (
                             <li key={key}>
-                              <CustomLink to={``} className='dropdown-item'>
+                              <CustomLink to={`/matches/${Item.sportId}`} className='dropdown-item'>
                                 <b>{Item.name}</b>
                               </CustomLink>
                             </li>
