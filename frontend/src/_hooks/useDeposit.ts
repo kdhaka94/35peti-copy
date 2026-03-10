@@ -20,7 +20,8 @@ const validationSchema = Yup.object().shape({
 const useDeposit = () => {
   const [amount, setAmount] = useState(null)
   const [bankUpiLists, setBankUpiLists] = useState<any>({})
-  const [preview, setPreview] = useState({ type: '', imagePath: '', utrno:"" })
+  const [paymentAccounts, setPaymentAccounts] = useState<any[]>([])
+  const [preview, setPreview] = useState({ type: '', imagePath: '', utrno: "" })
   const {
     register,
     handleSubmit,
@@ -32,6 +33,7 @@ const useDeposit = () => {
 
   useEffect(() => {
     depositWithdrawService.getPaymentSetting().then((res) => setBankUpiLists(res?.data?.data))
+    depositWithdrawService.getUserPaymentAccounts().then((res) => setPaymentAccounts(res?.data?.data?.accounts || []))
   }, [])
 
   const handleChange = (e: any) => {
@@ -41,7 +43,7 @@ const useDeposit = () => {
 
   const handleUploadedFile = (event: any, type: string) => {
     const file = event.target.files[0]
-    setPreview({ type, imagePath: file, utrno:preview.utrno })
+    setPreview({ type, imagePath: file, utrno: preview.utrno })
   }
 
   const handleUploadedUTR = (event: any, type: string) => {
@@ -52,10 +54,10 @@ const useDeposit = () => {
       utrno: type === preview.type ? file : '', // clear if type changed
     })
   }
-  
+
   const onSubmit = async (data: any) => {
     if (!preview.imagePath) return toast.error('Image is required field')
-      if (!preview.type) return toast.error('Please select a payment method')
+    if (!preview.type) return toast.error('Please select a payment method')
 
     const formData = new FormData()
     const amount = getValues('amount')
@@ -70,7 +72,7 @@ const useDeposit = () => {
       toast.success(response?.data?.message)
       reset()
       setAmount(null)
-      setPreview({ type: '', imagePath: '', utrno:"" })
+      setPreview({ type: '', imagePath: '', utrno: "" })
     }
   }
   const generateTransactionId = () => {
@@ -85,6 +87,7 @@ const useDeposit = () => {
     amount,
     handleChange,
     bankUpiLists,
+    paymentAccounts,
     handleUploadedFile,
     preview,
     generateTransactionId,

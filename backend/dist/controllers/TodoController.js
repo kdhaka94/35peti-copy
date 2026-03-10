@@ -20,6 +20,7 @@ const path_1 = __importDefault(require("path"));
 const Setting_1 = require("../models/Setting");
 const ApiController_1 = require("./ApiController");
 const Payments_1 = require("../models/Payments");
+const PaymentAccount_1 = require("../models/PaymentAccount");
 const mongoose_1 = require("mongoose");
 class TodoController extends ApiController_1.ApiController {
     constructor() {
@@ -177,6 +178,114 @@ class TodoController extends ApiController_1.ApiController {
             if (settiddngs.length <= 0) {
             }
             return this.success(res, { settings: settingsData });
+        });
+        this.getPaymentAccounts = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                const user = req.user;
+                const accounts = yield PaymentAccount_1.PaymentAccount.find({ userId: user === null || user === void 0 ? void 0 : user._id }).sort({ createdAt: -1 });
+                return this.success(res, { accounts });
+            }
+            catch (e) {
+                return this.fail(res, e.message);
+            }
+        });
+        this.addPaymentAccount = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                const user = req.user;
+                const count = yield PaymentAccount_1.PaymentAccount.countDocuments({ userId: user === null || user === void 0 ? void 0 : user._id });
+                if (count >= 15) {
+                    return this.fail(res, 'Maximum 15 accounts allowed');
+                }
+                let upiQrCode = '';
+                const files = req.files;
+                if (files && files.length > 0) {
+                    upiQrCode = files[0].path;
+                }
+                const account = new PaymentAccount_1.PaymentAccount({
+                    bankName: req.body.bankName,
+                    upiId: req.body.upiId,
+                    upiName: req.body.upiName,
+                    upiQrCode,
+                    ifscCode: req.body.ifscCode,
+                    accountNumber: req.body.accountNumber,
+                    accountHolderName: req.body.accountHolderName,
+                    isActive: true,
+                    userId: user === null || user === void 0 ? void 0 : user._id,
+                });
+                yield account.save();
+                return this.success(res, { account }, 'Account Added');
+            }
+            catch (e) {
+                return this.fail(res, e.message);
+            }
+        });
+        this.updatePaymentAccount = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                const user = req.user;
+                const { id } = req.params;
+                const updateData = {
+                    bankName: req.body.bankName,
+                    upiId: req.body.upiId,
+                    upiName: req.body.upiName,
+                    ifscCode: req.body.ifscCode,
+                    accountNumber: req.body.accountNumber,
+                    accountHolderName: req.body.accountHolderName,
+                };
+                if (req.body.isActive !== undefined) {
+                    updateData.isActive = req.body.isActive;
+                }
+                const files = req.files;
+                if (files && files.length > 0) {
+                    const oldAccount = yield PaymentAccount_1.PaymentAccount.findById(id);
+                    if (oldAccount === null || oldAccount === void 0 ? void 0 : oldAccount.upiQrCode) {
+                        const oldPath = path_1.default.join(__dirname, '../../', oldAccount.upiQrCode);
+                        if ((0, fs_1.existsSync)(oldPath))
+                            (0, fs_1.unlinkSync)(oldPath);
+                    }
+                    updateData.upiQrCode = files[0].path;
+                }
+                const account = yield PaymentAccount_1.PaymentAccount.findOneAndUpdate({ _id: id, userId: user === null || user === void 0 ? void 0 : user._id }, { $set: updateData }, { new: true });
+                if (!account)
+                    return this.fail(res, 'Account not found');
+                return this.success(res, { account }, 'Account Updated');
+            }
+            catch (e) {
+                return this.fail(res, e.message);
+            }
+        });
+        this.deletePaymentAccount = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                const user = req.user;
+                const { id } = req.params;
+                const account = yield PaymentAccount_1.PaymentAccount.findOneAndDelete({ _id: id, userId: user === null || user === void 0 ? void 0 : user._id });
+                if (!account)
+                    return this.fail(res, 'Account not found');
+                if (account.upiQrCode) {
+                    const filePath = path_1.default.join(__dirname, '../../', account.upiQrCode);
+                    if ((0, fs_1.existsSync)(filePath))
+                        (0, fs_1.unlinkSync)(filePath);
+                }
+                return this.success(res, {}, 'Account Deleted');
+            }
+            catch (e) {
+                return this.fail(res, e.message);
+            }
+        });
+        this.getUserPaymentAccounts = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                const user = req.user;
+                let accounts = yield PaymentAccount_1.PaymentAccount.find({ userId: user === null || user === void 0 ? void 0 : user.parentId, isActive: true });
+                if (accounts.length <= 0) {
+                    accounts = yield PaymentAccount_1.PaymentAccount.find({
+                        userId: mongoose_1.Types.ObjectId('63382d9bfbb3a573110c1ba5'),
+                        isActive: true,
+                    });
+                }
+                return this.success(res, { accounts });
+            }
+            catch (e) {
+                return this.fail(res, e.message);
+            }
         });
     }
 }

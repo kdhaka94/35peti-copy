@@ -12,6 +12,7 @@ const Deposit = () => {
     handleChange,
     onSubmit,
     bankUpiLists,
+    paymentAccounts,
     handleUploadedFile,
     preview,
     generateTransactionId,
@@ -55,9 +56,6 @@ const Deposit = () => {
                   <div className="col-md-3 col-12">
                     <label className="w-100 label-amount">Enter Amount:</label>
                     <div className="form-group mb-3 depo-amount">
-                      {/* <button className='deposit-minus'>
-                      <i className='fas fa-minus' />
-                    </button> */}
                       <input
                         type="number"
                         placeholder="Amount"
@@ -65,17 +63,13 @@ const Deposit = () => {
                         {...register("amount")}
                         onChange={handleChange}
                       />
-                      {/* <button className='deposit-plus'>
-                      <i className='fas fa-plus' />
-                    </button> */}
                     </div>
                   </div>
                 </div>
               </div>
               <div
-                className={`payment-ions-container ${
-                  amount && amount > 0 ? "" : "d-none"
-                }`}
+                className={`payment-ions-container ${amount && amount > 0 ? "" : "d-none"
+                  }`}
               >
                 <div className="payment-icons" style={{ width: "100%" }}>
                   <div className="glass" />
@@ -89,14 +83,11 @@ const Deposit = () => {
                     </div>
                     <div className="deposit-options">
                       <div
-                        className={`bank-detail ${
-                          amount && amount > 0 ? "" : "payment-disable"
-                        }`}
+                        className={`bank-detail ${amount && amount > 0 ? "" : "payment-disable"
+                          }`}
                       >
                         <div className="payment-detail-box">
                           <p>
-                            {/* // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                           @ts-ignore */}
                             {bankUpiLists?.settings &&
                               bankUpiLists?.settings?.upiId}
                             <span className="ml-auto">
@@ -112,15 +103,12 @@ const Deposit = () => {
                           </p>
                         </div>
                         <div className="text-center qr-code">
-                          {/* // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                           @ts-ignore */}
                           <PaymentQRCode
                             upiId={bankUpiLists?.settings?.upiId}
                             name={bankUpiLists?.settings?.upiName}
                             amount={amount}
                             transactionId={generateTransactionId()}
                           />
-                          {/* <img src={bankUpiLists?.settings?.upiQrCode || ""} /> */}
                         </div>
                       </div>
                     </div>
@@ -139,14 +127,11 @@ const Deposit = () => {
                       />
                     </div>
                     <div className="p-2 w-100 d-flexx d-none align-items-center justify-content-between">
-                    
-
                       <button
-                        className={`payment-pay-now d-flex flex-wrap justify-content-center ${
-                          preview?.imagePath && preview?.type == "upi"
+                        className={`payment-pay-now d-flex flex-wrap justify-content-center ${preview?.imagePath && preview?.type == "upi"
                             ? ""
                             : "pay-disable"
-                        }`}
+                          }`}
                         type="submit"
                       >
                         <div className="w-100 text-center">
@@ -162,166 +147,219 @@ const Deposit = () => {
                   <div className="content">
                     <div className="payment-icons-title">
                       <h4 className="mb-0 text-center">
-                        <span>Bank Account</span>
-                        {/* <i className="fas fa-info-circle payment-rules" /> */}
+                        <span>Bank Accounts</span>
                       </h4>
-                      {/* <p>Make Sure You Attach Successful Payment Screenshot</p> */}
                     </div>
                     <div className="deposit-options">
-                      <div
-                        className={`bank-detail ${
-                          amount != undefined ? "" : "payment-disable"
-                        }`}
-                      >
-                        <div className="payment-detail-box">
-                          <p>
-                            {/* // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                           @ts-ignore */}
-                           Account Name: 
-                             {bankUpiLists?.settings &&
-                              bankUpiLists?.settings?.accountHolderName}
-                            {/* // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                           @ts-ignore */}
-                            <i
-                              className="fas fa-copy mr-1"
-                              onClick={() => {
-                                copytoclipboard(
-                                  bankUpiLists?.settings?.accountHolderName
-                                );
-                              }}
-                            />
-                          </p>
+                      {paymentAccounts && paymentAccounts.length > 0 ? (
+                        paymentAccounts.map((account: any, index: number) => (
+                          <div
+                            key={account._id || index}
+                            className={`bank-detail ${amount != undefined ? "" : "payment-disable"
+                              }`}
+                            style={{
+                              marginBottom: "15px",
+                              borderBottom: "1px solid #ddd",
+                              paddingBottom: "10px",
+                            }}
+                          >
+                            <div className="payment-detail-box">
+                              <p>
+                                Account Name: {account.accountHolderName}
+                                <i
+                                  className="fas fa-copy mr-1"
+                                  onClick={() =>
+                                    copytoclipboard(account.accountHolderName)
+                                  }
+                                />
+                              </p>
+                            </div>
+                            <div className="payment-detail-box">
+                              <p>
+                                A/c No. {account.accountNumber}
+                                <i
+                                  className="fas fa-copy mr-1"
+                                  onClick={() =>
+                                    copytoclipboard(account.accountNumber)
+                                  }
+                                />
+                              </p>
+                            </div>
+                            <div className="payment-detail-box">
+                              <p>
+                                IFSC Code: {account.ifscCode}
+                                <i
+                                  className="fas fa-copy mr-1"
+                                  onClick={() =>
+                                    copytoclipboard(account.ifscCode)
+                                  }
+                                />
+                              </p>
+                            </div>
+                            <div className="payment-detail-box">
+                              <p>
+                                Bank Name: {account.bankName}
+                                <i
+                                  className="fas fa-copy mr-1"
+                                  onClick={() =>
+                                    copytoclipboard(account.bankName)
+                                  }
+                                />
+                              </p>
+                            </div>
+                            <div className="payment-detail-box">
+                              <p>
+                                UPI Id: {account.upiId}
+                                <i
+                                  className="fas fa-copy mr-1"
+                                  onClick={() =>
+                                    copytoclipboard(account.upiId)
+                                  }
+                                />
+                              </p>
+                            </div>
+                          </div>
+                        ))
+                      ) : (
+                        <div
+                          className={`bank-detail ${amount != undefined ? "" : "payment-disable"
+                            }`}
+                        >
+                          <div className="payment-detail-box">
+                            <p>
+                              Account Name:{" "}
+                              {bankUpiLists?.settings &&
+                                bankUpiLists?.settings?.accountHolderName}
+                              <i
+                                className="fas fa-copy mr-1"
+                                onClick={() =>
+                                  copytoclipboard(
+                                    bankUpiLists?.settings?.accountHolderName
+                                  )
+                                }
+                              />
+                            </p>
+                          </div>
+                          <div className="payment-detail-box">
+                            <p>
+                              A/c No.{" "}
+                              {bankUpiLists?.settings &&
+                                bankUpiLists?.settings?.accountNumber}
+                              <i
+                                className="fas fa-copy mr-1"
+                                onClick={() =>
+                                  copytoclipboard(
+                                    bankUpiLists?.settings?.accountNumber
+                                  )
+                                }
+                              />
+                            </p>
+                          </div>
+                          <div className="payment-detail-box">
+                            <p>
+                              IFSC Code:{" "}
+                              {bankUpiLists?.settings &&
+                                bankUpiLists?.settings?.ifscCode}
+                              <i
+                                className="fas fa-copy mr-1"
+                                onClick={() =>
+                                  copytoclipboard(
+                                    bankUpiLists?.settings?.ifscCode
+                                  )
+                                }
+                              />
+                            </p>
+                          </div>
+                          <div className="payment-detail-box">
+                            <p>
+                              Bank Name:{" "}
+                              {bankUpiLists?.settings &&
+                                bankUpiLists?.settings?.bankName}
+                              <i
+                                className="fas fa-copy mr-1"
+                                onClick={() =>
+                                  copytoclipboard(
+                                    bankUpiLists?.settings?.bankName
+                                  )
+                                }
+                              />
+                            </p>
+                          </div>
                         </div>
-                        <div className="payment-detail-box">
-                          <p>
-                            {/* // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                           @ts-ignore */}
-                           A/c No.
-                            {bankUpiLists?.settings &&
-                              bankUpiLists?.settings?.accountNumber}
-                            <i
-                              className="fas fa-copy mr-1"
-                              onClick={() => {
-                                copytoclipboard(
-                                  bankUpiLists?.settings?.accountNumber
-                                );
-                              }}
-                            />
-                          </p>
-                        </div>
-                        <div className="payment-detail-box">
-                          <p>
-                            {/* // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                           @ts-ignore */}
-                           IFSC Code:
-                            {bankUpiLists?.settings &&
-                              bankUpiLists?.settings?.ifscCode}
-                            <i
-                              className="fas fa-copy mr-1"
-                              onClick={() => {
-                                copytoclipboard(
-                                  bankUpiLists?.settings?.ifscCode
-                                );
-                              }}
-                            />
-                          </p>
-                        </div>
-
-                        <div className="payment-detail-box">
-                          <p>
-                            {/* // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                           @ts-ignore */}
-                          Bank Name :
-                            {bankUpiLists?.settings &&
-                              bankUpiLists?.settings?.bankName}
-                            <i
-                              className="fas fa-copy mr-1"
-                              onClick={() => {
-                                copytoclipboard(
-                                  bankUpiLists?.settings?.bankName
-                                );
-                              }}
-                            />
-                          </p>
-                        </div>
-
-                        <small>(Range: 100 - 100000)</small>
-                      </div>
+                      )}
+                      <small>(Range: 100 - 100000)</small>
                     </div>
-                    <div className="col-lg-12" style={{ padding: "7px" }}>
-                      <input
-                        type="number"
-                        className="form-control"
-                        placeholder="Enter UTR No"
-                        {...register("utrno")}
-                        value={preview.type == "bank" ? preview.utrno : ""}
-                        disabled={amount && amount > 0 ? false : true}
-                        onChange={(e) => handleUploadedUTR(e, "bank")}
-                      />
-                    </div>
-                    <div className="p-2 w-100 gap-2 align-items-center justify-content-between">
+                  </div>
+                  <div className="col-lg-12" style={{ padding: "7px" }}>
+                    <input
+                      type="number"
+                      className="form-control"
+                      placeholder="Enter UTR No"
+                      {...register("utrno")}
+                      value={preview.type == "bank" ? preview.utrno : ""}
+                      disabled={amount && amount > 0 ? false : true}
+                      onChange={(e) => handleUploadedUTR(e, "bank")}
+                    />
+                  </div>
+                  <div className="p-2 w-100 gap-2 align-items-center justify-content-between">
                     <div
-                        className={`upload-ss ${
-                          amount && amount > 0 ? "" : "pay-disable"
+                      className={`upload-ss ${amount && amount > 0 ? "" : "pay-disable"
                         }`}
-                      >
-                        <input
-                          type="file"
-                          id="upload-14624"
-                          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                          //@ts-expect-error
-                          disabled={`${amount && amount > 0 ? "" : "disabled"}`}
-                          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                          //@ts-expect-error
-                          hidden="hidden"
-                          accept="image/png, image/jpg, image/jpeg"
-                          {...register("imageUrl")}
-                          onChange={(e) => handleUploadedFile(e, "upi")}
-                        />
-                        <label htmlFor="upload-14624">
-                          <i className="fas fa-plus-circle mr-1" />
-                          Choose File
-                        </label>
-                      </div>
-
-                      <div className="custom-control mt-2 mb-2 custom-checkbox">
-  <input
-    type="checkbox"
-    className="custom-control-input"
-    name="terms_condition"
-    id="termsCheck185350"
-  />
-  <label
-    className="custom-control-label"
-    htmlFor="termsCheck185350"
-  >
-    I have read and agree with{" "}
-    <a
-      href="#"
-      data-toggle="modal"
-      data-target="#termsAndCondition"
-      className="terms-condition"
-    >
-      the terms of payment and withdrawal policy.
-    </a>
-  </label>
-</div>
-
-
-                      <button
-                        className={`payment-pay-now d-flex flex-wrap justify-content-center bg-success text-white ${
-                          preview?.imagePath && preview?.type == "bank"
-                            ? ""
-                            : ""
-                        }`}
-                        type="submit"
-                      >
-                        <div className="w-100 text-center">
-                          <span>Submit</span>
-                        </div>
-                      
-                      </button>
+                    >
+                      <input
+                        type="file"
+                        id="upload-14624"
+                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                        //@ts-expect-error
+                        disabled={`${amount && amount > 0 ? "" : "disabled"
+                          }`}
+                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                        //@ts-expect-error
+                        hidden="hidden"
+                        accept="image/png, image/jpg, image/jpeg"
+                        {...register("imageUrl")}
+                        onChange={(e) => handleUploadedFile(e, "upi")}
+                      />
+                      <label htmlFor="upload-14624">
+                        <i className="fas fa-plus-circle mr-1" />
+                        Choose File
+                      </label>
                     </div>
+
+                    <div className="custom-control mt-2 mb-2 custom-checkbox">
+                      <input
+                        type="checkbox"
+                        className="custom-control-input"
+                        name="terms_condition"
+                        id="termsCheck185350"
+                      />
+                      <label
+                        className="custom-control-label"
+                        htmlFor="termsCheck185350"
+                      >
+                        I have read and agree with{" "}
+                        <a
+                          href="#"
+                          data-toggle="modal"
+                          data-target="#termsAndCondition"
+                          className="terms-condition"
+                        >
+                          the terms of payment and withdrawal policy.
+                        </a>
+                      </label>
+                    </div>
+
+                    <button
+                      className={`payment-pay-now d-flex flex-wrap justify-content-center bg-success text-white ${preview?.imagePath && preview?.type == "bank"
+                          ? ""
+                          : ""
+                        }`}
+                      type="submit"
+                    >
+                      <div className="w-100 text-center">
+                        <span>Submit</span>
+                      </div>
+                    </button>
                   </div>
                 </div>
               </div>

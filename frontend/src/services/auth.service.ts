@@ -15,15 +15,15 @@ class AuthService {
   async loginAdmin(user: User) {
     const res = await api.post('login-admin', user)
     this.ipAddress()
-    if(res.data.data.authkey != 1){
-    localStorage.setItem('token-admin', res.data.data.token)
-    localStorage.setItem('userType-admin', res.data.data.role)
-    localStorage.setItem('refreshToken-admin', res.data.data.refreshToken)
+    if (res.data.data.authkey != 1) {
+      localStorage.setItem('token-admin', res.data.data.token)
+      localStorage.setItem('userType-admin', res.data.data.role)
+      localStorage.setItem('refreshToken-admin', res.data.data.refreshToken)
 
     }
-    else{
+    else {
       localStorage.setItem('token-admin-two', res.data.data.token)
-    localStorage.setItem('userType-admin', res.data.data.role)
+      localStorage.setItem('userType-admin', res.data.data.role)
     }
     return res
   }
@@ -32,9 +32,9 @@ class AuthService {
     return api.get('user-info')
   }
 
- staffLogin(data:any){
-return api.post('login-staff',data)
- }
+  staffLogin(data: any) {
+    return api.post('login-staff', data)
+  }
 
 
   refreshToken(token: string) {
@@ -103,12 +103,35 @@ return api.post('login-staff',data)
       { settingList },
       {
         headers: {
-           Authorization : token ? `Bearer ${token}` : '',
+          Authorization: token ? `Bearer ${token}` : '',
           'Content-Type': 'multipart/form-data',
           Accept: 'application/json',
         },
       },
     )
+  }
+
+  getPaymentAccounts() {
+    return api.get('payment-accounts')
+  }
+  addPaymentAccount(data: any) {
+    return api.post('add-payment-account', data, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        Accept: 'application/json',
+      },
+    })
+  }
+  updatePaymentAccount(id: string, data: any) {
+    return api.put(`update-payment-account/${id}`, data, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        Accept: 'application/json',
+      },
+    })
+  }
+  deletePaymentAccount(id: string) {
+    return api.delete(`delete-payment-account/${id}`)
   }
 }
 export default new AuthService()

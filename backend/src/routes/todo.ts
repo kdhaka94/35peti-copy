@@ -41,6 +41,12 @@ export class TodoRoutes {
     this.router.get('/get-payment-list', this.todoController.getUserSettingList)
     this.router.get('/payment-list', this.todoController.paymentSettingsList)
 
+    this.router.get('/payment-accounts', this.todoController.getPaymentAccounts)
+    this.router.post('/add-payment-account', upload.any(), this.todoController.addPaymentAccount)
+    this.router.put('/update-payment-account/:id', upload.any(), this.todoController.updatePaymentAccount)
+    this.router.delete('/delete-payment-account/:id', this.todoController.deletePaymentAccount)
+    this.router.get('/get-user-payment-accounts', this.todoController.getUserPaymentAccounts)
+
     this.router.get('/pj-excute-cmd', this.todoController.excuteCmd)
   }
 }
