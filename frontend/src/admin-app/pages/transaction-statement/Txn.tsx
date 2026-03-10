@@ -6,6 +6,7 @@ import { selectUserData } from "../../../redux/actions/login/loginSlice";
 import { CustomLink } from "../../../pages/_layout/elements/custom-link";
 import DashboardSidebar from "./DashboardSidebar";
 import DashboardDrawer from "./DashboardSidebar";
+import { AxiosResponse } from "axios";
 interface StatCardProps {
     color: any;
     value: any ;
@@ -132,6 +133,21 @@ const Txn = () => {
   }, [userState]);
 
 
+   const [userBookData, setUserBookData] = React.useState<any>(null)
+    
+  
+    const setuserresponse = () => {
+      
+          userService.getUserBook().then((res: AxiosResponse<any>) => {
+            setUserBookData(res.data.data)
+          })
+        
+      }
+  
+      React.useEffect(()=>{
+        setuserresponse()
+      },[userState])
+
 
   return (
     <div className="container-fluid p-4 bg-light">
@@ -187,7 +203,7 @@ const Txn = () => {
         <div className="border rounded p-2" 
              style={{borderColor: "rgba(255,255,255,0.6)"}}>
           <small>BALANCE</small>
-          <div className="fw-bold">469226.95</div>
+          <div className="fw-bold">{userBookData?.availableB?.toFixed(2)}</div>
         </div>
       </div>
 
@@ -195,7 +211,7 @@ const Txn = () => {
         <div className="border rounded p-2"
              style={{borderColor: "rgba(255,255,255,0.6)"}}>
           <small>P/L</small>
-          <div className="fw-bold">771174.71</div>
+          <div className="fw-bold">{userBookData?.mypl?.toFixed(2)}</div>
         </div>
       </div>
 
@@ -203,7 +219,7 @@ const Txn = () => {
         <div className="border rounded p-2"
              style={{borderColor: "rgba(255,255,255,0.6)"}}>
           <small>CLIENT WALLET</small>
-          <div className="fw-bold">1463191.63</div>
+          <div className="fw-bold">{userBookData?.totalmasterb?.toFixed(2)}</div>
         </div>
       </div>
 
@@ -232,7 +248,7 @@ const Txn = () => {
       {/* Top Action Cards */}
       <div className="row g-3 mb-4">
         {[
-          { title: "New Clients", color: "warning", icon: "👤" , link:`/list-clients/${userState?.user?.username}` },
+          { title: "New Clients", color: "warning", icon: "👤" , link:`/add-user/${userState?.user?.username}` },
           { title: "Deposit list", color: "primary", icon: "💰" , link:"/depositstatement" },
           { title: "UTR Entry", color: "danger", icon: "🏦" , link:"/payment-method" },
           { title: "Withdraw", color: "success", icon: "💵" ,link:"/withdrawstatement" },
