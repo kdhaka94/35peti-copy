@@ -15,15 +15,15 @@ class AuthService {
   async loginAdmin(user: User) {
     const res = await api.post('login-admin', user)
     this.ipAddress()
-    if(res.data.data.authkey != 1){
-    localStorage.setItem('token-admin', res.data.data.token)
-    localStorage.setItem('userType-admin', res.data.data.role)
-    localStorage.setItem('refreshToken-admin', res.data.data.refreshToken)
+    if (res.data.data.authkey != 1) {
+      localStorage.setItem('token-admin', res.data.data.token)
+      localStorage.setItem('userType-admin', res.data.data.role)
+      localStorage.setItem('refreshToken-admin', res.data.data.refreshToken)
 
     }
-    else{
+    else {
       localStorage.setItem('token-admin-two', res.data.data.token)
-    localStorage.setItem('userType-admin', res.data.data.role)
+      localStorage.setItem('userType-admin', res.data.data.role)
     }
     return res
   }
@@ -32,9 +32,9 @@ class AuthService {
     return api.get('user-info')
   }
 
- staffLogin(data:any){
-return api.post('login-staff',data)
- }
+  staffLogin(data: any) {
+    return api.post('login-staff', data)
+  }
 
 
   refreshToken(token: string) {
@@ -93,22 +93,35 @@ return api.post('login-staff',data)
     return api.post('save-setting-list', { settingList })
   }
 
-  getpymentSettingsList() {
-    return api.get('payment-list')
+  // Payment Account CRUD (multi-account)
+  getPaymentAccounts() {
+    return api.get('payment-accounts')
   }
-  savepaymentSettingList(settingList: any) {
+  createPaymentAccount(formData: any) {
     const token = this.getToken()
-    return api.post(
-      'save-payment-list',
-      { settingList },
-      {
-        headers: {
-           Authorization : token ? `Bearer ${token}` : '',
-          'Content-Type': 'multipart/form-data',
-          Accept: 'application/json',
-        },
+    return api.post('payment-account', formData, {
+      headers: {
+        Authorization: token ? `Bearer ${token}` : '',
+        'Content-Type': 'multipart/form-data',
+        Accept: 'application/json',
       },
-    )
+    })
+  }
+  updatePaymentAccount(id: string, formData: any) {
+    const token = this.getToken()
+    return api.put(`payment-account/${id}`, formData, {
+      headers: {
+        Authorization: token ? `Bearer ${token}` : '',
+        'Content-Type': 'multipart/form-data',
+        Accept: 'application/json',
+      },
+    })
+  }
+  deletePaymentAccount(id: string) {
+    return api.delete(`payment-account/${id}`)
+  }
+  togglePaymentAccountStatus(id: string) {
+    return api.patch(`payment-account/${id}/toggle`)
   }
 }
 export default new AuthService()

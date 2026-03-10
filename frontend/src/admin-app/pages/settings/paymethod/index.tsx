@@ -1,171 +1,295 @@
 import { AxiosResponse } from 'axios'
-import React, { ChangeEvent, FormEvent, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { toast } from 'react-toastify'
-import { useWebsocketUser } from '../../../../context/webSocketUser'
 import authService from '../../../../services/auth.service'
 import mobileSubheader from '../../_layout/elements/mobile-subheader'
 
-const Message = () => {
-  const { socketUser } = useWebsocketUser()
-  const formRef = useRef(null)
-  const [settingList, setSettingList] = React.useState<
-    {
-      name: string
-      label: string
-      value: any
-      active: boolean
-      inputType: string
-      category: string
-      index: number
-    }[]
-  >([])
+const MAX_ACCOUNTS = 15
 
-  React.useEffect(() => {
-    getSettings()
+const emptyForm = {
+  bankName: '',
+  accountHolderName: '',
+  accountNumber: '',
+  ifscCode: '',
+  upiId: '',
+  upiName: '',
+  isActive: true,
+}
+
+const PaymentAccountSettings = () => {
+  const [accounts, setAccounts] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+  const [showForm, setShowForm] = useState(false)
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [formData, setFormData] = useState(emptyForm)
+  const [qrFile, setQrFile] = useState<File | null>(null)
+  const [qrPreview, setQrPreview] = useState<string | null>(null)
+  const [submitting, setSubmitting] = useState(false)
+
+  useEffect(() => {
+    fetchAccounts()
   }, [])
 
-  React.useEffect(() => {
-    socketUser.on('loggedOut', (msg) => {
-      toast.success(msg)
+  const fetchAccounts = () => {
+    setLoading(true)
+    authService.getPaymentAccounts().then((res: AxiosResponse<any>) => {
+      setAccounts(res.data?.data?.accounts || [])
+      setLoading(false)
+    }).catch(() => {
+      toast.error('Failed to load accounts')
+      setLoading(false)
     })
-    return () => {
-      socketUser.off('logoutAll')
-      socketUser.off('loggedOut')
+  }
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value, type, checked } = e.target
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value,
+    }))
+  }
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      setQrFile(file)
+      setQrPreview(URL.createObjectURL(file))
     }
-  })
+  }
 
-  const getSettings = () => {
-    authService.getpymentSettingsList().then((res: AxiosResponse<any>) => {
-      setSettingList(res.data.data.settings)
+  const resetForm = () => {
+    setFormData(emptyForm)
+    setQrFile(null)
+    setQrPreview(null)
+    setEditingId(null)
+    setShowForm(false)
+  }
+
+  const handleEdit = (account: any) => {
+    setFormData({
+      bankName: account.bankName || '',
+      accountHolderName: account.accountHolderName || '',
+      accountNumber: account.accountNumber || '',
+      ifscCode: account.ifscCode || '',
+      upiId: account.upiId || '',
+      upiName: account.upiName || '',
+      isActive: account.isActive,
     })
+    setEditingId(account._id)
+    setQrFile(null)
+    setQrPreview(
+      account.upiQrCode
+        ? `${process.env.REACT_APP_SITE_URL}${account.upiQrCode}`
+        : null,
+    )
+    setShowForm(true)
   }
 
-  const onChange = (e: any, index: number) => {
-    const allSettingList: any = [...settingList]
-    const file = e.target.files ? e.target.files[0] : null
-
-    console.log('e.target.value', e.target.value)
-
-    allSettingList[index]['value'] = e.target.value
-    if (file) allSettingList[index][`${allSettingList[index]['name']}-file`] = file
-
-    setSettingList(allSettingList)
-  }
-
-  const onChangeActive = (e: ChangeEvent<HTMLInputElement>, index: number) => {
-    const allSettingList: any = [...settingList]
-    allSettingList[index]['active'] = e.target.checked
-    setSettingList(allSettingList)
-  }
-
-  const handleSettingSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    const formData = new FormData()
-    for (const key in settingList) {
-      formData.append(settingList[key].name, JSON.stringify(settingList[key]))
+    setSubmitting(true)
+    try {
+      const data = new FormData()
+      Object.entries(formData).forEach(([key, value]) => {
+        data.append(key, String(value))
+      })
+      if (qrFile) {
+        data.append('upiQrCode', qrFile)
+      }
+
+      if (editingId) {
+        await authService.updatePaymentAccount(editingId, data)
+        toast.success('Account updated successfully')
+      } else {
+        await authService.createPaymentAccount(data)
+        toast.success('Account added successfully')
+      }
+      resetForm()
+      fetchAccounts()
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || 'Failed to save account')
+    } finally {
+      setSubmitting(false)
     }
-    authService.savepaymentSettingList(settingList).then((res: AxiosResponse<any>) => {
-      // eslint-disable-next-line
-      //@ts-expect-error
-      if (formRef?.current) formRef.current.reset()
-      getSettings()
-      toast.success(res.data.message)
-    })
   }
 
-  const getCategorize = () => {
-    return settingList.reduce((acc: any, setting, currentIndex) => {
-      if (!acc[setting.category]) acc[setting.category] = []
-      setting.index = currentIndex
-      acc[setting.category].push(setting)
-      return acc
-    }, {})
+  const handleDelete = async (id: string) => {
+    if (!window.confirm('Are you sure you want to delete this account?')) return
+    try {
+      await authService.deletePaymentAccount(id)
+      toast.success('Account deleted')
+      fetchAccounts()
+    } catch {
+      toast.error('Failed to delete account')
+    }
   }
 
-  console.log('getCategorize', settingList)
+  const handleToggle = async (id: string) => {
+    try {
+      await authService.togglePaymentAccountStatus(id)
+      toast.success('Status updated')
+      fetchAccounts()
+    } catch {
+      toast.error('Failed to update status')
+    }
+  }
 
   return (
     <>
-      {mobileSubheader.subheaderdesktopadmin('Messages')}
+      {mobileSubheader.subheaderdesktopadmin('Account Settings')}
       <div className='container-fluid'>
         <div className='row'>
           <div className='col-md-12 mt-1'>
             <div className='add-account'>
-              <form onSubmit={handleSettingSubmit} ref={formRef}>
-                <div className='row'>
-                  {Object.keys(getCategorize()).map((key) => {
-                    return (
-                      <div key={key} className='col-md-12'>
-                        <h4 className='text-capitalize p-2'>{key}</h4>
-                        <div key={key} className='row'>
-                          {getCategorize()[key].map((setting: any) => (
-                            <div key={setting.name} className='col-lg-6'>
-                              <div className='form-group'>
-                                <label>
-                                  {setting.label} *{' '}
-                                  {'active' in setting &&
-                                    setting.name == 'userMaintenanceMessage' ? (
-                                    <input
-                                      type={'checkbox'}
-                                      checked={setting.active}
-                                      onChange={(e) => onChangeActive(e, setting.index)}
-                                    />
-                                  ) : (
-                                    ''
-                                  )}
-                                  {setting.value && setting.inputType === 'file' && (
-                                    <a
-                                      href={process.env.REACT_APP_SITE_URL + setting.value}
-                                      target='__blank'
-                                    >
-                                      <img
-                                        src={process.env.REACT_APP_SITE_URL + setting.value}
-                                        width={20}
-                                      />
-                                    </a>
-                                  )}
-                                </label>
-                                <div className='form-label-group'>
-                                  {!setting.inputType ? (
-                                    <input
-                                      type={'text'}
-                                      name={setting.name}
-                                      id='user_name'
-                                      className='form-control'
-                                      placeholder={setting?.label}
-                                      value={setting.value}
-                                      onChange={(e) => onChange(e, setting.index)}
-                                    />
-                                  ) : (
-                                    <>
-                                      <input
-                                        type={setting.inputType}
-                                        name={setting.name}
-                                        id='user_name'
-                                        className='form-control'
-                                        placeholder={setting?.label}
-                                        onChange={(e) => onChange(e, setting.index)}
-                                      />
-                                    </>
-                                  )}
-                                  {/* {JSON.stringify(setting.active)} */}
-                                </div>
-                              </div>
-                            </div>
-                          ))}
+              {/* Header */}
+              <div className='d-flex align-items-center justify-content-between mb-3 flex-wrap'>
+                <h4 className='mb-0'>Account Settings</h4>
+                <div className='d-flex align-items-center gap-2'>
+                  <span className='badge bg-info text-dark' style={{ fontSize: '13px', padding: '6px 12px' }}>
+                    {accounts.length} / {MAX_ACCOUNTS} Accounts
+                  </span>
+                  {!showForm && accounts.length < MAX_ACCOUNTS && (
+                    <button
+                      className='btn btn-success btn-sm'
+                      onClick={() => { resetForm(); setShowForm(true) }}
+                    >
+                      + Add Account
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Add/Edit Form */}
+              {showForm && (
+                <div className='card mb-3'>
+                  <div className='card-header bg-dark text-white'>
+                    <h5 className='mb-0'>{editingId ? 'Edit Account' : 'Add New Account'}</h5>
+                  </div>
+                  <div className='card-body'>
+                    <form onSubmit={handleSubmit}>
+                      <div className='row'>
+                        <div className='col-lg-6'>
+                          <div className='form-group'>
+                            <label>Bank Name *</label>
+                            <input type='text' name='bankName' className='form-control' value={formData.bankName} onChange={handleChange} required />
+                          </div>
+                        </div>
+                        <div className='col-lg-6'>
+                          <div className='form-group'>
+                            <label>Account Holder Name *</label>
+                            <input type='text' name='accountHolderName' className='form-control' value={formData.accountHolderName} onChange={handleChange} required />
+                          </div>
+                        </div>
+                        <div className='col-lg-6'>
+                          <div className='form-group'>
+                            <label>Account Number *</label>
+                            <input type='text' name='accountNumber' className='form-control' value={formData.accountNumber} onChange={handleChange} required />
+                          </div>
+                        </div>
+                        <div className='col-lg-6'>
+                          <div className='form-group'>
+                            <label>IFSC Code *</label>
+                            <input type='text' name='ifscCode' className='form-control' value={formData.ifscCode} onChange={handleChange} required />
+                          </div>
+                        </div>
+                        <div className='col-lg-6'>
+                          <div className='form-group'>
+                            <label>UPI ID *</label>
+                            <input type='text' name='upiId' className='form-control' value={formData.upiId} onChange={handleChange} required />
+                          </div>
+                        </div>
+                        <div className='col-lg-6'>
+                          <div className='form-group'>
+                            <label>UPI Name</label>
+                            <input type='text' name='upiName' className='form-control' value={formData.upiName} onChange={handleChange} />
+                          </div>
+                        </div>
+                        <div className='col-lg-6'>
+                          <div className='form-group'>
+                            <label>UPI QR Code Image</label>
+                            <input type='file' className='form-control' accept='image/jpeg,image/jpg,image/png,image/webp' onChange={handleFileChange} />
+                            {qrPreview && (
+                              <img src={qrPreview} alt='QR Preview' style={{ width: 80, height: 80, objectFit: 'contain', marginTop: 8, border: '1px solid #ddd', borderRadius: 4 }} />
+                            )}
+                          </div>
+                        </div>
+                        <div className='col-lg-6 d-flex align-items-center'>
+                          <div className='form-check mt-3'>
+                            <input type='checkbox' className='form-check-input' name='isActive' checked={formData.isActive} onChange={handleChange} id='isActiveCheck' />
+                            <label className='form-check-label' htmlFor='isActiveCheck'>Active (visible to users)</label>
+                          </div>
+                        </div>
+                        <div className='col-lg-12 mt-2'>
+                          <button type='submit' className='btn btn-primary mr-2' disabled={submitting}>
+                            {submitting ? 'Saving...' : editingId ? 'Update Account' : 'Add Account'}
+                          </button>
+                          <button type='button' className='btn btn-secondary' onClick={resetForm}>Cancel</button>
                         </div>
                       </div>
-                    )
-                  })}
-                  <div className='col-lg-12'>
-                    <div className='tr'>
-                      <button type='submit' className='btn btn-primary'>
-                        Submit
-                      </button>
-                    </div>
+                    </form>
                   </div>
                 </div>
-              </form>
+              )}
+
+              {/* Accounts Table */}
+              {loading ? (
+                <p>Loading...</p>
+              ) : accounts.length === 0 ? (
+                <p className='text-center text-muted p-4'>No accounts added yet.</p>
+              ) : (
+                <div className='table-responsive'>
+                  <table className='table table-bordered table-striped'>
+                    <thead className='thead-dark'>
+                      <tr>
+                        <th>#</th>
+                        <th>Bank Name</th>
+                        <th>Account Holder</th>
+                        <th>Account No.</th>
+                        <th>IFSC</th>
+                        <th>UPI ID</th>
+                        <th>QR</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {accounts.map((acc: any, index: number) => (
+                        <tr key={acc._id} style={{ opacity: acc.isActive ? 1 : 0.5 }}>
+                          <td>{index + 1}</td>
+                          <td>{acc.bankName}</td>
+                          <td>{acc.accountHolderName}</td>
+                          <td>{acc.accountNumber}</td>
+                          <td>{acc.ifscCode}</td>
+                          <td>{acc.upiId}</td>
+                          <td>
+                            {acc.upiQrCode ? (
+                              <img
+                                src={`${process.env.REACT_APP_SITE_URL}${acc.upiQrCode}`}
+                                alt='QR'
+                                style={{ width: 40, height: 40, objectFit: 'contain', borderRadius: 4 }}
+                              />
+                            ) : '—'}
+                          </td>
+                          <td>
+                            <span
+                              className={`badge ${acc.isActive ? 'bg-success' : 'bg-danger'}`}
+                              style={{ cursor: 'pointer' }}
+                              onClick={() => handleToggle(acc._id)}
+                              title='Click to toggle'
+                            >
+                              {acc.isActive ? 'Active' : 'Inactive'}
+                            </span>
+                          </td>
+                          <td>
+                            <button className='btn btn-warning btn-sm mr-1' onClick={() => handleEdit(acc)}>Edit</button>
+                            <button className='btn btn-danger btn-sm' onClick={() => handleDelete(acc._id)}>Delete</button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -173,4 +297,5 @@ const Message = () => {
     </>
   )
 }
-export default Message
+
+export default PaymentAccountSettings

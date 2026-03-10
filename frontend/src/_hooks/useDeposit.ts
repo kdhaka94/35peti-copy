@@ -1,7 +1,7 @@
-import { yupResolver } from '@hookform/resolvers/yup'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
+import { yupResolver } from '@hookform/resolvers/yup'
 import * as Yup from 'yup'
 import depositWithdrawService from '../services/deposit-withdraw.service'
 
@@ -19,8 +19,9 @@ const validationSchema = Yup.object().shape({
 
 const useDeposit = () => {
   const [amount, setAmount] = useState(null)
-  const [bankUpiLists, setBankUpiLists] = useState<any>({})
-  const [preview, setPreview] = useState({ type: '', imagePath: '', utrno:"" })
+  const [accounts, setAccounts] = useState<any[]>([])
+  const [selectedAccount, setSelectedAccount] = useState<any>(null)
+  const [preview, setPreview] = useState({ type: '', imagePath: '', utrno: '' })
   const {
     register,
     handleSubmit,
@@ -31,7 +32,11 @@ const useDeposit = () => {
   } = useForm<DepositInput>({ resolver: yupResolver(validationSchema) })
 
   useEffect(() => {
-    depositWithdrawService.getPaymentSetting().then((res) => setBankUpiLists(res?.data?.data))
+    depositWithdrawService.getPaymentSetting().then((res) => {
+      const accs = res?.data?.data?.accounts || []
+      setAccounts(accs)
+      if (accs.length > 0) setSelectedAccount(accs[0])
+    })
   }, [])
 
   const handleChange = (e: any) => {
@@ -41,7 +46,7 @@ const useDeposit = () => {
 
   const handleUploadedFile = (event: any, type: string) => {
     const file = event.target.files[0]
-    setPreview({ type, imagePath: file, utrno:preview.utrno })
+    setPreview({ type, imagePath: file, utrno: preview.utrno })
   }
 
   const handleUploadedUTR = (event: any, type: string) => {
@@ -49,13 +54,13 @@ const useDeposit = () => {
     setPreview({
       type,
       imagePath: preview.imagePath,
-      utrno: type === preview.type ? file : '', // clear if type changed
+      utrno: type === preview.type ? file : '',
     })
   }
-  
+
   const onSubmit = async (data: any) => {
     if (!preview.imagePath) return toast.error('Image is required field')
-      if (!preview.type) return toast.error('Please select a payment method')
+    if (!selectedAccount) return toast.error('Please select a payment account')
 
     const formData = new FormData()
     const amount = getValues('amount')
@@ -65,17 +70,20 @@ const useDeposit = () => {
     formData.append('accountType', preview.type)
     formData.append('amount', amount.toString())
     formData.append('utrno', preview.utrno)
+    formData.append('accountId', selectedAccount._id)
     const response = await depositWithdrawService.addDepositWithdraw(formData)
     if (response?.data?.message) {
       toast.success(response?.data?.message)
       reset()
       setAmount(null)
-      setPreview({ type: '', imagePath: '', utrno:"" })
+      setPreview({ type: '', imagePath: '', utrno: '' })
     }
   }
+
   const generateTransactionId = () => {
-    return Math.floor(100000 + Math.random() * 900000); // Generates a number between 100000 and 999999
-  };
+    return Math.floor(100000 + Math.random() * 900000)
+  }
+
   return {
     register,
     handleSubmit,
@@ -84,11 +92,13 @@ const useDeposit = () => {
     setValue,
     amount,
     handleChange,
-    bankUpiLists,
+    accounts,
+    selectedAccount,
+    setSelectedAccount,
     handleUploadedFile,
     preview,
     generateTransactionId,
-    handleUploadedUTR
+    handleUploadedUTR,
   }
 }
 

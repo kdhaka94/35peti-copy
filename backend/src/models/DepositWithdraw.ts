@@ -25,10 +25,11 @@ interface IDepositWithdraw {
   remark?: string
   imageUrl?: string
   accountType?: 'upi' | 'bank'
-  utrno?:number
+  utrno?: number
+  accountId?: Types.ObjectId
 }
 
-interface IDepositWithdrawModel extends Document, IDepositWithdraw {}
+interface IDepositWithdrawModel extends Document, IDepositWithdraw { }
 
 const DepositWithdrawSchema = new Schema(
   {
@@ -44,7 +45,8 @@ const DepositWithdrawSchema = new Schema(
     accountType: String,
     parentStr: [],
     username: String,
-    utrno:Number
+    utrno: Number,
+    accountId: { type: Types.ObjectId, ref: 'PaymentAccount' }
   },
   {
     timestamps: true,

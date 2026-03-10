@@ -28,24 +28,24 @@ class DepositWithdrawService {
     return api.post(`get-deposit-withdraw-list`, obj)
   }
 
-   getDepositWithdrawListstwo(obj: {
+  getDepositWithdrawListstwo(obj: {
     type: string
     username?: string
     startDate?: string
     endDate?: string
     reportType?: string
-    parentId?:String
+    parentId?: String
   }) {
     return api.post(`get-deposit-withdraw-list-two`, obj)
   }
 
 
-  staffList(){
+  staffList() {
     return api.get('staff-list')
   }
 
-  deleteStaff(data:any){
-    return api.post('delete-staff',data)
+  deleteStaff(data: any) {
+    return api.post('delete-staff', data)
   }
 
 
@@ -57,7 +57,7 @@ class DepositWithdrawService {
     return api.get('get-setting-list')
   }
   getPaymentSetting() {
-    return api.get('get-payment-list')
+    return api.get('active-payment-accounts')
   }
   updateDepositWithdrawStatus(obj: {
     id?: string
