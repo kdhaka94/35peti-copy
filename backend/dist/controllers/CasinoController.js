@@ -1805,7 +1805,7 @@ class CasinoController extends ApiController_1.ApiController {
                 return this.fail(res, e.message);
             }
         });
-        this.htmlCards = (req, res) => __awaiter(this, void 0, void 0, function* () {
+        this.htmlCardsold = (req, res) => __awaiter(this, void 0, void 0, function* () {
             var _f;
             const { type, roundId } = req.params;
             try {
@@ -1813,6 +1813,20 @@ class CasinoController extends ApiController_1.ApiController {
                 const resultApi = yield axios_1.default.get(`http://69.62.123.205:3000/detailresult2/${type}/${roundId}`);
                 console.log(resultApi, "CGHJK");
                 const html = (_f = resultApi === null || resultApi === void 0 ? void 0 : resultApi.data) === null || _f === void 0 ? void 0 : _f.data.t1;
+                return this.success(res, { html });
+            }
+            catch (e) {
+                return this.fail(res, e.stack);
+            }
+        });
+        this.htmlCards = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const { type, roundId } = req.params;
+            console.log(type, roundId, "ddf");
+            try {
+                let casinoType = yield CasinoGameResult_1.CasinoGameResult.findOne({ mid: roundId });
+                console.log(casinoType, "caisnotype");
+                // const html = casinoType?.data?.html old one
+                const html = casinoType === null || casinoType === void 0 ? void 0 : casinoType.data;
                 return this.success(res, { html });
             }
             catch (e) {

@@ -1944,7 +1944,7 @@ updateTv = async (req: Request, res: Response) => {
     }
   }
 
-  htmlCards = async (req: Request, res: Response) => {
+  htmlCardsold = async (req: Request, res: Response) => {
     const { type, roundId } = req.params
     try {
       // let casinoType: any = await CasinoGameResult.findOne({ mid: roundId })
@@ -1952,6 +1952,20 @@ updateTv = async (req: Request, res: Response) => {
       console.log(resultApi,"CGHJK")
       
       const html = resultApi?.data?.data.t1
+      return this.success(res, { html })
+    } catch (e: any) {
+      return this.fail(res, e.stack)
+    }
+  }
+
+    htmlCards = async (req: Request, res: Response) => {
+    const { type, roundId } = req.params
+    console.log(type,roundId,"ddf")
+    try {
+      let casinoType: any = await CasinoGameResult.findOne({ mid: roundId })
+      console.log(casinoType,"caisnotype")
+      // const html = casinoType?.data?.html old one
+      const html = casinoType?.data
       return this.success(res, { html })
     } catch (e: any) {
       return this.fail(res, e.stack)
