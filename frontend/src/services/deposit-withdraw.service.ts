@@ -57,10 +57,7 @@ class DepositWithdrawService {
     return api.get('get-setting-list')
   }
   getPaymentSetting() {
-    return api.get('get-payment-list')
-  }
-  getUserPaymentAccounts() {
-    return api.get('get-user-payment-accounts')
+    return api.get('active-payment-accounts')
   }
   updateDepositWithdrawStatus(obj: {
     id?: string

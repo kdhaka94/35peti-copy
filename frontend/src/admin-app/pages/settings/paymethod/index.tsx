@@ -1,104 +1,136 @@
 import { AxiosResponse } from 'axios'
-import React, { ChangeEvent, FormEvent, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { toast } from 'react-toastify'
 import authService from '../../../../services/auth.service'
 import mobileSubheader from '../../_layout/elements/mobile-subheader'
 
-const PayMethod = () => {
-  const formRef = useRef<HTMLFormElement>(null)
-  const [accounts, setAccounts] = useState<any[]>([])
-  const [editId, setEditId] = useState<string | null>(null)
-  const [showForm, setShowForm] = useState(false)
-  const [formData, setFormData] = useState({
-    bankName: '',
-    upiId: '',
-    upiName: '',
-    ifscCode: '',
-    accountNumber: '',
-    accountHolderName: '',
-  })
-  const [qrFile, setQrFile] = useState<File | null>(null)
+const MAX_ACCOUNTS = 15
 
-  React.useEffect(() => {
-    getAccounts()
+const emptyForm = {
+  bankName: '',
+  accountHolderName: '',
+  accountNumber: '',
+  ifscCode: '',
+  upiId: '',
+  upiName: '',
+  isActive: true,
+}
+
+const PaymentAccountSettings = () => {
+  const [accounts, setAccounts] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+  const [showForm, setShowForm] = useState(false)
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [formData, setFormData] = useState(emptyForm)
+  const [qrFile, setQrFile] = useState<File | null>(null)
+  const [qrPreview, setQrPreview] = useState<string | null>(null)
+  const [submitting, setSubmitting] = useState(false)
+
+  useEffect(() => {
+    fetchAccounts()
   }, [])
 
-  const getAccounts = () => {
+  const fetchAccounts = () => {
+    setLoading(true)
     authService.getPaymentAccounts().then((res: AxiosResponse<any>) => {
-      setAccounts(res.data.data.accounts || [])
+      setAccounts(res.data?.data?.accounts || [])
+      setLoading(false)
+    }).catch(() => {
+      toast.error('Failed to load accounts')
+      setLoading(false)
     })
   }
 
-  const resetForm = () => {
-    setFormData({
-      bankName: '',
-      upiId: '',
-      upiName: '',
-      ifscCode: '',
-      accountNumber: '',
-      accountHolderName: '',
-    })
-    setQrFile(null)
-    setEditId(null)
-    setShowForm(false)
-    if (formRef.current) formRef.current.reset()
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value, type, checked } = e.target
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value,
+    }))
   }
 
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value })
-  }
-
-  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setQrFile(e.target.files[0])
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      setQrFile(file)
+      setQrPreview(URL.createObjectURL(file))
     }
   }
 
+  const resetForm = () => {
+    setFormData(emptyForm)
+    setQrFile(null)
+    setQrPreview(null)
+    setEditingId(null)
+    setShowForm(false)
+  }
+
   const handleEdit = (account: any) => {
-    setEditId(account._id)
     setFormData({
       bankName: account.bankName || '',
+      accountHolderName: account.accountHolderName || '',
+      accountNumber: account.accountNumber || '',
+      ifscCode: account.ifscCode || '',
       upiId: account.upiId || '',
       upiName: account.upiName || '',
-      ifscCode: account.ifscCode || '',
-      accountNumber: account.accountNumber || '',
-      accountHolderName: account.accountHolderName || '',
+      isActive: account.isActive,
     })
+    setEditingId(account._id)
     setQrFile(null)
+    setQrPreview(
+      account.upiQrCode
+        ? `${process.env.REACT_APP_SITE_URL}${account.upiQrCode}`
+        : null,
+    )
     setShowForm(true)
   }
 
-  const handleDelete = (id: string) => {
-    if (!window.confirm('Are you sure you want to delete this account?')) return
-    authService.deletePaymentAccount(id).then((res: AxiosResponse<any>) => {
-      toast.success(res.data.message)
-      getAccounts()
-    })
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setSubmitting(true)
+    try {
+      const data = new FormData()
+      Object.entries(formData).forEach(([key, value]) => {
+        data.append(key, String(value))
+      })
+      if (qrFile) {
+        data.append('upiQrCode', qrFile)
+      }
+
+      if (editingId) {
+        await authService.updatePaymentAccount(editingId, data)
+        toast.success('Account updated successfully')
+      } else {
+        await authService.createPaymentAccount(data)
+        toast.success('Account added successfully')
+      }
+      resetForm()
+      fetchAccounts()
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || 'Failed to save account')
+    } finally {
+      setSubmitting(false)
+    }
   }
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    const data = new FormData()
-    data.append('bankName', formData.bankName)
-    data.append('upiId', formData.upiId)
-    data.append('upiName', formData.upiName)
-    data.append('ifscCode', formData.ifscCode)
-    data.append('accountNumber', formData.accountNumber)
-    data.append('accountHolderName', formData.accountHolderName)
-    if (qrFile) data.append('upiQrCode', qrFile)
+  const handleDelete = async (id: string) => {
+    if (!window.confirm('Are you sure you want to delete this account?')) return
+    try {
+      await authService.deletePaymentAccount(id)
+      toast.success('Account deleted')
+      fetchAccounts()
+    } catch {
+      toast.error('Failed to delete account')
+    }
+  }
 
-    if (editId) {
-      authService.updatePaymentAccount(editId, data).then((res: AxiosResponse<any>) => {
-        toast.success(res.data.message)
-        resetForm()
-        getAccounts()
-      })
-    } else {
-      authService.addPaymentAccount(data).then((res: AxiosResponse<any>) => {
-        toast.success(res.data.message)
-        resetForm()
-        getAccounts()
-      })
+  const handleToggle = async (id: string) => {
+    try {
+      await authService.togglePaymentAccountStatus(id)
+      toast.success('Status updated')
+      fetchAccounts()
+    } catch {
+      toast.error('Failed to update status')
     }
   }
 
@@ -109,135 +141,89 @@ const PayMethod = () => {
         <div className='row'>
           <div className='col-md-12 mt-1'>
             <div className='add-account'>
-              <div className='d-flex justify-content-between align-items-center mb-3'>
-                <h4 className='mb-0'>Payment Accounts ({accounts.length}/15)</h4>
-                {!showForm && accounts.length < 15 && (
-                  <button
-                    className='btn btn-primary'
-                    onClick={() => { resetForm(); setShowForm(true) }}
-                  >
-                    + Add Account
-                  </button>
-                )}
+              {/* Header */}
+              <div className='d-flex align-items-center justify-content-between mb-3 flex-wrap'>
+                <h4 className='mb-0'>Account Settings</h4>
+                <div className='d-flex align-items-center gap-2'>
+                  <span className='badge bg-info text-dark' style={{ fontSize: '13px', padding: '6px 12px' }}>
+                    {accounts.length} / {MAX_ACCOUNTS} Accounts
+                  </span>
+                  {!showForm && accounts.length < MAX_ACCOUNTS && (
+                    <button
+                      className='btn btn-success btn-sm'
+                      onClick={() => { resetForm(); setShowForm(true) }}
+                    >
+                      + Add Account
+                    </button>
+                  )}
+                </div>
               </div>
 
+              {/* Add/Edit Form */}
               {showForm && (
                 <div className='card mb-3'>
-                  <div className='card-header'>
-                    <h5 className='mb-0'>{editId ? 'Edit Account' : 'Add New Account'}</h5>
+                  <div className='card-header bg-dark text-white'>
+                    <h5 className='mb-0'>{editingId ? 'Edit Account' : 'Add New Account'}</h5>
                   </div>
                   <div className='card-body'>
-                    <form onSubmit={handleSubmit} ref={formRef}>
+                    <form onSubmit={handleSubmit}>
                       <div className='row'>
                         <div className='col-lg-6'>
                           <div className='form-group'>
                             <label>Bank Name *</label>
-                            <input
-                              type='text'
-                              name='bankName'
-                              className='form-control'
-                              placeholder='Bank Name'
-                              value={formData.bankName}
-                              onChange={handleInputChange}
-                              required
-                            />
-                          </div>
-                        </div>
-                        <div className='col-lg-6'>
-                          <div className='form-group'>
-                            <label>Upi Id *</label>
-                            <input
-                              type='text'
-                              name='upiId'
-                              className='form-control'
-                              placeholder='UPI Id'
-                              value={formData.upiId}
-                              onChange={handleInputChange}
-                              required
-                            />
-                          </div>
-                        </div>
-                        <div className='col-lg-6'>
-                          <div className='form-group'>
-                            <label>Upi Name *</label>
-                            <input
-                              type='text'
-                              name='upiName'
-                              className='form-control'
-                              placeholder='UPI Name'
-                              value={formData.upiName}
-                              onChange={handleInputChange}
-                              required
-                            />
-                          </div>
-                        </div>
-                        <div className='col-lg-6'>
-                          <div className='form-group'>
-                            <label>UPI QR Code *</label>
-                            <input
-                              type='file'
-                              name='upiQrCode'
-                              className='form-control'
-                              accept='image/*'
-                              onChange={handleFileChange}
-                            />
-                          </div>
-                        </div>
-                        <div className='col-lg-6'>
-                          <div className='form-group'>
-                            <label>IFSC Code *</label>
-                            <input
-                              type='text'
-                              name='ifscCode'
-                              className='form-control'
-                              placeholder='IFSC Code'
-                              value={formData.ifscCode}
-                              onChange={handleInputChange}
-                              required
-                            />
+                            <input type='text' name='bankName' className='form-control' value={formData.bankName} onChange={handleChange} required />
                           </div>
                         </div>
                         <div className='col-lg-6'>
                           <div className='form-group'>
                             <label>Account Holder Name *</label>
-                            <input
-                              type='text'
-                              name='accountHolderName'
-                              className='form-control'
-                              placeholder='Account Holder Name'
-                              value={formData.accountHolderName}
-                              onChange={handleInputChange}
-                              required
-                            />
+                            <input type='text' name='accountHolderName' className='form-control' value={formData.accountHolderName} onChange={handleChange} required />
                           </div>
                         </div>
                         <div className='col-lg-6'>
                           <div className='form-group'>
                             <label>Account Number *</label>
-                            <input
-                              type='text'
-                              name='accountNumber'
-                              className='form-control'
-                              placeholder='Account Number'
-                              value={formData.accountNumber}
-                              onChange={handleInputChange}
-                              required
-                            />
+                            <input type='text' name='accountNumber' className='form-control' value={formData.accountNumber} onChange={handleChange} required />
                           </div>
                         </div>
-                        <div className='col-lg-12'>
-                          <div className='tr'>
-                            <button type='submit' className='btn btn-primary mr-2'>
-                              {editId ? 'Update' : 'Submit'}
-                            </button>
-                            <button
-                              type='button'
-                              className='btn btn-secondary'
-                              onClick={resetForm}
-                            >
-                              Cancel
-                            </button>
+                        <div className='col-lg-6'>
+                          <div className='form-group'>
+                            <label>IFSC Code *</label>
+                            <input type='text' name='ifscCode' className='form-control' value={formData.ifscCode} onChange={handleChange} required />
                           </div>
+                        </div>
+                        <div className='col-lg-6'>
+                          <div className='form-group'>
+                            <label>UPI ID *</label>
+                            <input type='text' name='upiId' className='form-control' value={formData.upiId} onChange={handleChange} required />
+                          </div>
+                        </div>
+                        <div className='col-lg-6'>
+                          <div className='form-group'>
+                            <label>UPI Name</label>
+                            <input type='text' name='upiName' className='form-control' value={formData.upiName} onChange={handleChange} />
+                          </div>
+                        </div>
+                        <div className='col-lg-6'>
+                          <div className='form-group'>
+                            <label>UPI QR Code Image</label>
+                            <input type='file' className='form-control' accept='image/jpeg,image/jpg,image/png,image/webp' onChange={handleFileChange} />
+                            {qrPreview && (
+                              <img src={qrPreview} alt='QR Preview' style={{ width: 80, height: 80, objectFit: 'contain', marginTop: 8, border: '1px solid #ddd', borderRadius: 4 }} />
+                            )}
+                          </div>
+                        </div>
+                        <div className='col-lg-6 d-flex align-items-center'>
+                          <div className='form-check mt-3'>
+                            <input type='checkbox' className='form-check-input' name='isActive' checked={formData.isActive} onChange={handleChange} id='isActiveCheck' />
+                            <label className='form-check-label' htmlFor='isActiveCheck'>Active (visible to users)</label>
+                          </div>
+                        </div>
+                        <div className='col-lg-12 mt-2'>
+                          <button type='submit' className='btn btn-primary mr-2' disabled={submitting}>
+                            {submitting ? 'Saving...' : editingId ? 'Update Account' : 'Add Account'}
+                          </button>
+                          <button type='button' className='btn btn-secondary' onClick={resetForm}>Cancel</button>
                         </div>
                       </div>
                     </form>
@@ -245,70 +231,64 @@ const PayMethod = () => {
                 </div>
               )}
 
-              {accounts.length > 0 && (
+              {/* Accounts Table */}
+              {loading ? (
+                <p>Loading...</p>
+              ) : accounts.length === 0 ? (
+                <p className='text-center text-muted p-4'>No accounts added yet.</p>
+              ) : (
                 <div className='table-responsive'>
-                  <table className='table table-striped table-bordered w-100'>
-                    <thead>
+                  <table className='table table-bordered table-striped'>
+                    <thead className='thead-dark'>
                       <tr>
                         <th>#</th>
                         <th>Bank Name</th>
-                        <th>UPI Id</th>
-                        <th>UPI Name</th>
-                        <th>IFSC Code</th>
-                        <th>Account Number</th>
                         <th>Account Holder</th>
-                        <th>QR Code</th>
+                        <th>Account No.</th>
+                        <th>IFSC</th>
+                        <th>UPI ID</th>
+                        <th>QR</th>
+                        <th>Status</th>
                         <th>Actions</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {accounts.map((account: any, index: number) => (
-                        <tr key={account._id}>
+                      {accounts.map((acc: any, index: number) => (
+                        <tr key={acc._id} style={{ opacity: acc.isActive ? 1 : 0.5 }}>
                           <td>{index + 1}</td>
-                          <td>{account.bankName}</td>
-                          <td>{account.upiId}</td>
-                          <td>{account.upiName}</td>
-                          <td>{account.ifscCode}</td>
-                          <td>{account.accountNumber}</td>
-                          <td>{account.accountHolderName}</td>
+                          <td>{acc.bankName}</td>
+                          <td>{acc.accountHolderName}</td>
+                          <td>{acc.accountNumber}</td>
+                          <td>{acc.ifscCode}</td>
+                          <td>{acc.upiId}</td>
                           <td>
-                            {account.upiQrCode && (
-                              <a
-                                href={process.env.REACT_APP_SITE_URL + account.upiQrCode}
-                                target='_blank'
-                                rel='noreferrer'
-                              >
-                                <img
-                                  src={process.env.REACT_APP_SITE_URL + account.upiQrCode}
-                                  width={30}
-                                  alt='QR'
-                                />
-                              </a>
-                            )}
+                            {acc.upiQrCode ? (
+                              <img
+                                src={`${process.env.REACT_APP_SITE_URL}${acc.upiQrCode}`}
+                                alt='QR'
+                                style={{ width: 40, height: 40, objectFit: 'contain', borderRadius: 4 }}
+                              />
+                            ) : '—'}
                           </td>
                           <td>
-                            <button
-                              className='btn btn-sm btn-info mr-1'
-                              onClick={() => handleEdit(account)}
+                            <span
+                              className={`badge ${acc.isActive ? 'bg-success' : 'bg-danger'}`}
+                              style={{ cursor: 'pointer' }}
+                              onClick={() => handleToggle(acc._id)}
+                              title='Click to toggle'
                             >
-                              Edit
-                            </button>
-                            <button
-                              className='btn btn-sm btn-danger'
-                              onClick={() => handleDelete(account._id)}
-                            >
-                              Delete
-                            </button>
+                              {acc.isActive ? 'Active' : 'Inactive'}
+                            </span>
+                          </td>
+                          <td>
+                            <button className='btn btn-warning btn-sm mr-1' onClick={() => handleEdit(acc)}>Edit</button>
+                            <button className='btn btn-danger btn-sm' onClick={() => handleDelete(acc._id)}>Delete</button>
                           </td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
                 </div>
-              )}
-
-              {accounts.length === 0 && !showForm && (
-                <p className='text-center text-muted'>No accounts added yet. Click "Add Account" to get started.</p>
               )}
             </div>
           </div>
@@ -317,4 +297,5 @@ const PayMethod = () => {
     </>
   )
 }
-export default PayMethod
+
+export default PaymentAccountSettings

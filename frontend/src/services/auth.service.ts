@@ -93,45 +93,35 @@ class AuthService {
     return api.post('save-setting-list', { settingList })
   }
 
-  getpymentSettingsList() {
-    return api.get('payment-list')
-  }
-  savepaymentSettingList(settingList: any) {
-    const token = this.getToken()
-    return api.post(
-      'save-payment-list',
-      { settingList },
-      {
-        headers: {
-          Authorization: token ? `Bearer ${token}` : '',
-          'Content-Type': 'multipart/form-data',
-          Accept: 'application/json',
-        },
-      },
-    )
-  }
-
+  // Payment Account CRUD (multi-account)
   getPaymentAccounts() {
     return api.get('payment-accounts')
   }
-  addPaymentAccount(data: any) {
-    return api.post('add-payment-account', data, {
+  createPaymentAccount(formData: any) {
+    const token = this.getToken()
+    return api.post('payment-account', formData, {
       headers: {
+        Authorization: token ? `Bearer ${token}` : '',
         'Content-Type': 'multipart/form-data',
         Accept: 'application/json',
       },
     })
   }
-  updatePaymentAccount(id: string, data: any) {
-    return api.put(`update-payment-account/${id}`, data, {
+  updatePaymentAccount(id: string, formData: any) {
+    const token = this.getToken()
+    return api.put(`payment-account/${id}`, formData, {
       headers: {
+        Authorization: token ? `Bearer ${token}` : '',
         'Content-Type': 'multipart/form-data',
         Accept: 'application/json',
       },
     })
   }
   deletePaymentAccount(id: string) {
-    return api.delete(`delete-payment-account/${id}`)
+    return api.delete(`payment-account/${id}`)
+  }
+  togglePaymentAccountStatus(id: string) {
+    return api.patch(`payment-account/${id}/toggle`)
   }
 }
 export default new AuthService()

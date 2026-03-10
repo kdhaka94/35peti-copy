@@ -6,8 +6,7 @@ import path from 'path'
 import { ISetting, Setting } from '../models/Setting'
 import { Todo } from '../models/Todo'
 import { ApiController } from './ApiController'
-import { Payment } from '../models/Payments'
-import { PaymentAccount } from '../models/PaymentAccount'
+import { PaymentAccount } from '../models/Payments'
 import { Types } from 'mongoose'
 
 export class TodoController extends ApiController {
@@ -67,120 +66,40 @@ export class TodoController extends ApiController {
     }
   }
 
-  savepaymentSettings = async (req: Request, res: Response) => {
-    try {
-      const pathURL = path.join(__dirname, '../../')
-      const user: any = req.user
-      const { settingList } = req.body
-      const hostName = user?._id
-      console.log(req.files, " req.files req.files")
-      //@ts-expect-error
-      let files = req.files?.reduce((acc, file: any) => {
-        acc[file.fieldname] = file.path
-        return acc
-      }, {})
-      console.log(files)
-      let settingsData: any = await Payment.find({
-        $or: [
-          { userId: { $in: hostName } }, // Matches any value in the hostName array
-          { userId: Types.ObjectId("63382d9bfbb3a573110c1ba5") } // Matches static ID
-        ]
-      });
-      console.log(settingsData, "settingsData")
-      settingsData = settingsData.reduce((acc: any, setting: any) => {
-        acc[setting.name] = setting
-        return acc
-      })
-      console.log(settingsData)
+  // --- Payment Account CRUD (multi-account) ---
 
-      settingList.map(async (setting: any, index: number) => {
-        if (setting.inputType === 'file') {
-          const oldFile = settingsData[setting.name].value
-          if (files[`settingList[${index}][${setting.name}-file]`]) {
-            setting['value'] = files[`settingList[${index}][${setting.name}-file]`]
-            const filePath = path.join(pathURL, oldFile)
-            if (existsSync(filePath) && oldFile) {
-              unlinkSync(filePath)
-            }
-          } else {
-            setting['value'] = oldFile
-          }
-        }
-        console.log(hostName)
-        console.log(setting)
-        await Payment.findOneAndUpdate(
-          { name: setting.name, userId: hostName },
-          {
-            $set: {
-              value: setting.value,
-              active: setting.active || null,
-              name: setting.name,
-              label: setting.label,
-              userId: hostName,
-              inputType: setting?.inputType
-            },
-          },
-          {
-            upsert: true, // Create a new document if no match is found
-            new: true, // Return the new document after update/insert
-          }
-        )
-      })
-      return this.success(res, {}, 'Setting Saved')
+  createPaymentAccount = async (req: Request, res: Response) => {
+    try {
+      const user: any = req.user
+      const userId = user?._id
+
+      const count = await PaymentAccount.countDocuments({ userId })
+      if (count >= 15) {
+        return this.fail(res, 'Maximum 15 accounts allowed. Delete an existing account first.')
+      }
+
+      const { bankName, accountHolderName, accountNumber, ifscCode, upiId, upiName, isActive } = req.body
+
+      const accountData: any = {
+        userId,
+        bankName,
+        accountHolderName,
+        accountNumber,
+        ifscCode,
+        upiId,
+        upiName,
+        isActive: isActive !== undefined ? isActive : true,
+      }
+
+      if (req.file) {
+        accountData.upiQrCode = req.file.path
+      }
+
+      const account = await PaymentAccount.create(accountData)
+      return this.success(res, { account }, 'Account added successfully')
     } catch (e: any) {
       return this.fail(res, e.message)
     }
-  }
-  settingsList = async (req: Request, res: Response) => {
-    const settings = await Setting.find({})
-    return this.success(res, { settings })
-  }
-
-  paymentSettingsList = async (req: Request, res: Response) => {
-    const userinfo: any = req.user
-    let settings = await Payment.find({ userId: userinfo?._id })
-
-    if (settings.length <= 0) {
-      let settingsData: any = []
-      let settingsCommon = await Payment.find({ userId: Types.ObjectId("63382d9bfbb3a573110c1ba5") })
-      settingsCommon.map((setting: any) => {
-        setting.value = ""
-        settingsData.push(setting)
-      })
-      settings = settingsData;
-
-    }
-    return this.success(res, { settings })
-  }
-  getSettingList = async (req: Request, res: Response) => {
-    let settings = await Setting.find({})
-    const settingsData: any = {}
-    //@ts-expect-error
-    settings.map((setting: ISetting) => {
-      settingsData[setting.name] = setting.value
-    })
-    return this.success(res, { settings: settingsData })
-  }
-  getUserSettingList = async (req: Request, res: Response) => {
-    const userinfo: any = req.user
-    console.log(userinfo)
-    let settiddngs = await Payment.find({ userId: userinfo?.parentId })
-
-    if (settiddngs.length <= 0) {
-      settiddngs = await Payment.find({ userId: Types.ObjectId("63382d9bfbb3a573110c1ba5") })
-    }
-
-    console.log(settiddngs)
-
-    const settingsData: any = {}
-    //@ts-expect-error
-    settiddngs.map((setting: ISetting) => {
-      settingsData[setting.name] = setting.value
-    })
-    if (settiddngs.length <= 0) {
-
-    }
-    return this.success(res, { settings: settingsData })
   }
 
   getPaymentAccounts = async (req: Request, res: Response) => {
@@ -193,31 +112,11 @@ export class TodoController extends ApiController {
     }
   }
 
-  addPaymentAccount = async (req: Request, res: Response) => {
+  getActivePaymentAccounts = async (req: Request, res: Response) => {
     try {
       const user: any = req.user
-      const count = await PaymentAccount.countDocuments({ userId: user?._id })
-      if (count >= 15) {
-        return this.fail(res, 'Maximum 15 accounts allowed')
-      }
-      let upiQrCode = ''
-      const files: any = req.files
-      if (files && files.length > 0) {
-        upiQrCode = files[0].path
-      }
-      const account = new PaymentAccount({
-        bankName: req.body.bankName,
-        upiId: req.body.upiId,
-        upiName: req.body.upiName,
-        upiQrCode,
-        ifscCode: req.body.ifscCode,
-        accountNumber: req.body.accountNumber,
-        accountHolderName: req.body.accountHolderName,
-        isActive: true,
-        userId: user?._id,
-      })
-      await account.save()
-      return this.success(res, { account }, 'Account Added')
+      const accounts = await PaymentAccount.find({ userId: user?.parentId, isActive: true }).sort({ createdAt: -1 })
+      return this.success(res, { accounts })
     } catch (e: any) {
       return this.fail(res, e.message)
     }
@@ -225,35 +124,30 @@ export class TodoController extends ApiController {
 
   updatePaymentAccount = async (req: Request, res: Response) => {
     try {
-      const user: any = req.user
       const { id } = req.params
-      const updateData: any = {
-        bankName: req.body.bankName,
-        upiId: req.body.upiId,
-        upiName: req.body.upiName,
-        ifscCode: req.body.ifscCode,
-        accountNumber: req.body.accountNumber,
-        accountHolderName: req.body.accountHolderName,
-      }
-      if (req.body.isActive !== undefined) {
-        updateData.isActive = req.body.isActive
-      }
-      const files: any = req.files
-      if (files && files.length > 0) {
-        const oldAccount: any = await PaymentAccount.findById(id)
-        if (oldAccount?.upiQrCode) {
-          const oldPath = path.join(__dirname, '../../', oldAccount.upiQrCode)
-          if (existsSync(oldPath)) unlinkSync(oldPath)
-        }
-        updateData.upiQrCode = files[0].path
-      }
-      const account = await PaymentAccount.findOneAndUpdate(
-        { _id: id, userId: user?._id },
-        { $set: updateData },
-        { new: true },
-      )
+      const { bankName, accountHolderName, accountNumber, ifscCode, upiId, upiName, isActive } = req.body
+
+      const account = await PaymentAccount.findById(id)
       if (!account) return this.fail(res, 'Account not found')
-      return this.success(res, { account }, 'Account Updated')
+
+      if (bankName !== undefined) account.bankName = bankName
+      if (accountHolderName !== undefined) account.accountHolderName = accountHolderName
+      if (accountNumber !== undefined) account.accountNumber = accountNumber
+      if (ifscCode !== undefined) account.ifscCode = ifscCode
+      if (upiId !== undefined) account.upiId = upiId
+      if (upiName !== undefined) account.upiName = upiName
+      if (isActive !== undefined) account.isActive = isActive
+
+      if (req.file) {
+        // Delete old QR file
+        if (account.upiQrCode && existsSync(account.upiQrCode)) {
+          unlinkSync(account.upiQrCode)
+        }
+        account.upiQrCode = req.file.path
+      }
+
+      await account.save()
+      return this.success(res, { account }, 'Account updated successfully')
     } catch (e: any) {
       return this.fail(res, e.message)
     }
@@ -261,33 +155,51 @@ export class TodoController extends ApiController {
 
   deletePaymentAccount = async (req: Request, res: Response) => {
     try {
-      const user: any = req.user
       const { id } = req.params
-      const account: any = await PaymentAccount.findOneAndDelete({ _id: id, userId: user?._id })
+      const account = await PaymentAccount.findById(id)
       if (!account) return this.fail(res, 'Account not found')
-      if (account.upiQrCode) {
-        const filePath = path.join(__dirname, '../../', account.upiQrCode)
-        if (existsSync(filePath)) unlinkSync(filePath)
+
+      if (account.upiQrCode && existsSync(account.upiQrCode)) {
+        unlinkSync(account.upiQrCode)
       }
-      return this.success(res, {}, 'Account Deleted')
+
+      await PaymentAccount.findByIdAndDelete(id)
+      return this.success(res, {}, 'Account deleted successfully')
     } catch (e: any) {
       return this.fail(res, e.message)
     }
   }
 
-  getUserPaymentAccounts = async (req: Request, res: Response) => {
+  togglePaymentAccountStatus = async (req: Request, res: Response) => {
     try {
-      const user: any = req.user
-      let accounts = await PaymentAccount.find({ userId: user?.parentId, isActive: true })
-      if (accounts.length <= 0) {
-        accounts = await PaymentAccount.find({
-          userId: Types.ObjectId('63382d9bfbb3a573110c1ba5'),
-          isActive: true,
-        })
-      }
-      return this.success(res, { accounts })
+      const { id } = req.params
+      const account = await PaymentAccount.findById(id)
+      if (!account) return this.fail(res, 'Account not found')
+
+      account.isActive = !account.isActive
+      await account.save()
+      return this.success(res, { account }, `Account ${account.isActive ? 'activated' : 'deactivated'}`)
     } catch (e: any) {
       return this.fail(res, e.message)
     }
   }
+
+  // --- Existing settings methods ---
+
+  settingsList = async (req: Request, res: Response) => {
+    const settings = await Setting.find({})
+    return this.success(res, { settings })
+  }
+
+  getSettingList = async (req: Request, res: Response) => {
+    let settings = await Setting.find({})
+    const settingsData: any = {}
+    //@ts-expect-error
+    settings.map((setting: ISetting) => {
+      settingsData[setting.name] = setting.value
+    })
+    return this.success(res, { settings: settingsData })
+  }
+
+
 }

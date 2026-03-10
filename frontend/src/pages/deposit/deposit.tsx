@@ -11,13 +11,15 @@ const Deposit = () => {
     amount,
     handleChange,
     onSubmit,
-    bankUpiLists,
-    paymentAccounts,
+    accounts,
+    selectedAccount,
+    setSelectedAccount,
     handleUploadedFile,
     preview,
     generateTransactionId,
     handleUploadedUTR,
   } = useDeposit();
+
   const copytoclipboard = (code: string) => {
     const textArea = document.createElement("textarea");
     textArea.style.position = "fixed";
@@ -34,14 +36,14 @@ const Deposit = () => {
     document.body.appendChild(textArea);
     textArea.select();
     try {
-      const successful = document.execCommand("copy");
-      const msg = successful ? "successful" : "unsuccessful";
+      document.execCommand("copy");
       toast.success("Copied succesfull");
     } catch (err) {
       console.log("Oops, unable to copy");
     }
     document.body.removeChild(textArea);
   };
+
   return (
     <div className="mt-10">
       <div className="card mb-10">
@@ -67,302 +69,196 @@ const Deposit = () => {
                   </div>
                 </div>
               </div>
-              <div
-                className={`payment-ions-container ${amount && amount > 0 ? "" : "d-none"
-                  }`}
-              >
-                <div className="payment-icons" style={{ width: "100%" }}>
-                  <div className="glass" />
-                  <div className="content">
-                    <div className="payment-icons-title">
-                      <h4 className="mb-0">
-                        <span>UPI Payment</span>{" "}
-                        <i className="fas fa-info-circle payment-rules" />
-                      </h4>
-                      <p>Make Sure You Attach Successful Payment Screenshot</p>
-                    </div>
-                    <div className="deposit-options">
+
+              {/* Account Selection Tabs */}
+              {amount && Number(amount) > 0 && accounts.length > 0 && (
+                <div className="mb-3">
+                  <p className="font-weight-bold mb-2">Select Payment Account:</p>
+                  <div className="d-flex flex-wrap" style={{ gap: "10px" }}>
+                    {accounts.map((acc: any) => (
                       <div
-                        className={`bank-detail ${amount && amount > 0 ? "" : "payment-disable"
-                          }`}
+                        key={acc._id}
+                        className={`card text-center p-2`}
+                        style={{
+                          cursor: "pointer",
+                          minWidth: "120px",
+                          border: selectedAccount?._id === acc._id ? "2px solid #007bff" : "1px solid #ddd",
+                          background: selectedAccount?._id === acc._id ? "#e3f2fd" : "#fff",
+                        }}
+                        onClick={() => setSelectedAccount(acc)}
                       >
-                        <div className="payment-detail-box">
-                          <p>
-                            {bankUpiLists?.settings &&
-                              bankUpiLists?.settings?.upiId}
-                            <span className="ml-auto">
-                              <i
-                                className="fas fa-copy mr-1"
-                                onClick={() => {
-                                  copytoclipboard(
-                                    bankUpiLists?.settings?.upiId
-                                  );
-                                }}
-                              />
-                            </span>
-                          </p>
-                        </div>
-                        <div className="text-center qr-code">
-                          <PaymentQRCode
-                            upiId={bankUpiLists?.settings?.upiId}
-                            name={bankUpiLists?.settings?.upiName}
-                            amount={amount}
-                            transactionId={generateTransactionId()}
-                          />
+                        <strong style={{ fontSize: "13px" }}>{acc.bankName}</strong>
+                        <small className="text-muted">{acc.accountHolderName}</small>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Selected Account Details */}
+              {amount && Number(amount) > 0 && selectedAccount && (
+                <div
+                  className="payment-ions-container"
+                >
+                  {/* UPI Section */}
+                  <div className="payment-icons" style={{ width: "100%" }}>
+                    <div className="glass" />
+                    <div className="content">
+                      <div className="payment-icons-title">
+                        <h4 className="mb-0">
+                          <span>UPI Payment</span>{" "}
+                          <i className="fas fa-info-circle payment-rules" />
+                        </h4>
+                        <p>Make Sure You Attach Successful Payment Screenshot</p>
+                      </div>
+                      <div className="deposit-options">
+                        <div className="bank-detail">
+                          <div className="payment-detail-box">
+                            <p>
+                              {selectedAccount.upiId}
+                              <span className="ml-auto">
+                                <i
+                                  className="fas fa-copy mr-1"
+                                  onClick={() => copytoclipboard(selectedAccount.upiId)}
+                                />
+                              </span>
+                            </p>
+                          </div>
+                          <div className="text-center qr-code">
+                            <PaymentQRCode
+                              upiId={selectedAccount.upiId}
+                              name={selectedAccount.upiName}
+                              amount={amount}
+                              transactionId={generateTransactionId()}
+                            />
+                          </div>
                         </div>
                       </div>
                     </div>
-                    <div
-                      className="col-lg-12 d-none"
-                      style={{ padding: "7px" }}
-                    >
-                      <input
-                        type="number"
-                        className="form-control"
-                        placeholder="Enter UTR No"
-                        disabled={amount && amount > 0 ? false : true}
-                        {...register("utrno")}
-                        value={preview.type == "upi" ? preview.utrno : ""}
-                        onChange={(e) => handleUploadedUTR(e, "upi")}
-                      />
-                    </div>
-                    <div className="p-2 w-100 d-flexx d-none align-items-center justify-content-between">
-                      <button
-                        className={`payment-pay-now d-flex flex-wrap justify-content-center ${preview?.imagePath && preview?.type == "upi"
-                            ? ""
-                            : "pay-disable"
-                          }`}
-                        type="submit"
-                      >
-                        <div className="w-100 text-center">
-                          <span>Pay Now</span>
-                        </div>
-                        <small>(Range: 100 - 100000)</small>
-                      </button>
-                    </div>
                   </div>
-                </div>
-                <div className="payment-icons" style={{ width: "100%" }}>
-                  <div className="glass" />
-                  <div className="content">
-                    <div className="payment-icons-title">
-                      <h4 className="mb-0 text-center">
-                        <span>Bank Accounts</span>
-                      </h4>
-                    </div>
-                    <div className="deposit-options">
-                      {paymentAccounts && paymentAccounts.length > 0 ? (
-                        paymentAccounts.map((account: any, index: number) => (
-                          <div
-                            key={account._id || index}
-                            className={`bank-detail ${amount != undefined ? "" : "payment-disable"
-                              }`}
-                            style={{
-                              marginBottom: "15px",
-                              borderBottom: "1px solid #ddd",
-                              paddingBottom: "10px",
-                            }}
-                          >
-                            <div className="payment-detail-box">
-                              <p>
-                                Account Name: {account.accountHolderName}
-                                <i
-                                  className="fas fa-copy mr-1"
-                                  onClick={() =>
-                                    copytoclipboard(account.accountHolderName)
-                                  }
-                                />
-                              </p>
-                            </div>
-                            <div className="payment-detail-box">
-                              <p>
-                                A/c No. {account.accountNumber}
-                                <i
-                                  className="fas fa-copy mr-1"
-                                  onClick={() =>
-                                    copytoclipboard(account.accountNumber)
-                                  }
-                                />
-                              </p>
-                            </div>
-                            <div className="payment-detail-box">
-                              <p>
-                                IFSC Code: {account.ifscCode}
-                                <i
-                                  className="fas fa-copy mr-1"
-                                  onClick={() =>
-                                    copytoclipboard(account.ifscCode)
-                                  }
-                                />
-                              </p>
-                            </div>
-                            <div className="payment-detail-box">
-                              <p>
-                                Bank Name: {account.bankName}
-                                <i
-                                  className="fas fa-copy mr-1"
-                                  onClick={() =>
-                                    copytoclipboard(account.bankName)
-                                  }
-                                />
-                              </p>
-                            </div>
-                            <div className="payment-detail-box">
-                              <p>
-                                UPI Id: {account.upiId}
-                                <i
-                                  className="fas fa-copy mr-1"
-                                  onClick={() =>
-                                    copytoclipboard(account.upiId)
-                                  }
-                                />
-                              </p>
-                            </div>
+
+                  {/* Bank Section */}
+                  <div className="payment-icons" style={{ width: "100%" }}>
+                    <div className="glass" />
+                    <div className="content">
+                      <div className="payment-icons-title">
+                        <h4 className="mb-0 text-center">
+                          <span>Bank Account</span>
+                        </h4>
+                      </div>
+                      <div className="deposit-options">
+                        <div className="bank-detail">
+                          <div className="payment-detail-box">
+                            <p>
+                              Account Name:{selectedAccount.accountHolderName}
+                              <i
+                                className="fas fa-copy mr-1"
+                                onClick={() => copytoclipboard(selectedAccount.accountHolderName)}
+                              />
+                            </p>
                           </div>
-                        ))
-                      ) : (
+                          <div className="payment-detail-box">
+                            <p>
+                              A/c No.{selectedAccount.accountNumber}
+                              <i
+                                className="fas fa-copy mr-1"
+                                onClick={() => copytoclipboard(selectedAccount.accountNumber)}
+                              />
+                            </p>
+                          </div>
+                          <div className="payment-detail-box">
+                            <p>
+                              IFSC Code:{selectedAccount.ifscCode}
+                              <i
+                                className="fas fa-copy mr-1"
+                                onClick={() => copytoclipboard(selectedAccount.ifscCode)}
+                              />
+                            </p>
+                          </div>
+                          <div className="payment-detail-box">
+                            <p>
+                              Bank Name :{selectedAccount.bankName}
+                              <i
+                                className="fas fa-copy mr-1"
+                                onClick={() => copytoclipboard(selectedAccount.bankName)}
+                              />
+                            </p>
+                          </div>
+                          <small>(Range: 100 - 100000)</small>
+                        </div>
+                      </div>
+
+                      {/* UTR Input */}
+                      <div className="col-lg-12" style={{ padding: "7px" }}>
+                        <input
+                          type="number"
+                          className="form-control"
+                          placeholder="Enter UTR No"
+                          {...register("utrno")}
+                          value={preview.utrno || ""}
+                          disabled={!(amount && Number(amount) > 0)}
+                          onChange={(e) => handleUploadedUTR(e, "bank")}
+                        />
+                      </div>
+
+                      {/* File Upload + Submit */}
+                      <div className="p-2 w-100 gap-2 align-items-center justify-content-between">
                         <div
-                          className={`bank-detail ${amount != undefined ? "" : "payment-disable"
-                            }`}
+                          className={`upload-ss ${amount && Number(amount) > 0 ? "" : "pay-disable"}`}
                         >
-                          <div className="payment-detail-box">
-                            <p>
-                              Account Name:{" "}
-                              {bankUpiLists?.settings &&
-                                bankUpiLists?.settings?.accountHolderName}
-                              <i
-                                className="fas fa-copy mr-1"
-                                onClick={() =>
-                                  copytoclipboard(
-                                    bankUpiLists?.settings?.accountHolderName
-                                  )
-                                }
-                              />
-                            </p>
-                          </div>
-                          <div className="payment-detail-box">
-                            <p>
-                              A/c No.{" "}
-                              {bankUpiLists?.settings &&
-                                bankUpiLists?.settings?.accountNumber}
-                              <i
-                                className="fas fa-copy mr-1"
-                                onClick={() =>
-                                  copytoclipboard(
-                                    bankUpiLists?.settings?.accountNumber
-                                  )
-                                }
-                              />
-                            </p>
-                          </div>
-                          <div className="payment-detail-box">
-                            <p>
-                              IFSC Code:{" "}
-                              {bankUpiLists?.settings &&
-                                bankUpiLists?.settings?.ifscCode}
-                              <i
-                                className="fas fa-copy mr-1"
-                                onClick={() =>
-                                  copytoclipboard(
-                                    bankUpiLists?.settings?.ifscCode
-                                  )
-                                }
-                              />
-                            </p>
-                          </div>
-                          <div className="payment-detail-box">
-                            <p>
-                              Bank Name:{" "}
-                              {bankUpiLists?.settings &&
-                                bankUpiLists?.settings?.bankName}
-                              <i
-                                className="fas fa-copy mr-1"
-                                onClick={() =>
-                                  copytoclipboard(
-                                    bankUpiLists?.settings?.bankName
-                                  )
-                                }
-                              />
-                            </p>
-                          </div>
+                          <input
+                            type="file"
+                            id="upload-14624"
+                            // @ts-expect-error
+                            disabled={`${amount && Number(amount) > 0 ? "" : "disabled"}`}
+                            // @ts-expect-error
+                            hidden="hidden"
+                            accept="image/png, image/jpg, image/jpeg"
+                            {...register("imageUrl")}
+                            onChange={(e) => handleUploadedFile(e, "bank")}
+                          />
+                          <label htmlFor="upload-14624">
+                            <i className="fas fa-plus-circle mr-1" />
+                            Choose File
+                          </label>
                         </div>
-                      )}
-                      <small>(Range: 100 - 100000)</small>
-                    </div>
-                  </div>
-                  <div className="col-lg-12" style={{ padding: "7px" }}>
-                    <input
-                      type="number"
-                      className="form-control"
-                      placeholder="Enter UTR No"
-                      {...register("utrno")}
-                      value={preview.type == "bank" ? preview.utrno : ""}
-                      disabled={amount && amount > 0 ? false : true}
-                      onChange={(e) => handleUploadedUTR(e, "bank")}
-                    />
-                  </div>
-                  <div className="p-2 w-100 gap-2 align-items-center justify-content-between">
-                    <div
-                      className={`upload-ss ${amount && amount > 0 ? "" : "pay-disable"
-                        }`}
-                    >
-                      <input
-                        type="file"
-                        id="upload-14624"
-                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                        //@ts-expect-error
-                        disabled={`${amount && amount > 0 ? "" : "disabled"
-                          }`}
-                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                        //@ts-expect-error
-                        hidden="hidden"
-                        accept="image/png, image/jpg, image/jpeg"
-                        {...register("imageUrl")}
-                        onChange={(e) => handleUploadedFile(e, "upi")}
-                      />
-                      <label htmlFor="upload-14624">
-                        <i className="fas fa-plus-circle mr-1" />
-                        Choose File
-                      </label>
-                    </div>
 
-                    <div className="custom-control mt-2 mb-2 custom-checkbox">
-                      <input
-                        type="checkbox"
-                        className="custom-control-input"
-                        name="terms_condition"
-                        id="termsCheck185350"
-                      />
-                      <label
-                        className="custom-control-label"
-                        htmlFor="termsCheck185350"
-                      >
-                        I have read and agree with{" "}
-                        <a
-                          href="#"
-                          data-toggle="modal"
-                          data-target="#termsAndCondition"
-                          className="terms-condition"
+                        <div className="custom-control mt-2 mb-2 custom-checkbox">
+                          <input
+                            type="checkbox"
+                            className="custom-control-input"
+                            name="terms_condition"
+                            id="termsCheck185350"
+                          />
+                          <label
+                            className="custom-control-label"
+                            htmlFor="termsCheck185350"
+                          >
+                            I have read and agree with{" "}
+                            <a
+                              href="#"
+                              data-toggle="modal"
+                              data-target="#termsAndCondition"
+                              className="terms-condition"
+                            >
+                              the terms of payment and withdrawal policy.
+                            </a>
+                          </label>
+                        </div>
+
+                        <button
+                          className="payment-pay-now d-flex flex-wrap justify-content-center bg-success text-white"
+                          type="submit"
                         >
-                          the terms of payment and withdrawal policy.
-                        </a>
-                      </label>
-                    </div>
-
-                    <button
-                      className={`payment-pay-now d-flex flex-wrap justify-content-center bg-success text-white ${preview?.imagePath && preview?.type == "bank"
-                          ? ""
-                          : ""
-                        }`}
-                      type="submit"
-                    >
-                      <div className="w-100 text-center">
-                        <span>Submit</span>
+                          <div className="w-100 text-center">
+                            <span>Submit</span>
+                          </div>
+                        </button>
                       </div>
-                    </button>
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
             </form>
           </div>
 

@@ -15,7 +15,8 @@ const DepositWithdrawSchema = new mongoose_1.Schema({
     accountType: String,
     parentStr: [],
     username: String,
-    utrno: Number
+    utrno: Number,
+    accountId: { type: mongoose_1.Types.ObjectId, ref: 'PaymentAccount' }
 }, {
     timestamps: true,
     strict: true,

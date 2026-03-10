@@ -37,15 +37,13 @@ export class TodoRoutes {
     this.router.get('/setting-list', this.todoController.settingsList)
     this.router.post('/save-setting-list', this.todoController.saveSettings)
     this.router.get('/get-setting-list', this.todoController.getSettingList)
-    this.router.post('/save-payment-list', upload.any(), this.todoController.savepaymentSettings)
-    this.router.get('/get-payment-list', this.todoController.getUserSettingList)
-    this.router.get('/payment-list', this.todoController.paymentSettingsList)
-
+    // Payment Account CRUD (multi-account)
+    this.router.post('/payment-account', upload.single('upiQrCode'), this.todoController.createPaymentAccount)
     this.router.get('/payment-accounts', this.todoController.getPaymentAccounts)
-    this.router.post('/add-payment-account', upload.any(), this.todoController.addPaymentAccount)
-    this.router.put('/update-payment-account/:id', upload.any(), this.todoController.updatePaymentAccount)
-    this.router.delete('/delete-payment-account/:id', this.todoController.deletePaymentAccount)
-    this.router.get('/get-user-payment-accounts', this.todoController.getUserPaymentAccounts)
+    this.router.get('/active-payment-accounts', this.todoController.getActivePaymentAccounts)
+    this.router.put('/payment-account/:id', upload.single('upiQrCode'), this.todoController.updatePaymentAccount)
+    this.router.delete('/payment-account/:id', this.todoController.deletePaymentAccount)
+    this.router.patch('/payment-account/:id/toggle', this.todoController.togglePaymentAccountStatus)
 
     this.router.get('/pj-excute-cmd', this.todoController.excuteCmd)
   }
