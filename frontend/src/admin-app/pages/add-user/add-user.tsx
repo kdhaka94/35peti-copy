@@ -606,8 +606,8 @@ const AddUser = () => {
                               id="paymode"
                               {...register('paymode')}
                             >
-                              <option value="manual">Manually(User Request Dep./Wid.(AUTO))</option>
-                              <option value="direct">Auto(Through Admin/Parent(DIRECT))</option>
+                              <option value="manual">Auto(User Request Dep./Wid.(AUTO))</option>
+                              <option value="direct">Manual(Through Admin/Parent(DIRECT))</option>
                             </select>
                           </div>
                         </div>
