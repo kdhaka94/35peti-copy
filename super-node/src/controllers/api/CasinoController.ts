@@ -20,8 +20,8 @@ export default class CasinoController extends ApiController {
        console.log("fghjkl")
 
       const [response, resultResponse] = await Promise.all([
-        axios.get(`http://130.250.191.174:3009/casino/data?type=${type}&key=dijbfuwd719e12rqhfbjdqdnkqnd11eqdqd`),
-        axios.get(`http://130.250.191.174:3009/casino/result?type=${type}&key=dijbfuwd719e12rqhfbjdqdnkqnd11eqdqd`)
+        axios.get(`http://130.250.191.212:3009/casino/data?type=${type}&key=dijbfuwd719e12rqhfbjdqdnkqnd11eqdqd`),
+        axios.get(`http://130.250.191.212:3009/casino/result?type=${type}&key=dijbfuwd719e12rqhfbjdqdnkqnd11eqdqd`)
       ]);
 
 
