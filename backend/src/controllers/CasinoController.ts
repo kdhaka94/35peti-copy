@@ -1944,11 +1944,11 @@ updateTv = async (req: Request, res: Response) => {
     }
   }
 
-  htmlCardsold = async (req: Request, res: Response) => {
+  htmlCards = async (req: Request, res: Response) => {
     const { type, roundId } = req.params
     try {
       // let casinoType: any = await CasinoGameResult.findOne({ mid: roundId })
-      const resultApi = await axios.get(`http://69.62.123.205:3000/detailresult2/${type}/${roundId}`)
+      const resultApi = await axios.get(`http://130.250.191.212:3009/detailresult2/${type}/${roundId}`)
       console.log(resultApi,"CGHJK")
       
       const html = resultApi?.data?.data.t1
@@ -1958,7 +1958,7 @@ updateTv = async (req: Request, res: Response) => {
     }
   }
 
-    htmlCards = async (req: Request, res: Response) => {
+    htmlCardsold = async (req: Request, res: Response) => {
     const { type, roundId } = req.params
     console.log(type,roundId,"ddf")
     try {
