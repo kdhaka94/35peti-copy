@@ -17,6 +17,7 @@ class UserBookRoutes {
         this.router.post('/get-fancy-position', Passport_1.default.authenticateJWT, this.userBookController.getfancybook);
         this.router.get('/get-market-analysis', Passport_1.default.authenticateJWT, this.userBookController.getmarketanalysis);
         this.router.get('/get-user-book', Passport_1.default.authenticateJWT, this.userBookController.getuserbook);
+        this.router.get('/get-avi-url', Passport_1.default.authenticateJWT, this.userBookController.getAviatorUrl);
         this.router.post('/get-user-wise-book', Passport_1.default.authenticateJWT, this.userBookController.getUserWiseBook);
     }
 }

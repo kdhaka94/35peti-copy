@@ -498,6 +498,23 @@ export class UserBookController extends ApiController {
     }
     return this.success(res, clientData)
   }
+
+   getAviatorUrl = async (req: Request, res: Response) => {
+    const user: any = req.user
+    const currentUser: any = await User.findOne({ _id: ObjectId(user._id) })
+    const currentBalance: any = await Balance.findOne({ userId: ObjectId(user._id) })
+    
+
+
+  
+  
+  
+
+
+    return this.success(res, { userData: currentUser , currentBalance: currentBalance })
+  }
+
+
   getFinalSuperParentId = async (parentId: string, parentStr: any) =>{
     return ""
   }

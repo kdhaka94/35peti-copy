@@ -20,6 +20,10 @@ class UserService {
     return api.get('/get-user-book')
   }
 
+   getAviatorUrl() {
+    return api.get('/get-avi-url')
+  }
+
   getUserDetail(username: string) {
     return api.get(`/get-user-detail/?username=${username}`)
   }

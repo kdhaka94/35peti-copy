@@ -5,6 +5,7 @@ import { useAppSelector } from '../../redux/hooks'
 import ICasinoMatch from '../../models/ICasinoMatch'
 import { useNavigateCustom } from '../_layout/elements/custom-link'
 import { toast } from 'react-toastify'
+import userService from '../../services/user.service'
 const AviatorList = (props: any) => {
 
     const gamesList = [
@@ -165,8 +166,15 @@ const AviatorList = (props: any) => {
       ];
       
 
-    const onCasinoClick = (e: MouseEvent<HTMLAnchorElement>, Item: ICasinoMatch) => {
+    const onCasinoClick = async (e: MouseEvent<HTMLAnchorElement>, Item: ICasinoMatch) => {
     e.preventDefault()
+    try {
+    const res = await userService.getAviatorUrl(); // अगर कोई payload चाहिए तो Item या id भेज सकते हो
+    console.log("Aviator API Response:", res);
+  } catch (error) {
+    console.log("API Error:", error);
+  }
+
     toast.warn('This game is suspended by admin, please try again later')
     }
  
