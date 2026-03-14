@@ -87,8 +87,8 @@ const Deposit = () => {
                         }}
                         onClick={() => setSelectedAccount(acc)}
                       >
-                        <strong style={{ fontSize: "13px" }}>{acc.bankName}</strong>
-                        <small className="text-muted">{acc.accountHolderName}</small>
+                        <strong style={{ fontSize: "13px" }}>{acc.accountType === 'usdt' ? `💰 USDT` : `🏦 ${acc.bankName}`}</strong>
+                        <small className="text-muted">{acc.accountType === 'usdt' ? acc.network : acc.accountHolderName}</small>
                       </div>
                     ))}
                   </div>
@@ -100,104 +100,147 @@ const Deposit = () => {
                 <div
                   className="payment-ions-container"
                 >
-                  {/* UPI Section */}
-                  <div className="payment-icons" style={{ width: "100%" }}>
-                    <div className="glass" />
-                    <div className="content">
-                      <div className="payment-icons-title">
-                        <h4 className="mb-0">
-                          <span>UPI Payment</span>{" "}
-                          <i className="fas fa-info-circle payment-rules" />
-                        </h4>
-                        <p>Make Sure You Attach Successful Payment Screenshot</p>
-                      </div>
-                      <div className="deposit-options">
-                        <div className="bank-detail">
-                          <div className="payment-detail-box">
-                            <p>
-                              {selectedAccount.upiId}
-                              <span className="ml-auto">
-                                <i
-                                  className="fas fa-copy mr-1"
-                                  onClick={() => copytoclipboard(selectedAccount.upiId)}
+                  {/* USDT Section */}
+                  {selectedAccount.accountType === 'usdt' && (
+                    <div className="payment-icons" style={{ width: "100%" }}>
+                      <div className="glass" />
+                      <div className="content">
+                        <div className="payment-icons-title">
+                          <h4 className="mb-0">
+                            <span>💰 USDT Payment</span>
+                          </h4>
+                          <p>Send USDT to the wallet address below</p>
+                        </div>
+                        <div className="deposit-options">
+                          <div className="bank-detail">
+                            <div className="payment-detail-box">
+                              <p>
+                                <strong>Network:</strong> {selectedAccount.network}
+                              </p>
+                            </div>
+                            <div className="payment-detail-box">
+                              <p>
+                                <strong>Wallet Address:</strong>{" "}
+                                <span style={{ wordBreak: "break-all" }}>{selectedAccount.walletAddress}</span>
+                                <span className="ml-auto">
+                                  <i
+                                    className="fas fa-copy mr-1"
+                                    onClick={() => copytoclipboard(selectedAccount.walletAddress)}
+                                  />
+                                </span>
+                              </p>
+                            </div>
+                            {selectedAccount.upiQrCode && (
+                              <div className="text-center qr-code">
+                                <p>Scan to Pay</p>
+                                <img
+                                  src={`${process.env.REACT_APP_SITE_URL}${selectedAccount.upiQrCode}`}
+                                  alt="USDT QR Code"
+                                  style={{ maxWidth: 200 }}
                                 />
-                              </span>
-                            </p>
-                          </div>
-                          <div className="text-center qr-code">
-                            <PaymentQRCode
-                              upiId={selectedAccount.upiId}
-                              name={selectedAccount.upiName}
-                              amount={amount}
-                              transactionId={generateTransactionId()}
-                            />
+                              </div>
+                            )}
                           </div>
                         </div>
                       </div>
                     </div>
-                  </div>
+                  )}
 
-                  {/* Bank Section */}
+                  {/* UPI Section - only for bank accounts */}
+                  {selectedAccount.accountType !== 'usdt' && (
+                    <div className="payment-icons" style={{ width: "100%" }}>
+                      <div className="glass" />
+                      <div className="content">
+                        <div className="payment-icons-title">
+                          <h4 className="mb-0">
+                            <span>UPI Payment</span>{" "}
+                            <i className="fas fa-info-circle payment-rules" />
+                          </h4>
+                          <p>Make Sure You Attach Successful Payment Screenshot</p>
+                        </div>
+                        <div className="deposit-options">
+                          <div className="bank-detail">
+                            <div className="payment-detail-box">
+                              <p>
+                                {selectedAccount.upiId}
+                                <span className="ml-auto">
+                                  <i
+                                    className="fas fa-copy mr-1"
+                                    onClick={() => copytoclipboard(selectedAccount.upiId)}
+                                  />
+                                </span>
+                              </p>
+                            </div>
+                            <div className="text-center qr-code">
+                              <PaymentQRCode
+                                upiId={selectedAccount.upiId}
+                                name={selectedAccount.upiName}
+                                amount={amount}
+                                transactionId={generateTransactionId()}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Bank Section - only for bank accounts */}
+                  {selectedAccount.accountType !== 'usdt' && (
+                    <div className="payment-icons" style={{ width: "100%" }}>
+                      <div className="glass" />
+                      <div className="content">
+                        <div className="payment-icons-title">
+                          <h4 className="mb-0 text-center">
+                            <span>Bank Account</span>
+                          </h4>
+                        </div>
+                        <div className="deposit-options">
+                          <div className="bank-detail">
+                            <div className="payment-detail-box">
+                              <p>
+                                Account Name:{selectedAccount.accountHolderName}
+                                <i className="fas fa-copy mr-1" onClick={() => copytoclipboard(selectedAccount.accountHolderName)} />
+                              </p>
+                            </div>
+                            <div className="payment-detail-box">
+                              <p>
+                                A/c No.{selectedAccount.accountNumber}
+                                <i className="fas fa-copy mr-1" onClick={() => copytoclipboard(selectedAccount.accountNumber)} />
+                              </p>
+                            </div>
+                            <div className="payment-detail-box">
+                              <p>
+                                IFSC Code:{selectedAccount.ifscCode}
+                                <i className="fas fa-copy mr-1" onClick={() => copytoclipboard(selectedAccount.ifscCode)} />
+                              </p>
+                            </div>
+                            <div className="payment-detail-box">
+                              <p>
+                                Bank Name :{selectedAccount.bankName}
+                                <i className="fas fa-copy mr-1" onClick={() => copytoclipboard(selectedAccount.bankName)} />
+                              </p>
+                            </div>
+                            <small>(Range: 100 - 100000)</small>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* UTR Input - shared for all account types */}
                   <div className="payment-icons" style={{ width: "100%" }}>
                     <div className="glass" />
                     <div className="content">
-                      <div className="payment-icons-title">
-                        <h4 className="mb-0 text-center">
-                          <span>Bank Account</span>
-                        </h4>
-                      </div>
-                      <div className="deposit-options">
-                        <div className="bank-detail">
-                          <div className="payment-detail-box">
-                            <p>
-                              Account Name:{selectedAccount.accountHolderName}
-                              <i
-                                className="fas fa-copy mr-1"
-                                onClick={() => copytoclipboard(selectedAccount.accountHolderName)}
-                              />
-                            </p>
-                          </div>
-                          <div className="payment-detail-box">
-                            <p>
-                              A/c No.{selectedAccount.accountNumber}
-                              <i
-                                className="fas fa-copy mr-1"
-                                onClick={() => copytoclipboard(selectedAccount.accountNumber)}
-                              />
-                            </p>
-                          </div>
-                          <div className="payment-detail-box">
-                            <p>
-                              IFSC Code:{selectedAccount.ifscCode}
-                              <i
-                                className="fas fa-copy mr-1"
-                                onClick={() => copytoclipboard(selectedAccount.ifscCode)}
-                              />
-                            </p>
-                          </div>
-                          <div className="payment-detail-box">
-                            <p>
-                              Bank Name :{selectedAccount.bankName}
-                              <i
-                                className="fas fa-copy mr-1"
-                                onClick={() => copytoclipboard(selectedAccount.bankName)}
-                              />
-                            </p>
-                          </div>
-                          <small>(Range: 100 - 100000)</small>
-                        </div>
-                      </div>
-
-                      {/* UTR Input */}
                       <div className="col-lg-12" style={{ padding: "7px" }}>
                         <input
                           type="number"
                           className="form-control"
-                          placeholder="Enter UTR No"
+                          placeholder={selectedAccount.accountType === 'usdt' ? "Enter Transaction Hash / Reference" : "Enter UTR No"}
                           {...register("utrno")}
                           value={preview.utrno || ""}
                           disabled={!(amount && Number(amount) > 0)}
-                          onChange={(e) => handleUploadedUTR(e, "bank")}
+                          onChange={(e) => handleUploadedUTR(e, selectedAccount.accountType === 'usdt' ? 'usdt' : 'bank')}
                         />
                       </div>
 
@@ -215,7 +258,7 @@ const Deposit = () => {
                             hidden="hidden"
                             accept="image/png, image/jpg, image/jpeg"
                             {...register("imageUrl")}
-                            onChange={(e) => handleUploadedFile(e, "bank")}
+                            onChange={(e) => handleUploadedFile(e, selectedAccount.accountType === 'usdt' ? 'usdt' : 'bank')}
                           />
                           <label htmlFor="upload-14624">
                             <i className="fas fa-plus-circle mr-1" />
