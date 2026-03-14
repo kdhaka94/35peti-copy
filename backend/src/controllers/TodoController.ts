@@ -78,16 +78,19 @@ export class TodoController extends ApiController {
         return this.fail(res, 'Maximum 15 accounts allowed. Delete an existing account first.')
       }
 
-      const { bankName, accountHolderName, accountNumber, ifscCode, upiId, upiName, isActive } = req.body
+      const { bankName, accountHolderName, accountNumber, ifscCode, upiId, upiName, isActive, accountType, walletAddress, network } = req.body
 
       const accountData: any = {
         userId,
+        accountType: accountType || 'bank',
         bankName,
         accountHolderName,
         accountNumber,
         ifscCode,
         upiId,
         upiName,
+        walletAddress,
+        network,
         isActive: isActive !== undefined ? isActive : true,
       }
 
@@ -125,17 +128,20 @@ export class TodoController extends ApiController {
   updatePaymentAccount = async (req: Request, res: Response) => {
     try {
       const { id } = req.params
-      const { bankName, accountHolderName, accountNumber, ifscCode, upiId, upiName, isActive } = req.body
+      const { bankName, accountHolderName, accountNumber, ifscCode, upiId, upiName, isActive, accountType, walletAddress, network } = req.body
 
       const account = await PaymentAccount.findById(id)
       if (!account) return this.fail(res, 'Account not found')
 
+      if (accountType !== undefined) account.accountType = accountType
       if (bankName !== undefined) account.bankName = bankName
       if (accountHolderName !== undefined) account.accountHolderName = accountHolderName
       if (accountNumber !== undefined) account.accountNumber = accountNumber
       if (ifscCode !== undefined) account.ifscCode = ifscCode
       if (upiId !== undefined) account.upiId = upiId
       if (upiName !== undefined) account.upiName = upiName
+      if (walletAddress !== undefined) account.walletAddress = walletAddress
+      if (network !== undefined) account.network = network
       if (isActive !== undefined) account.isActive = isActive
 
       if (req.file) {

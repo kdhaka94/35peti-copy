@@ -5,13 +5,16 @@ const mongoose_1 = require("mongoose");
 const mongoose_2 = require("mongoose");
 const PaymentAccountSchema = new mongoose_2.Schema({
     userId: { type: mongoose_1.Types.ObjectId, ref: 'User' },
-    bankName: { type: String, required: true, trim: true },
-    accountHolderName: { type: String, required: true, trim: true },
-    accountNumber: { type: String, required: true, trim: true },
-    ifscCode: { type: String, required: true, trim: true },
-    upiId: { type: String, required: true, trim: true },
+    accountType: { type: String, enum: ['bank', 'usdt'], default: 'bank' },
+    bankName: { type: String, trim: true },
+    accountHolderName: { type: String, trim: true },
+    accountNumber: { type: String, trim: true },
+    ifscCode: { type: String, trim: true },
+    upiId: { type: String, trim: true },
     upiName: { type: String, trim: true },
     upiQrCode: { type: String, default: null },
+    walletAddress: { type: String, trim: true },
+    network: { type: String, trim: true },
     isActive: { type: Boolean, default: true },
 }, {
     timestamps: true,

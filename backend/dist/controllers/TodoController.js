@@ -80,15 +80,18 @@ class TodoController extends ApiController_1.ApiController {
                 if (count >= 15) {
                     return this.fail(res, 'Maximum 15 accounts allowed. Delete an existing account first.');
                 }
-                const { bankName, accountHolderName, accountNumber, ifscCode, upiId, upiName, isActive } = req.body;
+                const { bankName, accountHolderName, accountNumber, ifscCode, upiId, upiName, isActive, accountType, walletAddress, network } = req.body;
                 const accountData = {
                     userId,
+                    accountType: accountType || 'bank',
                     bankName,
                     accountHolderName,
                     accountNumber,
                     ifscCode,
                     upiId,
                     upiName,
+                    walletAddress,
+                    network,
                     isActive: isActive !== undefined ? isActive : true,
                 };
                 if (req.file) {
@@ -124,10 +127,12 @@ class TodoController extends ApiController_1.ApiController {
         this.updatePaymentAccount = (req, res) => __awaiter(this, void 0, void 0, function* () {
             try {
                 const { id } = req.params;
-                const { bankName, accountHolderName, accountNumber, ifscCode, upiId, upiName, isActive } = req.body;
+                const { bankName, accountHolderName, accountNumber, ifscCode, upiId, upiName, isActive, accountType, walletAddress, network } = req.body;
                 const account = yield Payments_1.PaymentAccount.findById(id);
                 if (!account)
                     return this.fail(res, 'Account not found');
+                if (accountType !== undefined)
+                    account.accountType = accountType;
                 if (bankName !== undefined)
                     account.bankName = bankName;
                 if (accountHolderName !== undefined)
@@ -140,6 +145,10 @@ class TodoController extends ApiController_1.ApiController {
                     account.upiId = upiId;
                 if (upiName !== undefined)
                     account.upiName = upiName;
+                if (walletAddress !== undefined)
+                    account.walletAddress = walletAddress;
+                if (network !== undefined)
+                    account.network = network;
                 if (isActive !== undefined)
                     account.isActive = isActive;
                 if (req.file) {

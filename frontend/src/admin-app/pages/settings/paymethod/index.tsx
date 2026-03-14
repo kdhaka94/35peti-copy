@@ -7,12 +7,15 @@ import mobileSubheader from '../../_layout/elements/mobile-subheader'
 const MAX_ACCOUNTS = 15
 
 const emptyForm = {
+  accountType: 'bank' as 'bank' | 'usdt',
   bankName: '',
   accountHolderName: '',
   accountNumber: '',
   ifscCode: '',
   upiId: '',
   upiName: '',
+  walletAddress: '',
+  network: 'TRC20',
   isActive: true,
 }
 
@@ -67,12 +70,15 @@ const PaymentAccountSettings = () => {
 
   const handleEdit = (account: any) => {
     setFormData({
+      accountType: account.accountType || 'bank',
       bankName: account.bankName || '',
       accountHolderName: account.accountHolderName || '',
       accountNumber: account.accountNumber || '',
       ifscCode: account.ifscCode || '',
       upiId: account.upiId || '',
       upiName: account.upiName || '',
+      walletAddress: account.walletAddress || '',
+      network: account.network || 'TRC20',
       isActive: account.isActive,
     })
     setEditingId(account._id)
@@ -168,45 +174,91 @@ const PaymentAccountSettings = () => {
                   <div className='card-body'>
                     <form onSubmit={handleSubmit}>
                       <div className='row'>
-                        <div className='col-lg-6'>
+                        {/* Account Type Selector */}
+                        <div className='col-lg-12 mb-3'>
                           <div className='form-group'>
-                            <label>Bank Name *</label>
-                            <input type='text' name='bankName' className='form-control' value={formData.bankName} onChange={handleChange} required />
+                            <label>Account Type *</label>
+                            <div className='d-flex' style={{ gap: '10px' }}>
+                              <button type='button' className={`btn ${formData.accountType === 'bank' ? 'btn-primary' : 'btn-outline-secondary'}`}
+                                onClick={() => setFormData(prev => ({ ...prev, accountType: 'bank' }))}>
+                                🏦 Bank / UPI
+                              </button>
+                              <button type='button' className={`btn ${formData.accountType === 'usdt' ? 'btn-primary' : 'btn-outline-secondary'}`}
+                                onClick={() => setFormData(prev => ({ ...prev, accountType: 'usdt' }))}>
+                                💰 USDT
+                              </button>
+                            </div>
                           </div>
                         </div>
+
+                        {/* Bank Fields - shown only for bank type */}
+                        {formData.accountType === 'bank' && (
+                          <>
+                            <div className='col-lg-6'>
+                              <div className='form-group'>
+                                <label>Bank Name *</label>
+                                <input type='text' name='bankName' className='form-control' value={formData.bankName} onChange={handleChange} required />
+                              </div>
+                            </div>
+                            <div className='col-lg-6'>
+                              <div className='form-group'>
+                                <label>Account Holder Name *</label>
+                                <input type='text' name='accountHolderName' className='form-control' value={formData.accountHolderName} onChange={handleChange} required />
+                              </div>
+                            </div>
+                            <div className='col-lg-6'>
+                              <div className='form-group'>
+                                <label>Account Number *</label>
+                                <input type='text' name='accountNumber' className='form-control' value={formData.accountNumber} onChange={handleChange} required />
+                              </div>
+                            </div>
+                            <div className='col-lg-6'>
+                              <div className='form-group'>
+                                <label>IFSC Code *</label>
+                                <input type='text' name='ifscCode' className='form-control' value={formData.ifscCode} onChange={handleChange} required />
+                              </div>
+                            </div>
+                            <div className='col-lg-6'>
+                              <div className='form-group'>
+                                <label>UPI ID *</label>
+                                <input type='text' name='upiId' className='form-control' value={formData.upiId} onChange={handleChange} required />
+                              </div>
+                            </div>
+                            <div className='col-lg-6'>
+                              <div className='form-group'>
+                                <label>UPI Name</label>
+                                <input type='text' name='upiName' className='form-control' value={formData.upiName} onChange={handleChange} />
+                              </div>
+                            </div>
+                          </>
+                        )}
+
+                        {/* USDT Fields - shown only for usdt type */}
+                        {formData.accountType === 'usdt' && (
+                          <>
+                            <div className='col-lg-6'>
+                              <div className='form-group'>
+                                <label>Wallet Address *</label>
+                                <input type='text' name='walletAddress' className='form-control' value={formData.walletAddress} onChange={handleChange} required placeholder='e.g. TXyz123...' />
+                              </div>
+                            </div>
+                            <div className='col-lg-6'>
+                              <div className='form-group'>
+                                <label>Network *</label>
+                                <select name='network' className='form-control' value={formData.network} onChange={handleChange as any} required>
+                                  <option value='TRC20'>TRC20 (Tron)</option>
+                                  <option value='ERC20'>ERC20 (Ethereum)</option>
+                                  <option value='BEP20'>BEP20 (BSC)</option>
+                                </select>
+                              </div>
+                            </div>
+                          </>
+                        )}
+
+                        {/* QR Code - shown for both types */}
                         <div className='col-lg-6'>
                           <div className='form-group'>
-                            <label>Account Holder Name *</label>
-                            <input type='text' name='accountHolderName' className='form-control' value={formData.accountHolderName} onChange={handleChange} required />
-                          </div>
-                        </div>
-                        <div className='col-lg-6'>
-                          <div className='form-group'>
-                            <label>Account Number *</label>
-                            <input type='text' name='accountNumber' className='form-control' value={formData.accountNumber} onChange={handleChange} required />
-                          </div>
-                        </div>
-                        <div className='col-lg-6'>
-                          <div className='form-group'>
-                            <label>IFSC Code *</label>
-                            <input type='text' name='ifscCode' className='form-control' value={formData.ifscCode} onChange={handleChange} required />
-                          </div>
-                        </div>
-                        <div className='col-lg-6'>
-                          <div className='form-group'>
-                            <label>UPI ID *</label>
-                            <input type='text' name='upiId' className='form-control' value={formData.upiId} onChange={handleChange} required />
-                          </div>
-                        </div>
-                        <div className='col-lg-6'>
-                          <div className='form-group'>
-                            <label>UPI Name</label>
-                            <input type='text' name='upiName' className='form-control' value={formData.upiName} onChange={handleChange} />
-                          </div>
-                        </div>
-                        <div className='col-lg-6'>
-                          <div className='form-group'>
-                            <label>UPI QR Code Image</label>
+                            <label>QR Code Image</label>
                             <input type='file' className='form-control' accept='image/jpeg,image/jpg,image/png,image/webp' onChange={handleFileChange} />
                             {qrPreview && (
                               <img src={qrPreview} alt='QR Preview' style={{ width: 80, height: 80, objectFit: 'contain', marginTop: 8, border: '1px solid #ddd', borderRadius: 4 }} />
@@ -242,10 +294,10 @@ const PaymentAccountSettings = () => {
                     <thead className='thead-dark'>
                       <tr>
                         <th>#</th>
-                        <th>Bank Name</th>
-                        <th>Account Holder</th>
-                        <th>Account No.</th>
-                        <th>IFSC</th>
+                        <th>Type</th>
+                        <th>Bank / Wallet</th>
+                        <th>Holder / Network</th>
+                        <th>Account No. / Address</th>
                         <th>UPI ID</th>
                         <th>QR</th>
                         <th>Status</th>
@@ -256,11 +308,17 @@ const PaymentAccountSettings = () => {
                       {accounts.map((acc: any, index: number) => (
                         <tr key={acc._id} style={{ opacity: acc.isActive ? 1 : 0.5 }}>
                           <td>{index + 1}</td>
-                          <td>{acc.bankName}</td>
-                          <td>{acc.accountHolderName}</td>
-                          <td>{acc.accountNumber}</td>
-                          <td>{acc.ifscCode}</td>
-                          <td>{acc.upiId}</td>
+                          <td>
+                            <span className={`badge ${acc.accountType === 'usdt' ? 'bg-warning text-dark' : 'bg-primary'}`}>
+                              {acc.accountType === 'usdt' ? '💰 USDT' : '🏦 Bank'}
+                            </span>
+                          </td>
+                          <td>{acc.accountType === 'usdt' ? '—' : acc.bankName}</td>
+                          <td>{acc.accountType === 'usdt' ? acc.network : acc.accountHolderName}</td>
+                          <td style={{ maxWidth: 150, overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                            {acc.accountType === 'usdt' ? acc.walletAddress : acc.accountNumber}
+                          </td>
+                          <td>{acc.accountType === 'usdt' ? '—' : acc.upiId}</td>
                           <td>
                             {acc.upiQrCode ? (
                               <img
