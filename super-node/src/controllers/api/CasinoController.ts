@@ -280,7 +280,7 @@ getSingleMarket = async (req: Request, res: Response) => {
       console.log(type,"type")
 
       let response = await axios.get(
-        `http://130.250.191.174:3009/casino/data?type=${type}&key=dijbfuwd719e12rqhfbjdqdnkqnd11eqdqd`
+        `http://130.250.191.212:3009/casino/data?type=${type}&key=dijbfuwd719e12rqhfbjdqdnkqnd11eqdqd`
       );
       let data = response.data;
       console.log(data,"single")
