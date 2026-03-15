@@ -1810,7 +1810,7 @@ class CasinoController extends ApiController_1.ApiController {
             const { type, roundId } = req.params;
             try {
                 // let casinoType: any = await CasinoGameResult.findOne({ mid: roundId })
-                const resultApi = yield axios_1.default.get(`http://130.250.191.212:3009/detailresult2/${type}/${roundId}`);
+                const resultApi = yield axios_1.default.get(`http://130.250.191.212:3009/casino/detail_result?type=${type}&mid=${roundId}&key=dijbfuwd719e12rqhfbjdqdnkqnd11eqdqd`);
                 console.log(resultApi, "CGHJK");
                 const html = (_f = resultApi === null || resultApi === void 0 ? void 0 : resultApi.data) === null || _f === void 0 ? void 0 : _f.data.t1;
                 return this.success(res, { html });

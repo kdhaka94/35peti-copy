@@ -40,7 +40,7 @@ export const WhiteLabelProvider: React.FC<{ children: ReactNode }> = ({ children
       // Get white-label by current domain
       const hostname = window.location.hostname;
       const response = await whiteLabelService.getWhiteLabelByDomain(hostname);
-      const data = response.data.data.whiteLabel;
+      const data = response.data.data;
       
       if (data && data.isActive) {
         setWhiteLabel(data);
@@ -73,6 +73,8 @@ export const WhiteLabelProvider: React.FC<{ children: ReactNode }> = ({ children
 
   const applyTheme = (data?: WhiteLabelData) => {
     const themeData = data || whiteLabel;
+    console.log(themeData,"themedata")
+   
     if (!themeData) return;
 
     // Set theme-1 background color dynamically
