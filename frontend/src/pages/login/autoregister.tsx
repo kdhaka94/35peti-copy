@@ -86,6 +86,7 @@ const RegisterAuto = () => {
           username: formData.username,
           password: formData.password,
           parent: whiteLabel?.userId?.username,
+          // parent:"Rahulauto",
           confirm_password: formData.confirm_password,
         },
         {

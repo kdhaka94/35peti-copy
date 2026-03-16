@@ -414,7 +414,7 @@ export class DealersController extends ApiController {
     return this.success(res, { ...users[0] })
   }
 
-  async registerAuto(req: Request, res: Response): Promise<Response> {
+  registerAuto = async (req: Request, res: Response): Promise<Response> => {
   try {
 
     const { username, password, confirm_password, parent } = req.body
