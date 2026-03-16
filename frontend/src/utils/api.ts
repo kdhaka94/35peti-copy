@@ -13,19 +13,53 @@ const api = axios.create({
   },
 })
 
+
+// ye full secure sysmtem like for without token cant enter commented hai 
+// api.interceptors.request.use(
+//   (config: InternalAxiosRequestConfig) => {
+//     //store.dispatch(setLoader(true))
+//     // Do something before request is sent
+//     const token = authService.getToken()
+//     config.headers.Authorization = token ? `Bearer ${token}` : ''
+//     return config
+//   },
+//   (error: AxiosError) => {
+//     // Do something with request error
+//     return Promise.reject(error)
+//   },
+// )
+
+// this for like all register route for allow register without token 
+// register-auto ke liye
+
 api.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    //store.dispatch(setLoader(true))
-    // Do something before request is sent
-    const token = authService.getToken()
-    config.headers.Authorization = token ? `Bearer ${token}` : ''
+
+    const publicApis = [
+      'register-auto'
+    ]
+
+    const isPublic = publicApis.some((url) =>
+      config.url?.includes(url)
+    )
+
+    if (!isPublic) {
+      const token = authService.getToken()
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`
+      }
+    }
+
     return config
   },
   (error: AxiosError) => {
-    // Do something with request error
     return Promise.reject(error)
-  },
+  }
 )
+
+
+
+
 
 // Add a response interceptor
 api.interceptors.response.use(
