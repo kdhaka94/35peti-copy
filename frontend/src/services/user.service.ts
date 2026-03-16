@@ -52,7 +52,11 @@ cerateStaff(data:any) {
   
 
   addUser(data: any) {
-    return api.post('/register', data)
+    return api.post('/register', data,{
+   headers:{
+     "Content-Type":"multipart/form-data"
+   }
+ })
   }
 
   updatePassword(data: any) {

@@ -7,6 +7,7 @@ import { selectUserData, userUpdate } from '../../../redux/actions/login/loginSl
 import User from '../../../models/User'
 import { getUserInfoAction, loginAction } from '../../../redux/actions/login/login.action'
 import SubmitButton from '../../../components/SubmitButton'
+import { useWhiteLabel } from '../../../context/WhiteLabelContext'
 
 const Login = () => {
   const dispatch = useAppDispatch()
@@ -122,6 +123,13 @@ const Login = () => {
     dispatch(loginAction(loginForm))
   }
 
+  const { whiteLabel } = useWhiteLabel();
+  const API_URL = process.env.REACT_APP_API_BASEURL || "";
+  
+  const logoSrc = whiteLabel?.logoImage
+    ? `${API_URL.replace("/api","")}/${whiteLabel.logoImage}`
+    : "/imgs/logo.png";
+
   return (
     <div className='login'>
       <div className='wrapper d-flex justify-content-center align-items-center'>
@@ -130,7 +138,7 @@ const Login = () => {
             <div className='col-md-12'>
               <div className='loginInner1'>
                 <div className='log-logo m-b-20 text-center'>
-                  <img src='/imgs/logo.png' className='logo-login' style={{ maxWidth: "250px", maxHeight: "100px" }} />
+                  <img src={logoSrc} className='logo-login' style={{ maxWidth: "250px", maxHeight: "100px" }} />
                 </div>
                 <div className='featured-box-login featured-box-secundary default log-fld'>
                   <h2 className="text-center">Sign In</h2>

@@ -143,6 +143,14 @@ export class DealersController extends ApiController {
               { new: true, upsert: true, session },
             )
 
+            let logoImagePath = ""
+
+if(req.file){
+   logoImagePath = req.file.path.replace(/\\/g, "/")
+}
+
+console.log(logoImagePath,"logoImagePath", req.file)
+
             // Automatically create a white-label for admin users
             if (role === RoleType.sadmin) {
               // Create a default domain based on the admin's username
@@ -155,6 +163,7 @@ export class DealersController extends ApiController {
                 mode:paymode,
                 companyName: defaultCompanyName,
                 logoUrl: req.body.whiteLabelLogoUrl || '',
+                logoImage: logoImagePath || "errr" ,
                 faviconUrl: req.body.whiteLabelFaviconUrl || '',
                 primaryColor: req.body.whiteLabelPrimaryColor || '#007bff',
                 secondaryColor: req.body.whiteLabelSecondaryColor || '#6c757d',

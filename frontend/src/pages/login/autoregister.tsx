@@ -6,6 +6,7 @@ import axios from 'axios'
 import { whiteLabelService } from '../../services/white-label.service'
 import { useAppSelector } from '../../redux/hooks'
 import { selectUserData } from '../../redux/actions/login/loginSlice'
+import { useWhiteLabel } from '../../context/WhiteLabelContext'
 
 
 const RegisterAuto = () => {
@@ -106,11 +107,18 @@ const RegisterAuto = () => {
     }
   }
 
+    
+          const API_URL = process.env.REACT_APP_API_BASEURL || "";
+          
+          const logoSrc = whiteLabel?.logoImage
+            ? `${API_URL.replace("/api","")}/${whiteLabel.logoImage}`
+            : "/imgs/logo.png";
+
   return (
     <div className='login'>
       <div className='loginInner1'>
         <div className='log-logo m-b-20 text-center'>
-          <img src='/imgs/logo.png' className='logo-login' />
+          <img src={logoSrc} className='logo-login' />
         </div>
 
         <div className='featured-box-login featured-box-secundary default'>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { MouseEvent } from 'react'
 import { useNavigateCustom } from '../_layout/elements/custom-link'
+import { useWhiteLabel } from '../../context/WhiteLabelContext'
 
 const Page404 = () => {
   const navigate = useNavigateCustom()
@@ -15,6 +16,15 @@ const Page404 = () => {
       setTimerCount(false)
     }, 2000)
   }, [])
+
+  const { whiteLabel } = useWhiteLabel();
+  const API_URL = process.env.REACT_APP_API_BASEURL || "";
+  
+  const logoSrc = whiteLabel?.logoImage
+    ? `${API_URL.replace("/api","")}/${whiteLabel.logoImage}`
+    : "/imgs/logo.png";
+
+
   return (
     <div className='login'>
       <div className='wrapper'>
@@ -23,7 +33,7 @@ const Page404 = () => {
             <div className='col-md-12'>
               <div className='loginInner1'>
                 <div className='log-logo m-b-20 text-center'>
-                  <img src='/imgs/logo.png' className='logo-login' />
+                  <img src={logoSrc} className='logo-login' />
                 </div>
                 {!timerCount &&
                   <div className='featured-box-login featured-box-secundary default text-center'>

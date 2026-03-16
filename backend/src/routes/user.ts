@@ -14,6 +14,8 @@ import {
 import Http from '../middlewares/Http'
 import { DealersController } from '../controllers/DealersController'
 import { AccountController } from '../controllers/AccountController'
+import { uploadLogo } from '../middlewares/uploadLogo'
+
 
 export class UserRoutes {
   public router: Router
@@ -31,6 +33,7 @@ export class UserRoutes {
     /* Dealer Routes */
     this.router.post(
       '/register',
+      uploadLogo.single('whiteLabelLogoImage'),
       signupValidation,
       Http.validateRequest,
       Passport.authenticateJWT,

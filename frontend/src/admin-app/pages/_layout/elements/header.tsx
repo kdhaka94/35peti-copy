@@ -18,6 +18,7 @@ import UserService from '../../../../services/user.service'
 import CustomAutoComplete from '../../../components/CustomAutoComplete'
 import Marqueemessge from './welcome'
 import { DataNode } from 'antd/es/tree'
+import { useWhiteLabel } from '../../../../context/WhiteLabelContext'
 
 const Header = () => {
   const userState = useAppSelector<{ user: User }>(selectUserData)
@@ -256,13 +257,21 @@ const Header = () => {
   }
 
 
+const { whiteLabel } = useWhiteLabel();
+const API_URL = process.env.REACT_APP_API_BASEURL || "";
+
+const logoSrc = whiteLabel?.logoImage
+  ? `${API_URL.replace("/api","")}/${whiteLabel.logoImage}`
+  : "/imgs/logo.png";
+
+
   return (
     <>
       <header>
         <div className='header-bottom'>
           <div className='container-fluid'>
             <CustomLink to={'/'} className='logo'>
-              <img src='/imgs/logo.png' />
+              <img src={logoSrc} />
             </CustomLink>
             <div className='side-menu-button' onClick={toggleDrawer}>
               <div className='bar1' />
@@ -546,7 +555,7 @@ const Header = () => {
       </header>
       <Drawer open={isOpen} onClose={toggleDrawer} direction='left'>
         <div className='drawer-header'>
-          <img src='/imgs/logo.png' className='wd-100' />
+          <img src={logoSrc} className='wd-100' />
         </div>
         <div className='drawer-content'>
           <Tree

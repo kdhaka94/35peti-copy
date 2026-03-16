@@ -3,6 +3,7 @@ import api from '../../../utils/api'
 import { useNavigateCustom } from '../../../pages/_layout/elements/custom-link'
 import SubmitButton from '../../../components/SubmitButton'
 import authService from '../../../services/auth.service'
+import { useWhiteLabel } from '../../../context/WhiteLabelContext'
 
 const StaffLogin = () => {
   const navigate = useNavigateCustom()
@@ -55,6 +56,13 @@ const [loginForm, setLoginForm] = useState({
     setLoading(false)
   }
 
+    const { whiteLabel } = useWhiteLabel();
+          const API_URL = process.env.REACT_APP_API_BASEURL || "";
+          
+          const logoSrc = whiteLabel?.logoImage
+            ? `${API_URL.replace("/api","")}/${whiteLabel.logoImage}`
+            : "/imgs/logo.png";
+
   return (
     <div className='login'>
       <div className='wrapper d-flex justify-content-center align-items-center'>
@@ -65,7 +73,7 @@ const [loginForm, setLoginForm] = useState({
                 
                 <div className='log-logo m-b-20 text-center'>
                   <img
-                    src='/imgs/logo.png'
+                    src={logoSrc}
                     className='logo-login'
                     style={{ maxWidth: "250px", maxHeight: "100px" }}
                   />

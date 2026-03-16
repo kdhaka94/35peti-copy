@@ -57,6 +57,8 @@ const AddUser = () => {
   const sportListState = useAppSelector<{ sports: ISport[] }>(selectSportList)
   const UNLIMITED_VALUE = 10000000;
 
+  const [logoFile,setLogoFile] = React.useState<File | null>(null)
+
   const [isUnlimited, setIsUnlimited] = React.useState(false);
   const { username } = useParams()
 
@@ -277,7 +279,17 @@ const AddUser = () => {
 
     console.log("Final data to submit:", data);
 
-    UserService.addUser(data)
+    const formData = new FormData()
+
+Object.entries(data).forEach(([key,value])=>{
+  formData.append(key,String(value))
+})
+
+if(logoFile){
+  formData.append("whiteLabelLogoImage",logoFile)
+}
+
+    UserService.addUser(formData)
       .then(() => {
         toast.success('User successfully created');
         reset();
@@ -1036,6 +1048,22 @@ const AddUser = () => {
                             />
                           </div>
                         </div>
+
+
+                        <div className="col-md-6">
+  <div className="form-group">
+    <label>Logo Image</label>
+    <input
+      type="file"
+      className="form-control"
+      accept="image/png,image/jpeg,image/jpg,image/webp"
+      onChange={(e:any)=>setLogoFile(e.target.files[0])}
+    />
+  </div>
+</div>
+
+
+
                         <div className="col-md-6">
                           <div className="form-group">
                             <label htmlFor="whiteLabelFaviconUrl">Favicon URL:</label>

@@ -9,6 +9,7 @@ import { isMobile } from 'react-device-detect'
 import api from '../../utils/api'
 import SubmitButton from '../../components/SubmitButton'
 import { whiteLabelService } from '../../services/white-label.service'
+import { useWhiteLabel } from '../../context/WhiteLabelContext'
 
 const Login = () => {
   const dispatch = useAppDispatch()
@@ -112,12 +113,19 @@ const Login = () => {
     setIsDemoLogin(false)
 
   }
+
+    
+          const API_URL = process.env.REACT_APP_API_BASEURL || "";
+          
+          const logoSrc = whiteLabel?.logoImage
+            ? `${API_URL.replace("/api","")}/${whiteLabel.logoImage}`
+            : "/imgs/logo.png";
   return (
     <div>
       <div className='login'>
         <div className='loginInner1'>
           <div className='log-logo m-b-20 text-center'>
-            <img src='/imgs/logo.png' className='logo-login' />
+            <img src={logoSrc} className='logo-login' />
           </div>
           <div className='featured-box-login featured-box-secundary default'>
             <h4 className='text-center'>

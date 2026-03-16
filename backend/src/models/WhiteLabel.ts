@@ -6,6 +6,7 @@ export interface IWhiteLabel {
   mode: string; // Custom domain for this white-label
   companyName?: string; // Company name for this white-label
   logoUrl?: string; // URL to the logo
+  logoImage?: string; // URL to the logo
   faviconUrl?: string; // URL to the favicon
   primaryColor?: string; // Primary theme color
   secondaryColor?: string; // Secondary theme color
@@ -30,6 +31,7 @@ export const whiteLabelSchema: Schema = new Schema(
     mode: { type: String },
     companyName: String,
     logoUrl: String,
+    logoImage: String,
     faviconUrl: String,
     primaryColor: { type: String, default: '#007bff' },
     secondaryColor: { type: String, default: '#6c757d' },

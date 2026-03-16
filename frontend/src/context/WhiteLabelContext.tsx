@@ -6,6 +6,7 @@ interface WhiteLabelData {
   domain: string;
   companyName: string;
   logoUrl: string;
+  logoImage: string;
   faviconUrl: string;
   primaryColor: string;
   secondaryColor: string;
