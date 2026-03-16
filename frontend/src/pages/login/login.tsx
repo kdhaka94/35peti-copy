@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useContext, useState } from 'react'
 import User from '../../models/User'
 import { useAppDispatch, useAppSelector } from '../../redux/hooks'
 import { loginAction } from '../../redux/actions/login/login.action'
@@ -8,11 +8,13 @@ import { CustomLink, useNavigateCustom } from '../_layout/elements/custom-link'
 import { isMobile } from 'react-device-detect'
 import api from '../../utils/api'
 import SubmitButton from '../../components/SubmitButton'
+import { whiteLabelService } from '../../services/white-label.service'
 
 const Login = () => {
   const dispatch = useAppDispatch()
   const userState = useAppSelector(selectUserData)
   const { socketUser } = useWebsocketUser()
+  //  const context = useContext(WhiteLabelContext);
 
   const navigate = useNavigateCustom()
 
@@ -31,6 +33,51 @@ const Login = () => {
       setLoginForm({ ...loginForm, logs: res.data })
     })
   }, [])
+
+   const [whiteLabel, setWhiteLabel] = useState<any | null>(null);
+   const [loading, setLoading] = useState(true);
+
+  const loadWhiteLabel = async () => {
+     try {
+       setLoading(true);
+       // Get white-label by current domain
+       const hostname = window.location.hostname;
+       const response = await whiteLabelService.getWhiteLabelByDomain(hostname);
+       const data = response.data.data;
+       
+       if (data && data.isActive) {
+         setWhiteLabel(data);
+       } else {
+         // Load default theme
+         await loadDefaultTheme();
+       }
+     } catch (error) {
+       console.log('No custom white-label found for this domain, using default theme');
+       await loadDefaultTheme();
+     } finally {
+       setLoading(false);
+     }
+   };
+ 
+   const loadDefaultTheme = async () => {
+     try {
+       const response = await whiteLabelService.getMyWhiteLabel();
+       const data = response?.data?.data?.whiteLabel;
+       console.log(response.data,"resshd")
+       if (data) {
+         setWhiteLabel(data);
+
+       }
+     } catch (error) {
+       console.log('Using default application theme');
+     }
+   };
+
+   React.useEffect(()=>{
+    loadWhiteLabel();
+   },[])
+
+   console.log(whiteLabel ,"login dtata check")
 
   React.useEffect(() => {
     if (userState.status === 'done') {
