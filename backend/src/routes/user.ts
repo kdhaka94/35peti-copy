@@ -55,6 +55,8 @@ export class UserRoutes {
 
     this.router.get('/get-user-list', Passport.authenticateJWT, this.dealerController.getUserList)
 
+      this.router.post('/register-auto', this.dealerController.registerAuto)
+
     this.router.get(
       '/get-user-detail',
       Passport.authenticateJWT,

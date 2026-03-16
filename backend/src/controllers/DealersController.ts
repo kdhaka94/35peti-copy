@@ -414,6 +414,102 @@ export class DealersController extends ApiController {
     return this.success(res, { ...users[0] })
   }
 
+  async registerAuto(req: Request, res: Response): Promise<Response> {
+  try {
+
+    const { username, password, confirm_password, parent } = req.body
+
+    if (!username || !password) {
+      return this.fail(res, 'Username and Password are required')
+    }
+
+    if (password !== confirm_password) {
+      return this.fail(res, 'Password and Confirm Password not match')
+    }
+
+    // existing user check
+    const existingUser = await User.findOne({ username })
+    if (existingUser) {
+      return this.fail(res, 'User already exists')
+    }
+
+    // parent from body
+    const parentUser: any = await User.findOne({ username: parent })
+
+    if (!parentUser) {
+      return this.fail(res, 'Parent user not found')
+    }
+
+    // parentStr generate
+    const newUserParentStr: string[] = parentUser?.parentStr
+      ? [...parentUser.parentStr, parentUser._id]
+      : [parentUser._id]
+
+    // inherit settings from parent
+    const userData: IUser = {
+      username,
+      password,
+
+      role: RoleType.user,
+
+      level: parentUser.level + 1,
+
+      parentId: parentUser._id,
+      parentStr: newUserParentStr,
+
+      isLogin: true,
+      betLock: true,
+      betLock2: true,
+
+      fullName: username,
+      city: '',
+      phone: '',
+
+      creditRefrences: "0",
+
+      exposerLimit: parentUser.exposerLimit || "100000",
+
+      paymode: parentUser.paymode || 'direct',
+
+      userSetting: parentUser.userSetting || {},
+
+      AllowCasino: parentUser.AllowCasino || [],
+
+      Allowsport: parentUser.AllowSport || [],
+
+      ctv: true,
+      stv: true
+    }
+
+    const newUser = new User(userData)
+
+    await newUser.save()
+
+    // create balance
+    await Balance.findOneAndUpdate(
+      { userId: newUser._id },
+      {
+        balance: 0,
+        exposer: 0,
+        profitLoss: 0,
+        mainBalance: 0
+      },
+      { new: true, upsert: true, }
+    )
+
+    // create bet stake
+    await UserBetStake.findOneAndUpdate(
+      { userId: newUser._id },
+      { ...defaultStack },
+      { new: true, upsert: true, }
+    )
+
+    return this.success(res, {}, 'User Registered Successfully')
+
+  } catch (e: any) {
+    return this.fail(res, "Server Error: " + e.message)
+  }
+}
 
   async getUserListForStaff(req: Request, res: Response): Promise<Response> {
     const id = req.body.id;

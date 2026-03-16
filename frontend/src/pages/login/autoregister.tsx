@@ -3,10 +3,15 @@ import { useNavigateCustom } from '../_layout/elements/custom-link'
 import SubmitButton from '../../components/SubmitButton'
 import authService from '../../services/auth.service'
 import axios from 'axios'
+import { whiteLabelService } from '../../services/white-label.service'
+import { useAppSelector } from '../../redux/hooks'
+import { selectUserData } from '../../redux/actions/login/loginSlice'
 
 
 const RegisterAuto = () => {
   const navigate = useNavigateCustom()
+    const userState = useAppSelector(selectUserData)
+  
 
   const [formData, setFormData] = React.useState({
     username: '',
@@ -15,6 +20,49 @@ const RegisterAuto = () => {
   })
 
   const [loading, setLoading] = React.useState(false)
+    const [whiteLabel, setWhiteLabel] = React.useState<any | null>(null);
+     const [loadingno, setLoadingno] = React.useState(true);
+  
+    const loadWhiteLabel = async () => {
+       try {
+         setLoading(true);
+         // Get white-label by current domain
+         const hostname = window.location.hostname;
+         const response = await whiteLabelService.getWhiteLabelByDomain(hostname);
+         const data = response.data.data;
+         
+         if (data && data.isActive) {
+           setWhiteLabel(data);
+         } else {
+           // Load default theme
+           await loadDefaultTheme();
+         }
+       } catch (error) {
+         console.log('No custom white-label found for this domain, using default theme');
+         await loadDefaultTheme();
+       } finally {
+         setLoading(false);
+       }
+     };
+   
+     const loadDefaultTheme = async () => {
+       try {
+         const response = await whiteLabelService.getMyWhiteLabel();
+         const data = response?.data?.data?.whiteLabel;
+         console.log(response.data,"resshd")
+         if (data) {
+           setWhiteLabel(data);
+  
+         }
+       } catch (error) {
+         console.log('Using default application theme');
+       }
+     };
+  
+     React.useEffect(()=>{
+      loadWhiteLabel();
+     },[userState])
+  
   const [error, setError] = React.useState('')
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -33,11 +81,11 @@ const RegisterAuto = () => {
       setLoading(true)
     
       await axios.post(
-        `${process.env.REACT_APP_API_BASEURL}register-new`,
+        `${process.env.REACT_APP_API_BASEURL}register-auto`,
         {
           username: formData.username,
           password: formData.password,
-          parent: 'loom1234',
+          parent: whiteLabel?.userId?.username,
           confirm_password: formData.confirm_password,
         },
         {

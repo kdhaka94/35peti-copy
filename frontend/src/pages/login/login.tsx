@@ -75,7 +75,7 @@ const Login = () => {
 
    React.useEffect(()=>{
     loadWhiteLabel();
-   },[])
+   },[userState])
 
    console.log(whiteLabel ,"login dtata check")
 
@@ -181,9 +181,9 @@ const Login = () => {
                   )}
                 </SubmitButton>
 
-                <SubmitButton className='btn btn-submit btn-login mb-10'>
+              {whiteLabel?.mode == "manual" &&  <SubmitButton className='btn btn-submit btn-login mb-10'>
                    <CustomLink to={"/register"} className='text-white'>Register Now</CustomLink>
-                </SubmitButton>
+                </SubmitButton>}
 
                
                 <small className='recaptchaTerms'>
