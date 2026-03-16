@@ -3,6 +3,7 @@ import mongoose, { Document, Schema, Model } from 'mongoose'
 export interface IWhiteLabel {
   userId: mongoose.Types.ObjectId; // Reference to the admin user who owns this white-label
   domain: string; // Custom domain for this white-label
+  mode: string; // Custom domain for this white-label
   companyName?: string; // Company name for this white-label
   logoUrl?: string; // URL to the logo
   faviconUrl?: string; // URL to the favicon
@@ -26,6 +27,7 @@ export const whiteLabelSchema: Schema = new Schema(
   {
     userId: { type: Schema.Types.ObjectId, ref: 'User', required: true, unique: true },
     domain: { type: String, required: true, unique: true, lowercase: true },
+    mode: { type: String },
     companyName: String,
     logoUrl: String,
     faviconUrl: String,

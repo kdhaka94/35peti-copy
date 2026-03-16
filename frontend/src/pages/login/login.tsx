@@ -4,7 +4,7 @@ import { useAppDispatch, useAppSelector } from '../../redux/hooks'
 import { loginAction } from '../../redux/actions/login/login.action'
 import { selectUserData } from '../../redux/actions/login/loginSlice'
 import { useWebsocketUser } from '../../context/webSocketUser'
-import { useNavigateCustom } from '../_layout/elements/custom-link'
+import { CustomLink, useNavigateCustom } from '../_layout/elements/custom-link'
 import { isMobile } from 'react-device-detect'
 import api from '../../utils/api'
 import SubmitButton from '../../components/SubmitButton'
@@ -133,6 +133,12 @@ const Login = () => {
                     <i className='ml-2 fas fa-sign-in-alt'></i>
                   )}
                 </SubmitButton>
+
+                <SubmitButton className='btn btn-submit btn-login mb-10'>
+                   <CustomLink to={"/register"} className='text-white'>Register Now</CustomLink>
+                </SubmitButton>
+
+               
                 <small className='recaptchaTerms'>
                   This site is protected by reCAPTCHA and the Google
                   <a
@@ -152,6 +158,8 @@ const Login = () => {
                   </a>{' '}
                   apply.
                 </small>
+
+
               </div>
               <div className='mt-2 text-center download-apk'></div>
             </form>

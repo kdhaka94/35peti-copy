@@ -7,13 +7,14 @@ import Deposit from '../pages/deposit/deposit'
 import Withdraw from '../pages/withdraw/withdraw'
 import DepositStatement from '../pages/depositstatement/depositstatement'
 import WithdrawStatement from '../pages/withdrawstatement/withdrawstatement'
-import Login2 from '../pages/login/login2'
+import Login2 from '../pages/login/autoregister'
 import TOS from '../pages/withdrawstatement/TOS'
 import RG from '../pages/withdrawstatement/RG'
 import AviatorList from '../pages/CasinoList/AviatorList'
 import { element } from 'prop-types'
 import TvSettings from '../pages/Updatetv/updatetv'
 import StaffRoutes from '../staff-app/staffRoutes'
+import RegisterAuto from '../pages/login/autoregister'
 
 const AccountStatement = React.lazy(() => import('../pages/AccountStatement/AccountStatement'))
 const BetHistory = React.lazy(() => import('../pages/BetHistory/BetHistory'))
@@ -52,6 +53,11 @@ const Routers = () => {
       children: [{ index: true, element: <Login /> }],
       // children: [{ index: true, element: <Login2 /> }],
 
+    },
+     {
+      path: "/register",
+      element: <AuthLayout />,
+      children: [{ index: true, element: <RegisterAuto /> }],
     },
     {
       path: '/transaction-password',

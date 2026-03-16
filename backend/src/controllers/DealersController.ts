@@ -152,6 +152,7 @@ export class DealersController extends ApiController {
               const whiteLabelData: IWhiteLabel = {
                 userId: newUser._id,
                 domain: defaultDomain,
+                mode:paymode,
                 companyName: defaultCompanyName,
                 logoUrl: req.body.whiteLabelLogoUrl || '',
                 faviconUrl: req.body.whiteLabelFaviconUrl || '',

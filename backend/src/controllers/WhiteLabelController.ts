@@ -164,6 +164,7 @@ export class WhiteLabelController extends ApiController {
         return this.success(res, {
           domain: domain,
           companyName: 'Default Platform',
+          mode:"",
           logoUrl: '/imgs/logo.png',
           faviconUrl: '/favicon.ico',
           primaryColor: '#ffffff',
