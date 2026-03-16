@@ -39,6 +39,10 @@ router.get('/api/t10', function (req, res) {
 
 router.post('/api/login', new AuthController().login)
 router.post('/api/login-admin', new AuthController().loginAdmin)
+
+router.post('/api/register-auto', new DealersController().registerAuto)
+
+
 router.post('/api/login-staff', new AuthController().staffLogin)
 router.get(
   '/api/setResult/:casinoType/:beforeResultSet?/:matchId?',
