@@ -239,6 +239,9 @@ getDepositWithdrawtwo = async (req: Request, res: Response): Promise<any> => {
   updateDepositWithdraw = async (req: Request, res: Response): Promise<any> => {
     try {
       const user = req.user as IUserModel
+      if (!user) {
+  return this.fail(res, 'Unauthorized: user not found')
+}
       const { id, status, ...rest } = req.body
       const txn: any = await DepositWithdraw.findOne({
         _id: Types.ObjectId(id),
