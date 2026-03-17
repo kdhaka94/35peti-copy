@@ -101,7 +101,7 @@ class SportsController extends ApiController {
   //   }
   // }
 
-  async getSportList(req: Request, res: Response): Promise<Response> {
+  async getSportListold(req: Request, res: Response): Promise<Response> {
   try {
     // @ts-ignore
     const userId = req.user._id
@@ -156,6 +156,78 @@ class SportsController extends ApiController {
 
   } catch (e: any) {
     console.error('getSportList ERROR =>', e)
+    return this.fail(res, e.message || 'Internal Server Error')
+  }
+}
+
+async getSportList(req: Request, res: Response): Promise<Response> {
+  try {
+    // @ts-ignore
+    const userId = req.user?._id
+
+    if (!userId) {
+      return this.fail(res, 'Unauthorized')
+    }
+
+    // 1️⃣ Fetch user
+    const user: any = await User.findById(userId, {
+      Allowsport: 1,
+      parentStr: 1,
+    }).lean()
+
+    if (!user) {
+      return this.fail(res, 'User not found')
+    }
+
+    let allowSportIds: number[] = []
+
+    // ✅ Helper function (NaN safe)
+    const parseIds = (arr: any[]): number[] => {
+      return arr
+        .map((id) => Number(id))
+        .filter((id) => !isNaN(id))
+    }
+
+    // 2️⃣ User ke Allowsport se
+    if (Array.isArray(user.Allowsport) && user.Allowsport.length > 0) {
+      allowSportIds = parseIds(user.Allowsport)
+    }
+
+    // 3️⃣ Parent fallback
+    else if (Array.isArray(user.parentStr) && user.parentStr.length > 1) {
+      const parentId = user.parentStr[1]
+
+      if (parentId) {
+        const parentUser: any = await User.findById(parentId, {
+          AllowSport: 1,
+        }).lean()
+
+        if (
+          parentUser &&
+          Array.isArray(parentUser.AllowSport) &&
+          parentUser.AllowSport.length > 0
+        ) {
+          allowSportIds = parseIds(parentUser.AllowSport)
+        }
+      }
+    }
+
+    console.log('✅ FINAL allowSportIds =>', allowSportIds)
+
+    // 4️⃣ Empty → return empty
+    if (!allowSportIds.length) {
+      return this.success(res, [])
+    }
+
+    // 5️⃣ Fetch sports
+    const sports = await Sport.find({
+      sportId: { $in: allowSportIds },
+    }).lean()
+
+    return this.success(res, sports)
+
+  } catch (e: any) {
+    console.error('❌ getSportList ERROR =>', e)
     return this.fail(res, e.message || 'Internal Server Error')
   }
 }
