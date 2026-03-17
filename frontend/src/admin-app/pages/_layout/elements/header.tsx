@@ -62,7 +62,7 @@ const Header = () => {
 
   const [isOpen, setIsOpen] = React.useState(false)
   const [gameList, setGameList] = React.useState([])
-    const [sgameList, setsGameList] = React.useState([])
+  const [sgameList, setsGameList] = React.useState([])
 
   // React.useEffect(() => {
   //   axios.get(`adminMessage.json?v=${Date.now()}`).then((res: AxiosResponse) => {
@@ -76,7 +76,7 @@ const Header = () => {
         setGameList(res.data.data)
       })
   }, [])
-   React.useEffect(() => {
+  React.useEffect(() => {
     if (gameList.length <= 0)
       sportsService.getSports().then((res: AxiosResponse<any>) => {
         setsGameList(res.data.data)
@@ -257,12 +257,12 @@ const Header = () => {
   }
 
 
-const { whiteLabel } = useWhiteLabel();
-const API_URL = process.env.REACT_APP_API_BASEURL || "";
+  const { whiteLabel } = useWhiteLabel();
+  const API_URL = process.env.REACT_APP_API_BASEURL || "";
 
-const logoSrc = whiteLabel?.logoImage
-  ? `${API_URL.replace("/api","")}${whiteLabel.logoImage}`
-  : "/imgs/logo.png";
+  const logoSrc = whiteLabel?.logoImage
+    ? `${API_URL}${whiteLabel.logoImage}`
+    : "/imgs/logo.png";
 
 
   return (
@@ -413,7 +413,7 @@ const logoSrc = whiteLabel?.logoImage
                         <b>Auto</b>
                       </CustomLink>
                     </li>}
-                
+
                   <li className='nav-item dropdown'>
                     <a>
                       <b> All Sport Market </b> <i className='fa fa-caret-down' />
@@ -473,7 +473,7 @@ const logoSrc = whiteLabel?.logoImage
                           </CustomLink>
                         </li>}
 
-                   { userState.user.role === RoleType.admin  &&  <li>
+                      {userState.user.role === RoleType.admin && <li>
                         <CustomLink to='/update-tv' className='dropdown-item'>
                           <b>{'Mange -TV'}</b>
                         </CustomLink>

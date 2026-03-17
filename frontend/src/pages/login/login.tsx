@@ -35,50 +35,50 @@ const Login = () => {
     })
   }, [])
 
-   const [whiteLabel, setWhiteLabel] = useState<any | null>(null);
-   const [loading, setLoading] = useState(true);
+  const [whiteLabel, setWhiteLabel] = useState<any | null>(null);
+  const [loading, setLoading] = useState(true);
 
   const loadWhiteLabel = async () => {
-     try {
-       setLoading(true);
-       // Get white-label by current domain
-       const hostname = window.location.hostname;
-       const response = await whiteLabelService.getWhiteLabelByDomain(hostname);
-       const data = response.data.data;
-       
-       if (data && data.isActive) {
-         setWhiteLabel(data);
-       } else {
-         // Load default theme
-         await loadDefaultTheme();
-       }
-     } catch (error) {
-       console.log('No custom white-label found for this domain, using default theme');
-       await loadDefaultTheme();
-     } finally {
-       setLoading(false);
-     }
-   };
- 
-   const loadDefaultTheme = async () => {
-     try {
-       const response = await whiteLabelService.getMyWhiteLabel();
-       const data = response?.data?.data?.whiteLabel;
-       console.log(response.data,"resshd")
-       if (data) {
-         setWhiteLabel(data);
+    try {
+      setLoading(true);
+      // Get white-label by current domain
+      const hostname = window.location.hostname;
+      const response = await whiteLabelService.getWhiteLabelByDomain(hostname);
+      const data = response.data.data;
 
-       }
-     } catch (error) {
-       console.log('Using default application theme');
-     }
-   };
+      if (data && data.isActive) {
+        setWhiteLabel(data);
+      } else {
+        // Load default theme
+        await loadDefaultTheme();
+      }
+    } catch (error) {
+      console.log('No custom white-label found for this domain, using default theme');
+      await loadDefaultTheme();
+    } finally {
+      setLoading(false);
+    }
+  };
 
-   React.useEffect(()=>{
+  const loadDefaultTheme = async () => {
+    try {
+      const response = await whiteLabelService.getMyWhiteLabel();
+      const data = response?.data?.data?.whiteLabel;
+      console.log(response.data, "resshd")
+      if (data) {
+        setWhiteLabel(data);
+
+      }
+    } catch (error) {
+      console.log('Using default application theme');
+    }
+  };
+
+  React.useEffect(() => {
     loadWhiteLabel();
-   },[userState])
+  }, [userState])
 
-   console.log(whiteLabel ,"login dtata check")
+  console.log(whiteLabel, "login dtata check")
 
   React.useEffect(() => {
     if (userState.status === 'done') {
@@ -114,12 +114,12 @@ const Login = () => {
 
   }
 
-    
-          const API_URL = process.env.REACT_APP_API_BASEURL || "";
-          
-          const logoSrc = whiteLabel?.logoImage
-            ? `${API_URL.replace("/api","")}${whiteLabel.logoImage}`
-            : "/imgs/logo.png";
+
+  const API_URL = process.env.REACT_APP_API_BASEURL || "";
+
+  const logoSrc = whiteLabel?.logoImage
+    ? `${API_URL}${whiteLabel.logoImage}`
+    : "/imgs/logo.png";
   return (
     <div>
       <div className='login'>
@@ -146,7 +146,7 @@ const Login = () => {
                   aria-required='true'
                   aria-invalid='false'
                   onChange={handleForm}
-                  required={!isDemoLogin} 
+                  required={!isDemoLogin}
 
                 />
                 <i className='fas fa-user'></i>
@@ -161,7 +161,7 @@ const Login = () => {
                   aria-required='true'
                   aria-invalid='false'
                   onChange={handleForm}
-                  required={!isDemoLogin} 
+                  required={!isDemoLogin}
 
                 />
                 <i className='fas fa-key'></i>
@@ -189,11 +189,11 @@ const Login = () => {
                   )}
                 </SubmitButton>
 
-              {whiteLabel?.mode == "manual" &&  <SubmitButton className='btn btn-submit btn-login mb-10'>
-                   <CustomLink to={"/register"} className='text-white'>Register Now</CustomLink>
+                {whiteLabel?.mode == "manual" && <SubmitButton className='btn btn-submit btn-login mb-10'>
+                  <CustomLink to={"/register"} className='text-white'>Register Now</CustomLink>
                 </SubmitButton>}
 
-               
+
                 <small className='recaptchaTerms'>
                   This site is protected by reCAPTCHA and the Google
                   <a

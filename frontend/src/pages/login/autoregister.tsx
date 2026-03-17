@@ -11,59 +11,59 @@ import { useWhiteLabel } from '../../context/WhiteLabelContext'
 
 const RegisterAuto = () => {
   const navigate = useNavigateCustom()
-    const userState = useAppSelector(selectUserData)
-  
+  const userState = useAppSelector(selectUserData)
+
 
   const [formData, setFormData] = React.useState({
     username: '',
     password: '',
-    confirm_password:'',
+    confirm_password: '',
   })
 
   const [loading, setLoading] = React.useState(false)
-    const [whiteLabel, setWhiteLabel] = React.useState<any | null>(null);
-     const [loadingno, setLoadingno] = React.useState(true);
-  
-    const loadWhiteLabel = async () => {
-       try {
-         setLoading(true);
-         // Get white-label by current domain
-         const hostname = window.location.hostname;
-         const response = await whiteLabelService.getWhiteLabelByDomain(hostname);
-         const data = response.data.data;
-         
-         if (data && data.isActive) {
-           setWhiteLabel(data);
-         } else {
-           // Load default theme
-           await loadDefaultTheme();
-         }
-       } catch (error) {
-         console.log('No custom white-label found for this domain, using default theme');
-         await loadDefaultTheme();
-       } finally {
-         setLoading(false);
-       }
-     };
-   
-     const loadDefaultTheme = async () => {
-       try {
-         const response = await whiteLabelService.getMyWhiteLabel();
-         const data = response?.data?.data?.whiteLabel;
-         console.log(response.data,"resshd")
-         if (data) {
-           setWhiteLabel(data);
-  
-         }
-       } catch (error) {
-         console.log('Using default application theme');
-       }
-     };
-  
-     React.useEffect(()=>{
-      loadWhiteLabel();
-     },[userState])
-  
+  const [whiteLabel, setWhiteLabel] = React.useState<any | null>(null);
+  const [loadingno, setLoadingno] = React.useState(true);
+
+  const loadWhiteLabel = async () => {
+    try {
+      setLoading(true);
+      // Get white-label by current domain
+      const hostname = window.location.hostname;
+      const response = await whiteLabelService.getWhiteLabelByDomain(hostname);
+      const data = response.data.data;
+
+      if (data && data.isActive) {
+        setWhiteLabel(data);
+      } else {
+        // Load default theme
+        await loadDefaultTheme();
+      }
+    } catch (error) {
+      console.log('No custom white-label found for this domain, using default theme');
+      await loadDefaultTheme();
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadDefaultTheme = async () => {
+    try {
+      const response = await whiteLabelService.getMyWhiteLabel();
+      const data = response?.data?.data?.whiteLabel;
+      console.log(response.data, "resshd")
+      if (data) {
+        setWhiteLabel(data);
+
+      }
+    } catch (error) {
+      console.log('Using default application theme');
+    }
+  };
+
+  React.useEffect(() => {
+    loadWhiteLabel();
+  }, [userState])
+
   const [error, setError] = React.useState('')
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -80,7 +80,7 @@ const RegisterAuto = () => {
 
     try {
       setLoading(true)
-    
+
       await axios.post(
         `${process.env.REACT_APP_API_BASEURL}register-auto`,
         {
@@ -96,10 +96,10 @@ const RegisterAuto = () => {
           },
         }
       )
-    
+
       alert('User Registered Successfully')
       navigate.go('/login')
-    
+
     } catch (err: any) {
       setError(err.response?.data?.message || 'Something went wrong')
     } finally {
@@ -107,12 +107,12 @@ const RegisterAuto = () => {
     }
   }
 
-    
-          const API_URL = process.env.REACT_APP_API_BASEURL || "";
-          
-          const logoSrc = whiteLabel?.logoImage
-            ? `${API_URL.replace("/api","")}${whiteLabel.logoImage}`
-            : "/imgs/logo.png";
+
+  const API_URL = process.env.REACT_APP_API_BASEURL || "";
+
+  const logoSrc = whiteLabel?.logoImage
+    ? `${API_URL}${whiteLabel.logoImage}`
+    : "/imgs/logo.png";
 
   return (
     <div className='login'>

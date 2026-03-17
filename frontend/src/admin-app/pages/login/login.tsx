@@ -24,7 +24,7 @@ const Login = () => {
   })
 
 
-  
+
   // React.useEffect(()=>{
   //   localStorage.removeItem('admin-token')
   //     localStorage.removeItem('refreshToken-admin')
@@ -60,7 +60,7 @@ const Login = () => {
   //     const { role, _id, authkey } = userState.user
 
 
-     
+
   //     // socket login
   //     socketUser.emit('login', {
   //       role,
@@ -83,32 +83,32 @@ const Login = () => {
 
 
   React.useEffect(() => {
-  // 👇 BACK se aaya hai to kuch mat kar
-  if (localStorage.getItem('force_login') === 'true') {
-    localStorage.removeItem('force_login');
-      
-   return navigate.go('/login')
-  }
+    // 👇 BACK se aaya hai to kuch mat kar
+    if (localStorage.getItem('force_login') === 'true') {
+      localStorage.removeItem('force_login');
 
-  if (userState.status === 'done' && userState.user?._id) {
-    const { role, _id, authkey } = userState.user;
-
-    socketUser.emit('login', {
-      role,
-      sessionId: userState.user.sessionId,
-      _id,
-    });
-
-    if (authkey === 1) {
-      localStorage.setItem('admin_otp_pending', 'true');
-      navigate.go('/otp-verification');
-      return;
+      return navigate.go('/login')
     }
 
-    dispatch(getUserInfoAction({} as User));
-    navigate.go('/list-clients');
-  }
-}, [userState]);
+    if (userState.status === 'done' && userState.user?._id) {
+      const { role, _id, authkey } = userState.user;
+
+      socketUser.emit('login', {
+        role,
+        sessionId: userState.user.sessionId,
+        _id,
+      });
+
+      if (authkey === 1) {
+        localStorage.setItem('admin_otp_pending', 'true');
+        navigate.go('/otp-verification');
+        return;
+      }
+
+      dispatch(getUserInfoAction({} as User));
+      navigate.go('/list-clients');
+    }
+  }, [userState]);
 
 
 
@@ -125,9 +125,9 @@ const Login = () => {
 
   const { whiteLabel } = useWhiteLabel();
   const API_URL = process.env.REACT_APP_API_BASEURL || "";
-  
+
   const logoSrc = whiteLabel?.logoImage
-    ? `${API_URL.replace("/api","")}${whiteLabel.logoImage}`
+    ? `${API_URL}${whiteLabel.logoImage}`
     : "/imgs/logo.png";
 
   return (
