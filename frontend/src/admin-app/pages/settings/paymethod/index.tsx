@@ -85,7 +85,7 @@ const PaymentAccountSettings = () => {
     setQrFile(null)
     setQrPreview(
       account.upiQrCode
-        ? `${process.env.REACT_APP_SITE_URL}${account.upiQrCode}`
+        ? `${process.env.REACT_APP_API_BACKURL}${account.upiQrCode}`
         : null,
     )
     setShowForm(true)
@@ -322,7 +322,7 @@ const PaymentAccountSettings = () => {
                           <td>
                             {acc.upiQrCode ? (
                               <img
-                                src={`${process.env.REACT_APP_SITE_URL}${acc.upiQrCode}`}
+                                src={`${process.env.REACT_APP_API_BACKURL}${acc.upiQrCode}`}
                                 alt='QR'
                                 style={{ width: 40, height: 40, objectFit: 'contain', borderRadius: 4 }}
                               />

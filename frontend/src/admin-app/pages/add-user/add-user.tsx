@@ -1060,6 +1060,7 @@ if(logoFile){
       onChange={(e:any)=>setLogoFile(e.target.files[0])}
     />
   </div>
+  Logo Size* = 170x50 px only
 </div>
 
 

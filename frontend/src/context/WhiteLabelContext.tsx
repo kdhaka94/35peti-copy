@@ -20,6 +20,7 @@ interface WhiteLabelData {
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
+  mode: string;
 }
 
 interface WhiteLabelContextType {

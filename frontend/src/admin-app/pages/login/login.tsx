@@ -80,6 +80,7 @@ const Login = () => {
   //     return navigate.go('/list-clients')
   //   }
   // }, [userState])
+  const { whiteLabel } = useWhiteLabel();
 
 
   React.useEffect(() => {
@@ -105,10 +106,16 @@ const Login = () => {
         return;
       }
 
+      // ✅ 🔥 NEW LOGIC
+    if (whiteLabel?.mode === "manual") {
+      navigate.go('/txn');
+      return;
+    }
+
       dispatch(getUserInfoAction({} as User));
       navigate.go('/list-clients');
     }
-  }, [userState]);
+  }, [userState, whiteLabel]);
 
 
 
@@ -123,7 +130,6 @@ const Login = () => {
     dispatch(loginAction(loginForm))
   }
 
-  const { whiteLabel } = useWhiteLabel();
   const API_URL = process.env.REACT_APP_API_BACKURL || "";
 
   const logoSrc = whiteLabel?.logoImage

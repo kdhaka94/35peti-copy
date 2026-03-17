@@ -296,6 +296,13 @@ const Txn = () => {
         />
 
         <StatCard
+          color="primary"
+          value={depositStats?.pendingAmount ?? 0}
+          label={`Pending Deposits : ${depositStats?.pendingCount ?? 0}`}
+          link="/depositstatement/pending"
+        />
+
+        <StatCard
           color="success"
           value={depositStats?.approvedAmount ?? 0}
           label={`Approved Deposits : ${depositStats?.approvedCount ?? 0}`}
