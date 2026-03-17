@@ -101,7 +101,7 @@ class SportsController extends ApiController {
   //   }
   // }
 
-  async getSportListold(req: Request, res: Response): Promise<Response> {
+  async getSportList(req: Request, res: Response): Promise<Response> {
   try {
     // @ts-ignore
     const userId = req.user._id
@@ -160,7 +160,9 @@ class SportsController extends ApiController {
   }
 }
 
-async getSportList(req: Request, res: Response): Promise<Response> {
+//dono hi shi hai shyd
+
+async getSportListnew(req: Request, res: Response): Promise<Response> {
   try {
     // @ts-ignore
     const userId = req.user?._id
