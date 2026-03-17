@@ -19,6 +19,7 @@ const validationSchema = Yup.object().shape({
 
 const useDeposit = () => {
   const [amount, setAmount] = useState(null)
+  const [loading, setLoading] = useState(false)
   const [accounts, setAccounts] = useState<any[]>([])
   const [selectedAccount, setSelectedAccount] = useState<any>(null)
   const [preview, setPreview] = useState({ type: '', imagePath: '', utrno: '' })
@@ -58,6 +59,7 @@ const useDeposit = () => {
     })
   }
 
+
   const onSubmit = async (data: any) => {
     if (!preview.imagePath) return toast.error('Image is required field')
     if (!selectedAccount) return toast.error('Please select a payment account')
@@ -71,14 +73,31 @@ const useDeposit = () => {
     formData.append('amount', amount.toString())
     formData.append('utrno', preview.utrno)
     formData.append('accountId', selectedAccount._id)
-    const response = await depositWithdrawService.addDepositWithdraw(formData)
+  try
+    { 
+        setLoading(true)
+      const response = await depositWithdrawService.addDepositWithdraw(formData)
     if (response?.data?.message) {
       toast.success(response?.data?.message)
       reset()
       setAmount(null)
       setPreview({ type: '', imagePath: '', utrno: '' })
     }
-  }
+  } catch(error: any) {
+  console.log(error)
+
+  // Backend se error message nikaalna
+  const errorMessage =
+    error?.response?.data?.message ||
+    error?.response?.data ||
+    error.message ||
+    "Something went wrong"
+
+  toast.error(errorMessage)
+} finally {
+  setLoading(false)
+}
+}
 
   const generateTransactionId = () => {
     return Math.floor(100000 + Math.random() * 900000)
@@ -99,6 +118,7 @@ const useDeposit = () => {
     preview,
     generateTransactionId,
     handleUploadedUTR,
+    loading,
   }
 }
 

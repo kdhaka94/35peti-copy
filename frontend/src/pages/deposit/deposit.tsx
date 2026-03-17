@@ -3,6 +3,8 @@ import PaymentQRCode from "../../components/PaymentQRCode";
 import DepositStatement2 from "../depositstatement/depositstatement2";
 import "./deposit.css";
 import { toast } from "react-toastify";
+import React from "react";
+
 
 const Deposit = () => {
   const {
@@ -18,7 +20,10 @@ const Deposit = () => {
     preview,
     generateTransactionId,
     handleUploadedUTR,
+    loading,
   } = useDeposit();
+
+
 
   const copytoclipboard = (code: string) => {
     const textArea = document.createElement("textarea");
@@ -43,6 +48,8 @@ const Deposit = () => {
     }
     document.body.removeChild(textArea);
   };
+
+  const [fileName, setFileName] = React.useState("");
 
   return (
     <div className="mt-10">
@@ -134,7 +141,7 @@ const Deposit = () => {
                               <div className="text-center qr-code">
                                 <p>Scan to Pay</p>
                                 <img
-                                  src={`${process.env.REACT_APP_SITE_URL}${selectedAccount.upiQrCode}`}
+                                  src={`${process.env.REACT_APP_API_BACKURL}${selectedAccount.upiQrCode}`}
                                   alt="USDT QR Code"
                                   style={{ maxWidth: 200 }}
                                 />
@@ -258,12 +265,25 @@ const Deposit = () => {
                             hidden="hidden"
                             accept="image/png, image/jpg, image/jpeg"
                             {...register("imageUrl")}
-                            onChange={(e) => handleUploadedFile(e, selectedAccount.accountType === 'usdt' ? 'usdt' : 'bank')}
+                              onChange={(e) => {
+      handleUploadedFile(e, selectedAccount.accountType === 'usdt' ? 'usdt' : 'bank');
+
+      if (e.target.files && e.target.files[0]) {
+        setFileName(e.target.files[0].name);
+      }
+    }}
+                            // onChange={(e) => handleUploadedFile(e, selectedAccount.accountType === 'usdt' ? 'usdt' : 'bank')}
                           />
                           <label htmlFor="upload-14624">
                             <i className="fas fa-plus-circle mr-1" />
-                            Choose File
+                           {fileName ? "Change File" :  "Choose File"}
                           </label>
+                           {/* 👇 File name show */}
+  {fileName && (
+    <p style={{ fontSize: "12px", marginTop: "5px", color: "green" }}>
+      ✅ {fileName}
+    </p>
+  )}
                         </div>
 
                         <div className="custom-control mt-2 mb-2 custom-checkbox">
@@ -290,11 +310,12 @@ const Deposit = () => {
                         </div>
 
                         <button
+                        disabled={loading}
                           className="payment-pay-now d-flex flex-wrap justify-content-center bg-success text-white"
                           type="submit"
                         >
                           <div className="w-100 text-center">
-                            <span>Submit</span>
+                            <span>{loading ? "Processing..." : "Submit"}</span>
                           </div>
                         </button>
                       </div>

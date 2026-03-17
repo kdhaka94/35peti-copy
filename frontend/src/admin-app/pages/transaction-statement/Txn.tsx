@@ -202,7 +202,7 @@ const Txn = () => {
 
     {/* Username */}
     <div className="text-center fw-semibold mb-4">
-      {userState?.user?.username} (35peti)
+      {userState?.user?.username} ({whiteLabel?.companyName})
     </div>
 
     {/* Stats */}
@@ -224,7 +224,7 @@ const Txn = () => {
         </div>
       </div>
 
-      <div className="col-4">
+      <div className="col-4 mb-2">
         <div className="border rounded p-2"
              style={{borderColor: "rgba(255,255,255,0.6)"}}>
           <small>CLIENT WALLET</small>
@@ -235,7 +235,7 @@ const Txn = () => {
     </div>
 
     {/* Search */}
-    <div className="mt-4 mb-4 d-flex items-center">
+    <div className="mt-4 mb-4 d-flexs d-none items-center">
       <input
         type="text"
         className="form-control"

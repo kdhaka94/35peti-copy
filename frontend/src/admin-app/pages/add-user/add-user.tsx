@@ -1034,7 +1034,7 @@ if(logoFile){
                         </div>
                       </div>
                       <div className="row">
-                        <div className="col-md-6">
+                        <div className="col-md-6 d-none">
                           <div className="form-group">
                             <label htmlFor="whiteLabelLogoUrl">Logo URL:</label>
                             <input
@@ -1065,7 +1065,7 @@ if(logoFile){
 
 
 
-                        <div className="col-md-6">
+                        <div className="col-md-6 d-none">
                           <div className="form-group">
                             <label htmlFor="whiteLabelFaviconUrl">Favicon URL:</label>
                             <input
