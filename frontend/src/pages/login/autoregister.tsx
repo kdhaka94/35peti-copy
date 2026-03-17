@@ -111,7 +111,7 @@ const RegisterAuto = () => {
           const API_URL = process.env.REACT_APP_API_BASEURL || "";
           
           const logoSrc = whiteLabel?.logoImage
-            ? `${API_URL.replace("/api","")}/${whiteLabel.logoImage}`
+            ? `${API_URL.replace("/api","")}${whiteLabel.logoImage}`
             : "/imgs/logo.png";
 
   return (
