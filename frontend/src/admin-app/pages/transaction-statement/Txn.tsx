@@ -7,6 +7,7 @@ import { CustomLink } from "../../../pages/_layout/elements/custom-link";
 import DashboardSidebar from "./DashboardSidebar";
 import DashboardDrawer from "./DashboardSidebar";
 import { AxiosResponse } from "axios";
+import { useWhiteLabel } from "../../../context/WhiteLabelContext";
 interface StatCardProps {
     color: any;
     value: any ;
@@ -148,6 +149,14 @@ const Txn = () => {
         setuserresponse()
       },[userState])
 
+        const { whiteLabel } = useWhiteLabel();
+      
+  const API_URL = process.env.REACT_APP_API_BACKURL || "";
+
+  const logoSrc = whiteLabel?.logoImage
+    ? `${API_URL}${whiteLabel.logoImage}`
+    : "/imgs/logo.png";
+
 
   return (
     <div className="container-fluid p-4 bg-light">
@@ -187,7 +196,7 @@ const Txn = () => {
     {/* Logo */}
     <div className="text-center mb-3">
       <h4 className="fw-bold m-0">
-      <img className="h-4 w-4" src="/imgs/logo.png"/>
+      <img className="h-4 w-4" src={logoSrc}/>
       </h4>
     </div>
 
