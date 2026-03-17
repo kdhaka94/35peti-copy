@@ -18,7 +18,7 @@ const Page404 = () => {
   }, [])
 
   const { whiteLabel } = useWhiteLabel();
-  const API_URL = process.env.REACT_APP_API_BASEURL || "";
+  const API_URL = process.env.REACT_APP_API_BACKURL || "";
 
   const logoSrc = whiteLabel?.logoImage
     ? `${API_URL}${whiteLabel.logoImage}`

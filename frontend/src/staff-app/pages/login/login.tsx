@@ -7,10 +7,10 @@ import { useWhiteLabel } from '../../../context/WhiteLabelContext'
 
 const StaffLogin = () => {
   const navigate = useNavigateCustom()
-const [loginForm, setLoginForm] = useState({
-  clientId: '',
-  password: '',
-})
+  const [loginForm, setLoginForm] = useState({
+    clientId: '',
+    password: '',
+  })
 
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -29,18 +29,18 @@ const [loginForm, setLoginForm] = useState({
     setError('')
 
     try {
-      console.log(loginForm,"hahahhhahah")
+      console.log(loginForm, "hahahhhahah")
       const res = await authService.staffLogin(loginForm)
-     console.log(res.data)
+      console.log(res.data)
       // token save
       localStorage.setItem('staff-clientId', res.data.data.clientId)
       localStorage.setItem('staff-parentId', res.data.data.ParentId)
       localStorage.setItem('staff-role', res.data.data.role)
       localStorage.setItem('staff-paymode', res.data.data.paymethod)
 
-    let paymode = res.data.data.paymethod
+      let paymode = res.data.data.paymethod
       // redirect
-      if (paymode == "manual"){
+      if (paymode == "manual") {
         navigate.go('/staff/dashboard')
         return
       }
@@ -56,12 +56,12 @@ const [loginForm, setLoginForm] = useState({
     setLoading(false)
   }
 
-    const { whiteLabel } = useWhiteLabel();
-          const API_URL = process.env.REACT_APP_API_BASEURL || "";
-          
-          const logoSrc = whiteLabel?.logoImage
-            ? `${API_URL}${whiteLabel.logoImage}`
-            : "/imgs/logo.png";
+  const { whiteLabel } = useWhiteLabel();
+  const API_URL = process.env.REACT_APP_API_BACKURL || "";
+
+  const logoSrc = whiteLabel?.logoImage
+    ? `${API_URL}${whiteLabel.logoImage}`
+    : "/imgs/logo.png";
 
   return (
     <div className='login'>
@@ -70,7 +70,7 @@ const [loginForm, setLoginForm] = useState({
           <div className='row'>
             <div className='col-md-12'>
               <div className='loginInner1'>
-                
+
                 <div className='log-logo m-b-20 text-center'>
                   <img
                     src={logoSrc}
