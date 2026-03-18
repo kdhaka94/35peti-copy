@@ -259,11 +259,11 @@ const Txn = () => {
         {[
           { title: "New Clients", color: "warning", icon: "👤" , link:`/add-user/${userState?.user?.username}` },
           { title: "Deposit list", color: "primary", icon: "💰" , link:"/depositstatement" },
-          { title: "UTR Entry", color: "danger", icon: "🏦" , link:"/payment-method" },
+          // { title: "UTR Entry", color: "danger", icon: "🏦" , link:"/payment-method" },
           { title: "Withdraw", color: "success", icon: "💵" ,link:"/withdrawstatement" },
           { title: "Add Account", color: "danger", icon: "🏛️" ,link:`/payment-method`   },
           { title: "Account list", color: "danger", icon: "🏦" , link:`/payment-method` },
-          { title: "Global search", color: "secondary", icon: "🔍" , link:`/list-clients/${userState?.user?.username}` },
+          // { title: "Global search", color: "secondary", icon: "🔍" , link:`/list-clients/${userState?.user?.username}` },
         ].map((item, i) => (
           <div className="col-xl-3 col-lg-4 col-md-6" key={i}>
             <div className="card shadow-sm p-2 mb-2">

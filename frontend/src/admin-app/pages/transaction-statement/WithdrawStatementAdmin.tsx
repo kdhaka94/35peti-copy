@@ -50,6 +50,23 @@ const WithdrawStatement = () => {
     setBankDetails(details)
   }
 
+  const handleCopy = (item: any) => {
+  const textToCopy = `
+Username: ${item.username}
+Account Holder: ${item.bankDetail.accountHolderName}
+Account Number: ${item.bankDetail.accountNumber}
+IFSC: ${item.bankDetail.ifscCode}
+  `
+
+  navigator.clipboard.writeText(textToCopy)
+    .then(() => {
+      toast.success('Copied to clipboard ✅')
+    })
+    .catch(() => {
+      toast.error('Copy failed ❌')
+    })
+}
+
   const getAccountStmt = (page: number) => {
     const payload: any = {
       type: 'withdraw',
@@ -209,9 +226,15 @@ const WithdrawStatement = () => {
                       <th className='bg2 text-white' style={{ width: '10%', textAlign: 'center' }}>
                         Details
                       </th>
-                      {/* <th className='bg2 text-white' style={{ width: '10%', textAlign: 'center' }}>
-                        UTR
-                      </th> */}
+                      <th className='bg2 text-white' style={{ width: '10%', textAlign: 'center' }}>
+                        Ac Holder Name
+                      </th>
+                      <th className='bg2 text-white' style={{ width: '10%', textAlign: 'center' }}>
+                       Ac. Number
+                      </th>
+                      <th className='bg2 text-white' style={{ width: '10%', textAlign: 'center' }}>
+                       IFSC
+                      </th>
                       <th className='bg2 text-white' style={{ width: '10%', textAlign: 'center' }}>
                         Approved By
                       </th>
@@ -240,7 +263,7 @@ const WithdrawStatement = () => {
                             {moment(item.createdAt).format('DD/MM/YYYY h:mm:ss A')}
                           </td>
                           <td style={{ textAlign: 'center' }}>{item.username}</td>
-                          <td style={{ textAlign: 'center' }}>
+                          {/* <td style={{ textAlign: 'center' }}>
                             <button
                               data-toggle='modal'
                               data-target='#bankModal'
@@ -248,8 +271,17 @@ const WithdrawStatement = () => {
                             >
                               View
                             </button>
+                          </td> */}
+
+                          <td style={{ textAlign: 'center' }}>
+                            <button onClick={() => handleCopy(item)}>
+                              Copy
+                            </button>
                           </td>
-                          {/* <td style={{ textAlign: 'center' }}>{item.utrno}</td> */}
+
+                          <td style={{ textAlign: 'center' }}>{item.bankDetail.accountHolderName}</td>
+                          <td style={{ textAlign: 'center' }}>{item.bankDetail.accountNumber}</td>
+                          <td style={{ textAlign: 'center' }}>{item.bankDetail.ifscCode}</td>
 
                           <td></td>
                           <td style={{ textAlign: 'center' }}>{item.accountType}</td>

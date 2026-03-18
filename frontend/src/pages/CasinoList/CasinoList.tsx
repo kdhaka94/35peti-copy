@@ -57,8 +57,8 @@ const CasinoList = () => {
           <li key={tab.link} className="nav-item">
             <a
               href={"#"}
-              className={`nav-link ${tab.active ? "active" : ""}`}
-              style={{ background: "#0088CC", color: "white" }}
+              className={`nav-link bg-theme ${tab.active ? "active" : ""}`}
+              style={{  color: "white" }}
             >
               <span>{tab.label}</span>
             </a>
