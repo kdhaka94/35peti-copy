@@ -59,9 +59,20 @@ export class DealersController extends ApiController {
         paymode,
         userSetting,
         transactionPassword,
-        Allowsport,
-        AllowCasino,
+
       } = req.body
+
+      const Allowsport = Array.isArray(req.body.Allowsport)
+  ? req.body.Allowsport.map(Number)
+  : req.body.Allowsport
+    ? req.body.Allowsport.split(',').map(Number)
+    : [];
+
+const AllowCasino = Array.isArray(req.body.AllowCasino)
+  ? req.body.AllowCasino.map(Number)
+  : req.body.AllowCasino
+    ? req.body.AllowCasino.split(',').map(Number)
+    : [];
 
       console.log(partnership)
       const currentUser: any = req.user

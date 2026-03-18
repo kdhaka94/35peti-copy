@@ -285,6 +285,16 @@ Object.entries(data).forEach(([key,value])=>{
   formData.append(key,String(value))
 })
 
+// Object.entries(data).forEach(([key, value]) => {
+//   if (Array.isArray(value)) {
+//     value.forEach((v) => {
+//       formData.append(key, String(v)) // ✅ multiple entries same key
+//     })
+//   } else {
+//     formData.append(key, String(value))
+//   }
+// })
+
 if(logoFile){
   formData.append("whiteLabelLogoImage",logoFile)
 }
