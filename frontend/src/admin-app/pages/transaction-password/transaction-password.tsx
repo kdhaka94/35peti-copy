@@ -15,6 +15,7 @@ import {
   selectUserData,
 } from "../../../redux/actions/login/loginSlice";
 import SubmitButton from "../../../components/SubmitButton";
+import { useWhiteLabel } from "../../../context/WhiteLabelContext";
 const TransactionPassword = () => {
   const [passobj, setpassobj] = React.useState<any>({});
   const userState = useAppSelector(selectUserData);
@@ -106,6 +107,13 @@ const TransactionPassword = () => {
     return rendbox;
   };
 
+    const { whiteLabel } = useWhiteLabel();
+  
+ const API_URL = process.env.REACT_APP_API_BACKURL || "";
+
+  const logoSrc = whiteLabel?.logoImage
+    ? `${API_URL}${whiteLabel.logoImage}`
+    : "/imgs/logo.png";
   return (
     <div className="login">
       <div className="wrapper">
@@ -114,7 +122,7 @@ const TransactionPassword = () => {
             <div className="col-md-12">
               <div className="loginInner1">
                 <div className="log-logo m-b-20 text-center">
-                  <img src="/imgs/logo.png" className="logo-login" />
+                  <img src={logoSrc} className="logo-login" />
                 </div>
                 <div className="featured-box-login featured-box-secundary default">
                   <h4 className="text-center">Set your own Password</h4>

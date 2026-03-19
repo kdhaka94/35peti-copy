@@ -492,7 +492,7 @@ const Header = () => {
                     bottom: "50px",
                     background: "none",
                     border: "none",
-                    display: "none"
+                    // display: "none"
                   }}
                   className="btns  btn-successx mr-2 d-n"
                   onClick={() => {

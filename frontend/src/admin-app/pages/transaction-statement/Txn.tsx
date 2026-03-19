@@ -228,7 +228,7 @@ const Txn = () => {
         <div className="border rounded p-2"
              style={{borderColor: "rgba(255,255,255,0.6)"}}>
           <small>CLIENT WALLET</small>
-          <div className="fw-bold">{userBookData?.totalmasterb?.toFixed(2)}</div>
+          <div className="fw-bold">{userBookData?.downlineob?.toFixed(2)}</div>
         </div>
       </div>
 
