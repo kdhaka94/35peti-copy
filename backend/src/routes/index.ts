@@ -67,13 +67,13 @@ router.get('/api/set-market-result-by-cron', new MatchController().setResultApi)
       new DepositWithdrawController().getDepositWithdrawtwo,
     )
 
-    router.post(
-      '/api/update-deposit-withdraw-status',
+    // router.post(
+    //   '/api/update-deposit-withdraw-status',
   
-      updateDepositWithdraw,
+    //   updateDepositWithdraw,
      
-      new DepositWithdrawController().updateDepositWithdraw,
-    )
+    //   new DepositWithdrawController().updateDepositWithdraw,
+    // )
 
 router.get('/api/result-market-auto', new FancyController().declaremarketresultAuto)
 router.get('/api/result-market-fancy-auto', new FancyController().setT10FancyResult)
