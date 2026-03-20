@@ -3,6 +3,7 @@ import './depositstatement.css'
 import { useLocation } from 'react-router-dom'
 import moment from 'moment'
 import depositWithdrawService from '../../services/deposit-withdraw.service'
+import { toast } from 'react-toastify'
 const DepositStatement2 = () => {
   const location = useLocation()
   const [depositStatement, setDepositStatement] = useState([])
@@ -54,6 +55,35 @@ const DepositStatement2 = () => {
   //     setDepositStatement(response?.data?.data)
   //   }
   // }
+
+  const handleCancel = async (item: any) => {
+  try {
+    const payload = {
+      status: "rejected",
+      id: item?._id,
+      userId: item?.userId,
+      parentId: item?.parentId,
+      username: item?.username,
+      type: item?.type,
+      orderId: item?.orderId,
+    }
+
+    const res = await depositWithdrawService.cancelWithDraw(payload)
+
+    if (res?.data?.message) {
+      toast.success(res.data.message)
+      getAccountStmt(1)
+
+      // 🔥 list refresh karo
+      // getWithdrawList()  // jo bhi function hai tumhare paas
+    }
+  } catch (err: any) {
+    toast.error(err?.response?.data?.message || 'Something went wrong')
+  }
+}
+
+
+
   return (
     <div className='mt-10' >
       <div className='card mb-10'>
@@ -137,6 +167,7 @@ const DepositStatement2 = () => {
               <th className='bet-event-name'>
                 <div>Remark</div>
               </th>
+              <th>Action</th>
             </tr>
           </thead>
           <tbody>
@@ -150,6 +181,16 @@ const DepositStatement2 = () => {
                     <td>{dateData}</td>
                     <td>{deposit.status}</td>
                     <td>{deposit.remark}</td>
+                    <td>
+  {deposit?.status === 'pending' && deposit?.type === "withdraw"  && (
+    <button
+      className="btn btn-danger btn-sm"
+      onClick={() => handleCancel(deposit)}
+    >
+      Cancel
+    </button>
+  )}
+</td>
                   </tr>
                 )
               })

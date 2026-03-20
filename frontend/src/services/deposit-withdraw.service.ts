@@ -59,6 +59,12 @@ class DepositWithdrawService {
   getPaymentSetting() {
     return api.get('active-payment-accounts')
   }
+
+  cancelWithDraw(data:any){
+    return api.post("cancel-withdraw",data)
+  }
+
+
   updateDepositWithdrawStatus(obj: {
     id?: string
     narration?: string

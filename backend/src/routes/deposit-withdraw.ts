@@ -86,6 +86,13 @@ export class DepositWithdrawRoutes {
       this.DepositWithdrawController.updateDepositWithdraw,
     )
 
+    this.router.post(
+      '/cancel-withdraw',
+      Passport.authenticateJWT,
+      Http.validateRequest,
+      this.DepositWithdrawController.cancelWithdraw,
+    )
+
     this.router.get(
       '/staff-list',
       Passport.authenticateJWT,

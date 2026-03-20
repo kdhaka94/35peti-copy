@@ -279,6 +279,49 @@ getDepositWithdrawtwo = async (req: Request, res: Response): Promise<any> => {
     }
   }
 
+  cancelWithdraw = async (req: Request, res: Response): Promise<any> => {
+    try {
+      const user = req.user as IUserModel
+      if (!user) {
+        return this.fail(res, 'Unauthorized: user not found')
+      }
+      const { id, status, ...rest } = req.body
+      const txn: any = await DepositWithdraw.findOne({
+        _id: Types.ObjectId(id),
+        status: 'pending',
+      })
+      if (!txn) return this.fail(res, 'Entry not found')
+      txn.remark = req.body.narration
+      if (status === 'approved') {
+        req.body.amount = txn.amount
+        req.body.parentUserId = txn.parentId
+        req.body.userId = txn.userId
+
+        const { userAccBal, pnlData } = await new AccountController().depositWithdraw(
+          req,
+          req?.user as IUserModel,
+        )
+        const successMsg = 'Transaction Approved'
+
+        if (successMsg) {
+          txn.status = status
+        }
+        await txn.save()
+
+        return this.success(res, { success: true }, successMsg)
+      } else {
+        const successMsg = 'Transaction rejected'
+        txn.status = 'rejected'
+        await txn.save()
+
+        return this.success(res, { success: true }, successMsg)
+      }
+      // await DepositWithdraw.findOneAndUpdate({ _id: id }, { ...rest })
+    } catch (e: any) {
+      return this.fail(res, e)
+    }
+  }
+
   StaffList = async(req:Request,res:Response) : Promise<any> =>{
     try {
       const currentUser:any = req.user
