@@ -95,6 +95,17 @@ const AllowCasino = Array.isArray(req.body.AllowCasino)
           if (!parentUser) {
             return this.fail(res, 'Parent User not exixts!')
           }
+
+          let finalPaymode = paymode;
+
+// 🔥 RULE APPLY
+if (role === RoleType.sadmin) {
+  finalPaymode = paymode; // frontend wala
+} else {
+  finalPaymode = parentUser.paymode; // parent inherit
+}
+
+
           let updatedUserSetting = {}
           if (role !== RoleType.user) {
             let errorMsg = this.validatePartnership(
@@ -137,7 +148,7 @@ const AllowCasino = Array.isArray(req.body.AllowCasino)
             creditRefrences,
             exposerLimit,
             userSetting: updatedUserSetting,
-            paymode,
+            paymode:finalPaymode,
             AllowCasino: AllowCasino || currentUser.AllowCasino,
             Allowsport: Allowsport || currentUser.AllowSport,
             ctv: true,
@@ -171,7 +182,7 @@ console.log(logoImagePath,"logoImagePath", req.file)
               const whiteLabelData: IWhiteLabel = {
                 userId: newUser._id,
                 domain: defaultDomain,
-                mode:paymode,
+                mode:finalPaymode,
                 companyName: defaultCompanyName,
                 logoUrl: req.body.whiteLabelLogoUrl || '',
                 logoImage: logoImagePath || "errr" ,

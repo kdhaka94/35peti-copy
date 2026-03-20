@@ -618,7 +618,7 @@ if(logoFile){
                       )}
 
 
-                      {userState.user.role === "admin" && (
+                      {userState.user.role === "admin" && watch('role') === 'sadmin' && (
                         <div className="col-md-6">
                           <div className="form-group">
                             <label htmlFor="paymode">Transaction Type</label>
