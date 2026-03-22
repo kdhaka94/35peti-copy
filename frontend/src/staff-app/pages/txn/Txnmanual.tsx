@@ -8,6 +8,7 @@ interface StatCardProps {
     value: number;
     label: string;
     link: string;
+    payStatus?: string;
 }
 
 type TxnStatus = "approved" | "rejected" | "pending";

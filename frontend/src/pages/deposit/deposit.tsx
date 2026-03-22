@@ -83,20 +83,22 @@ const Deposit = () => {
                   <p className="font-weight-bold mb-2">Select Payment Account:</p>
                   <div className="d-flex flex-wrap" style={{ gap: "10px" }}>
                     {accounts.map((acc: any) => (
-                      <div
-                        key={acc._id}
-                        className={`card text-center p-2`}
-                        style={{
-                          cursor: "pointer",
-                          minWidth: "120px",
-                          border: selectedAccount?._id === acc._id ? "2px solid #007bff" : "1px solid #ddd",
-                          background: selectedAccount?._id === acc._id ? "#e3f2fd" : "#fff",
-                        }}
-                        onClick={() => setSelectedAccount(acc)}
-                      >
-                        <strong style={{ fontSize: "13px" }}>{acc.accountType === 'usdt' ? `💰 USDT` : `🏦 ${acc.bankName}`}</strong>
-                        <small className="text-muted">{acc.accountType === 'usdt' ? acc.network : acc.accountHolderName}</small>
-                      </div>
+                      <React.Fragment key={acc._id}>
+                        <div
+                          className={`card text-center p-2`}
+                          style={{
+                            cursor: "pointer",
+                            minWidth: "120px",
+                            border: selectedAccount?._id === acc._id ? "2px solid #007bff" : "1px solid #ddd",
+                            background: selectedAccount?._id === acc._id ? "#e3f2fd" : "#fff",
+                          }}
+                          onClick={() => setSelectedAccount(acc)}
+                        >
+                          <strong style={{ fontSize: "13px" }}>{acc.accountType === 'usdt' ? `💰 USDT` : `🏦 ${acc.bankName}`}</strong>
+                          <small className="text-muted">{acc.accountType === 'usdt' ? acc.network : acc.accountHolderName}</small>
+                        </div>
+                        <span>{acc.accountType}</span>
+                      </React.Fragment>
                     ))}
                   </div>
                 </div>

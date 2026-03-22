@@ -10,8 +10,10 @@ import BankDetailModal from "./modal/BankDetailsModal";
 import RejectedModal from "./modal/RejectedModal";
 import mobileSubheader from '../../../admin-app/pages/_layout/elements/mobile-subheader'
 import { CustomLink, useNavigateCustom } from "../../../pages/_layout/elements/custom-link";
+import { useParams } from "react-router-dom";
 
 const WithdrawStatement = () => {
+  const { payStatus } = useParams();
   const [filterData, setFilterData] = useState<any>({
     startDate: moment().subtract(7, "days").format("YYYY-MM-DD"),
     endDate: moment().format("YYYY-MM-DD"),
@@ -43,15 +45,31 @@ const WithdrawStatement = () => {
     if (staffpid) {
       getAccountStmt(1);
     }
-  }, [staffpid, rejectedModal]);
+  }, [staffpid, rejectedModal ,payStatus]);
+
+  useEffect(() => {
+  if (payStatus) {
+    setFilterData((prev: any) => ({
+      ...prev,
+      reportType: payStatus,
+    }));
+  }
+}, [payStatus]);
 
   const getAccountStmt = async (page: number) => {
     try {
-      const res = await depositWithdrawService.getDepositWithdrawListstwo({
-        type: "withdraw",
-        ...filterData,
-        parentId: staffpid
-      });
+     const payload: any = {
+  type: "withdraw",
+  ...filterData,
+  parentId: staffpid
+};
+
+// URL param override karega
+if (payStatus) {
+  payload.reportType = payStatus;
+}
+
+const res = await depositWithdrawService.getDepositWithdrawListstwo(payload);
 
       setWithdrawStatement(res?.data?.data || []);
       setPageCount(res?.data?.totalPages || 0);
@@ -168,12 +186,12 @@ const WithdrawStatement = () => {
 
                   <div className="col-lg-2 mbc-5">
                     <label>Status</label>
-                    <select
-                      name="reportType"
-                      value={filterData.reportType}
-                      onChange={handleFormChange}
-                      className="form-control"
-                    >
+                   <select
+  name="reportType"
+  value={payStatus || filterData.reportType}
+  onChange={handleFormChange}
+  className="form-control"
+>
                       <option value="ALL">All</option>
                       <option value="approved">Approved</option>
                       <option value="pending">Pending</option>

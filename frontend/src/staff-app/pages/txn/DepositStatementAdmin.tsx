@@ -10,7 +10,9 @@ import BankDetailModal from './modal/BankDetailsModal'
 import { toast } from 'react-toastify'
 import RejectedModal from './modal/RejectedModal'
 import { CustomLink, useNavigateCustom } from '../../../pages/_layout/elements/custom-link'
+import { useParams } from 'react-router-dom'
 const DepositStatement = () => {
+  const { payStatus } = useParams()
   const [filterData, setFilterData] = React.useState<any>({
     startDate: '',
     endDate: '',
@@ -40,11 +42,21 @@ const DepositStatement = () => {
     }, []);
 
   React.useEffect(() => {
-    const filterObj = filterData
-    filterObj.startDate = moment().subtract(7, 'days').format('YYYY-MM-DD')
-    filterObj.endDate = moment().format('YYYY-MM-DD')
-    setFilterData(filterObj)
+   setFilterData((prev: any) => ({
+  ...prev,
+  startDate: moment().subtract(7, 'days').format('YYYY-MM-DD'),
+  endDate: moment().format('YYYY-MM-DD')
+}))
   }, [])
+
+  React.useEffect(() => {
+  if (payStatus) {
+    setFilterData((prev: any) => ({
+      ...prev,
+      reportType: payStatus,
+    }))
+  }
+}, [payStatus])
 
   const handleClick = (details: any) => {
     setBankDetails(details)
@@ -62,15 +74,22 @@ const DepositStatement = () => {
       if (staffpid) {
         getAccountStmt(1);
       }
-    }, [staffpid, rejectedModal]);
+    }, [staffpid, rejectedModal,payStatus]);
   
     const getAccountStmt = async (page: number) => {
       try {
-        const res = await depositWithdrawService.getDepositWithdrawListstwo({
-          type: "deposit",
-          ...filterData,
-          parentId: staffpid
-        });
+       const payload: any = {
+  type: "deposit",
+  ...filterData,
+  parentId: staffpid
+}
+
+// URL se aaya ho toh override karega
+if (payStatus) {
+  payload.reportType = payStatus
+}
+
+const res = await depositWithdrawService.getDepositWithdrawListstwo(payload);
   
         setDepositStatement(res?.data?.data || []);
         setPageCount(res?.data?.totalPages || 0);
@@ -195,6 +214,7 @@ const DepositStatement = () => {
                       <label className='label'>Type</label>
                       <select
                         name='reportType'
+                        value={payStatus || filterData.reportType}
                         onChange={handleformchange}
                         className='custom-select ng-untouched ng-pristine ng-valid'
                       >
@@ -237,9 +257,9 @@ const DepositStatement = () => {
                       <th className='bg2 text-white' style={{ width: '10%', textAlign: 'center' }}>
                         UTR
                       </th>
-                      <th className='bg2 text-white' style={{ width: '10%', textAlign: 'center' }}>
+                      {/* <th className='bg2 text-white' style={{ width: '10%', textAlign: 'center' }}>
                         Approved By
-                      </th>
+                      </th> */}
                       <th className='bg2 text-white' style={{ width: '10%', textAlign: 'center' }}>
                         Request Type
                       </th>
@@ -276,7 +296,7 @@ const DepositStatement = () => {
                           </td>
                           <td style={{ textAlign: 'center' }}>{item.utrno}</td>
 
-                          <td></td>
+                          {/* <td></td> */}
                           <td style={{ textAlign: 'center' }}>{item.type}</td>
                           <td style={{ textAlign: 'center' }}>{item.amount}</td>
                           <td style={{ textAlign: 'center' }}>

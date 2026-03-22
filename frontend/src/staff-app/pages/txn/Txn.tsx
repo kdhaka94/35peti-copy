@@ -8,6 +8,7 @@ interface StatCardProps {
     value: number;
     label: string;
     link: string;
+    payStatus?: string;
 }
 
 type TxnStatus = "approved" | "rejected" | "pending";
@@ -205,19 +206,22 @@ const Txn = () => {
                             color="primary"
                             value={depositStats?.totalAmount ?? 0}
                             label={`Total Deposits : ${depositStats?.totalCount ?? 0}`}
-                            link="/depositstatement"
+                            link="/deposit"
+                            payStatus=""
                         />
                         <StatCard
                             color="success"
                             value={depositStats?.approvedAmount ?? 0}
                             label={`Approved Deposits : ${depositStats?.approvedCount ?? 0}`}
-                            link="/depositstatement"
+                            link="/deposit"
+                            payStatus="approved"
                         />
                         <StatCard
                             color="danger"
                             value={depositStats?.rejectedAmount ?? 0}
                             label={`Rejected Deposits : ${depositStats?.rejectedCount ?? 0}`}
-                            link="/depositstatement"
+                            link="/deposit"
+                            payStatus="rejected"
                         />
                     </>
                 )}
@@ -229,25 +233,29 @@ const Txn = () => {
                             color="info"
                             value={withdrawStats?.totalAmount ?? 0}
                             label={`Total Withdrawals : ${withdrawStats?.totalCount ?? 0}`}
-                            link="/withdrawstatement"
+                            link="/withdraw"
+                            payStatus=""
                         />
                         <StatCard
                             color="warning"
                             value={withdrawStats?.pendingAmount ?? 0}
                             label={`Pending Withdrawals : ${withdrawStats?.pendingCount ?? 0}`}
-                            link="/withdrawstatement"
+                            link="/withdraw"
+                            payStatus="pending"
                         />
                         <StatCard
                             color="success"
                             value={withdrawStats?.approvedAmount ?? 0}
                             label={`Approved Withdrawals : ${withdrawStats?.approvedCount ?? 0}`}
-                            link="/withdrawstatement"
+                            link="/withdraw"
+                            payStatus="approved"
                         />
                         <StatCard
                             color="danger"
                             value={withdrawStats?.rejectedAmount ?? 0}
                             label={`Rejected Withdrawals : ${withdrawStats?.rejectedCount ?? 0}`}
-                            link="/withdrawstatement"
+                            link="/withdraw"
+                            payStatus="rejected"
                         />
                     </>
                 )}
@@ -258,15 +266,15 @@ const Txn = () => {
 };
 
 /* ---------------- Stat Card ---------------- */
-const StatCard: React.FC<StatCardProps> = ({ color, value, label }) => {
+const StatCard: React.FC<StatCardProps> = ({ color, value, label ,link,payStatus }) => {
     return (
         <div className="col-xl-3 col-lg-4 col-md-6 mb-4">
-            <div className={`card text-white bg-${color} shadow-sm h-100`}>
+            <CustomLink to={`/staff/${link}/${payStatus}`} className={`card text-white bg-${color} shadow-sm h-100`}>
                 <div className="card-body p-3">
                     <h3 className="fw-bold">{value}</h3>
                     <p className="mb-0">{label}</p>
                 </div>
-            </div>
+            </CustomLink>
         </div>
     );
 };

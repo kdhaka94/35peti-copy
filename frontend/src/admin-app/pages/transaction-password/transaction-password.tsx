@@ -77,7 +77,7 @@ const TransactionPassword = () => {
         } else {
           dispatch(setChangePassAndTxn(true));
           setIsOpen(false);
-          navigate.go("/");
+          navigate.go("/match/4/in-play");
         }
       })
       .catch((e) => {

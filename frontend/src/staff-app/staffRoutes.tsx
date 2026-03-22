@@ -25,6 +25,10 @@ const StaffRoutes = () => {
             path:"deposit",
             element:<DepositStatement/>
         },
+         {
+            path:"deposit/:payStatus",
+            element:<DepositStatement/>
+        },
         { 
             path:"withdraw",
             element:<WithdrawStatement/>

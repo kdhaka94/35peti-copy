@@ -53,9 +53,10 @@ const WithdrawStatement = () => {
   const handleCopy = (item: any) => {
   const textToCopy = `
 Username: ${item.username}
-Account Holder: ${item.bankDetail.accountHolderName}
-Account Number: ${item.bankDetail.accountNumber}
-IFSC: ${item.bankDetail.ifscCode}
+Account Holder: ${item.bankDetail.accountHolderName || "N/A" }
+Account Number: ${item.bankDetail.accountNumber || "N/A"}
+IFSC: ${item.bankDetail.ifscCode || "N/A"}
+UPI: ${item.bankDetail.upiId || "N/A"}
   `
 
   navigator.clipboard.writeText(textToCopy)
@@ -235,9 +236,12 @@ IFSC: ${item.bankDetail.ifscCode}
                       <th className='bg2 text-white' style={{ width: '10%', textAlign: 'center' }}>
                        IFSC
                       </th>
-                      <th className='bg2 text-white' style={{ width: '10%', textAlign: 'center' }}>
-                        Approved By
+                       <th className='bg2 text-white' style={{ width: '10%', textAlign: 'center' }}>
+                       UPI
                       </th>
+                      {/* <th className='bg2 text-white' style={{ width: '10%', textAlign: 'center' }}>
+                        Approved By
+                      </th> */}
                       <th className='bg2 text-white' style={{ width: '10%', textAlign: 'center' }}>
                         Request Type
                       </th>
@@ -282,8 +286,9 @@ IFSC: ${item.bankDetail.ifscCode}
                           <td style={{ textAlign: 'center' }}>{item.bankDetail.accountHolderName}</td>
                           <td style={{ textAlign: 'center' }}>{item.bankDetail.accountNumber}</td>
                           <td style={{ textAlign: 'center' }}>{item.bankDetail.ifscCode}</td>
+                          <td style={{ textAlign: 'center' }}>{item.bankDetail.upiId}</td>
 
-                          <td></td>
+                          {/* <td></td> */}
                           <td style={{ textAlign: 'center' }}>{item.accountType}</td>
                           <td style={{ textAlign: 'center' }}>{item.amount}</td>
                           <td style={{ textAlign: 'center' }}>

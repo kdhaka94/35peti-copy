@@ -27,7 +27,7 @@ const CustomAutoComplete = forwardRef(
     }
 
     const renderSuggestion = (suggestion: any) => (
-      <div className='dropdown-item'>{suggestion.username}</div>
+      <div style={{color:"black"}} className='p-2'>{suggestion.username}</div>
     )
 
     const inputProps = {
