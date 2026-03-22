@@ -33,6 +33,10 @@ const StaffRoutes = () => {
             path:"withdraw",
             element:<WithdrawStatement/>
         },
+         {
+            path:"withdraw/:payStatus",
+            element:<WithdrawStatement/>
+          },
         {
             path:"deposit/manual",
             element:<DepositStatementManual/>

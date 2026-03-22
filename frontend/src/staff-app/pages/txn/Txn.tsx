@@ -206,21 +206,21 @@ const Txn = () => {
                             color="primary"
                             value={depositStats?.totalAmount ?? 0}
                             label={`Total Deposits : ${depositStats?.totalCount ?? 0}`}
-                            link="/deposit"
+                            link="deposit"
                             payStatus=""
                         />
                         <StatCard
                             color="success"
                             value={depositStats?.approvedAmount ?? 0}
                             label={`Approved Deposits : ${depositStats?.approvedCount ?? 0}`}
-                            link="/deposit"
+                            link="deposit"
                             payStatus="approved"
                         />
                         <StatCard
                             color="danger"
                             value={depositStats?.rejectedAmount ?? 0}
                             label={`Rejected Deposits : ${depositStats?.rejectedCount ?? 0}`}
-                            link="/deposit"
+                            link="deposit"
                             payStatus="rejected"
                         />
                     </>
@@ -233,28 +233,28 @@ const Txn = () => {
                             color="info"
                             value={withdrawStats?.totalAmount ?? 0}
                             label={`Total Withdrawals : ${withdrawStats?.totalCount ?? 0}`}
-                            link="/withdraw"
+                            link="withdraw"
                             payStatus=""
                         />
                         <StatCard
                             color="warning"
                             value={withdrawStats?.pendingAmount ?? 0}
                             label={`Pending Withdrawals : ${withdrawStats?.pendingCount ?? 0}`}
-                            link="/withdraw"
+                            link="withdraw"
                             payStatus="pending"
                         />
                         <StatCard
                             color="success"
                             value={withdrawStats?.approvedAmount ?? 0}
                             label={`Approved Withdrawals : ${withdrawStats?.approvedCount ?? 0}`}
-                            link="/withdraw"
+                            link="withdraw"
                             payStatus="approved"
                         />
                         <StatCard
                             color="danger"
                             value={withdrawStats?.rejectedAmount ?? 0}
                             label={`Rejected Withdrawals : ${withdrawStats?.rejectedCount ?? 0}`}
-                            link="/withdraw"
+                            link="withdraw"
                             payStatus="rejected"
                         />
                     </>
