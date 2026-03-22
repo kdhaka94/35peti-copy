@@ -11,6 +11,7 @@ import RejectedModal from "./modal/RejectedModal";
 import mobileSubheader from '../../../admin-app/pages/_layout/elements/mobile-subheader'
 import { CustomLink, useNavigateCustom } from "../../../pages/_layout/elements/custom-link";
 import { useParams } from "react-router-dom";
+import CustomAutoComplete from "../../../admin-app/components/CustomAutoComplete";
 
 const WithdrawStatement = () => {
   const { payStatus } = useParams();
@@ -126,6 +127,24 @@ const res = await depositWithdrawService.getDepositWithdrawListstwo(payload);
     }
   };
 
+  const handleCopy = (item: any) => {
+  const textToCopy = `
+Username: ${item.username}
+Account Holder: ${item.bankDetail.accountHolderName || "N/A" }
+Account Number: ${item.bankDetail.accountNumber || "N/A"}
+IFSC: ${item.bankDetail.ifscCode || "N/A"}
+UPI: ${item.bankDetail.upiId || "N/A"}
+  `
+
+  navigator.clipboard.writeText(textToCopy)
+    .then(() => {
+      toast.success('Copied to clipboard ✅')
+    })
+    .catch(() => {
+      toast.error('Copy failed ❌')
+    })
+}
+
   const handleLogout = () => {
     localStorage.clear(); // sab clear karega
     navigate.go('/staff/login');
@@ -155,11 +174,11 @@ const res = await depositWithdrawService.getDepositWithdrawListstwo(payload);
                 <div className="row row5">
 
                   <div className="col-lg-2 mbc-5">
-                    {/* <label>User</label> */}
-                    {/* <CustomAutoComplete
+                    <label>User</label>
+                    <CustomAutoComplete
                       onSuggestionsFetchRequested={onSuggestionsFetchRequested}
                       onChangeSelectValue={onSelectUser}
-                    /> */}
+                    />
                   </div>
 
                   <div className=" col-6 col-lg-2 mbc-5">
@@ -222,6 +241,18 @@ const res = await depositWithdrawService.getDepositWithdrawListstwo(payload);
                         style={{ width: '10%', textAlign: 'center', whiteSpace: 'nowrap' }}>User</th>
                       <th  className='bg2 text-white'
                         style={{ width: '10%', textAlign: 'center', whiteSpace: 'nowrap' }}>Details</th>
+                         <th className='bg2 text-white' style={{ width: '10%', textAlign: 'center' }}>
+                        Ac Holder Name
+                      </th>
+                      <th className='bg2 text-white' style={{ width: '10%', textAlign: 'center' }}>
+                       Ac. Number
+                      </th>
+                      <th className='bg2 text-white' style={{ width: '10%', textAlign: 'center' }}>
+                       IFSC
+                      </th>
+                       <th className='bg2 text-white' style={{ width: '10%', textAlign: 'center' }}>
+                       UPI
+                      </th>
                       <th className='bg2 text-white'
                         style={{ width: '10%', textAlign: 'center', whiteSpace: 'nowrap' }}> Request Type</th>
                       <th className='bg2 text-white'
@@ -238,11 +269,20 @@ const res = await depositWithdrawService.getDepositWithdrawListstwo(payload);
                         <tr key={item._id}>
                           <td>{moment(item.createdAt).format("DD/MM/YYYY h:mm A")}</td>
                           <td>{item.username}</td>
-                          <td>
+                          {/* <td>
                             <button onClick={() => handleClick(item.bankDetail)}>
                               View
                             </button>
+                          </td> */}
+                             <td style={{ textAlign: 'center' }}>
+                            <button onClick={() => handleCopy(item)}>
+                              Copy
+                            </button>
                           </td>
+                          <td>{item.bankDetail.accountHolderName}</td>
+                          <td>{item.bankDetail.accountNumber}</td>
+                          <td>{item.bankDetail.ifscCode}</td>
+                          <td>{item.bankDetail.upiId}</td>
                           <td>{item.accountType}</td>
                           <td>{item.amount}</td>
                           <td style={{ textTransform: "capitalize" }}>

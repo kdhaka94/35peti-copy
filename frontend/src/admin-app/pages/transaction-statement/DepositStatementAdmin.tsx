@@ -208,9 +208,9 @@ const DepositStatement = () => {
                       <th className='bg2 text-white' style={{ width: '10%', textAlign: 'center' }}>
                         UTR
                       </th>
-                      <th className='bg2 text-white' style={{ width: '10%', textAlign: 'center' }}>
+                      {/* <th className='bg2 text-white' style={{ width: '10%', textAlign: 'center' }}>
                         Approved By
-                      </th>
+                      </th> */}
                       <th className='bg2 text-white' style={{ width: '10%', textAlign: 'center' }}>
                         Request Type
                       </th>
@@ -247,7 +247,7 @@ const DepositStatement = () => {
                           </td>
                           <td style={{ textAlign: 'center' }}>{item.utrno}</td>
 
-                          <td></td>
+                          {/* <td></td> */}
                           <td style={{ textAlign: 'center' }}>{item.type}</td>
                           <td style={{ textAlign: 'center' }}>{item.amount}</td>
                           <td style={{ textAlign: 'center' }}>

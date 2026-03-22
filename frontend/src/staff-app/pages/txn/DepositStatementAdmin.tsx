@@ -11,6 +11,7 @@ import { toast } from 'react-toastify'
 import RejectedModal from './modal/RejectedModal'
 import { CustomLink, useNavigateCustom } from '../../../pages/_layout/elements/custom-link'
 import { useParams } from 'react-router-dom'
+import CustomAutoComplete from '../../../admin-app/components/CustomAutoComplete'
 const DepositStatement = () => {
   const { payStatus } = useParams()
   const [filterData, setFilterData] = React.useState<any>({
@@ -166,13 +167,13 @@ const res = await depositWithdrawService.getDepositWithdrawListstwo(payload);
                 onSubmit={handleSubmitform}
               >
                 <div className='row row5'>
-                  {/* <div className='col-6 col-lg-2 mbc-5'> */}
-                    {/* <label className='label'>User</label> */}
-                    {/* <CustomAutoComplete
+                  <div className='col-6 col-lg-2 mbc-5'>
+                    <label className='label'>User</label>
+                    <CustomAutoComplete
                       onSuggestionsFetchRequested={onSuggestionsFetchRequested}
                       onChangeSelectValue={onSelectUser}
-                    /> */}
-                  {/* </div> */}
+                    />
+                  </div>
                   <div className='col-6 col-lg-2 mbc-5'>
                     <div className='form-group mb-0'>
                       <label className='label'>Start Date</label>
