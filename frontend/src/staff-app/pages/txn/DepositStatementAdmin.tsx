@@ -22,6 +22,7 @@ const DepositStatement = () => {
   })
   const [depositStatement, setDepositStatement] = useState([])
   const [pageCount, setPageCount] = React.useState<any>(0)
+  const [userList, setUserList] = useState<string[]>([]);
   const [bankDetails, setBankDetails] = useState({})
   const [rejectedModal, setRejectedModal] = useState(false)
   const [rejectedData, setRejectedData] = useState<any>({})
@@ -100,11 +101,12 @@ const res = await depositWithdrawService.getDepositWithdrawListstwo(payload);
     };
 
   const handleformchange = (event: any) => {
-    const filterObj = filterData
-    filterObj[event.target.name] = event.target.value
-    setFilterData(filterObj)
-  }
-
+  const { name, value } = event.target
+  setFilterData((prev:any) => ({
+    ...prev,
+    [name]: value
+  }))
+}
   const handleSubmitform = (event: any) => {
     event.preventDefault()
     getAccountStmt(1)
@@ -113,9 +115,12 @@ const res = await depositWithdrawService.getDepositWithdrawListstwo(payload);
   const onSuggestionsFetchRequested = ({ value }: any) => {
     return userService.getUserListSuggestion({ username: value })
   }
-  const onSelectUser = (username: any) => {
-    setFilterData({ ...filterData, username: username })
-  }
+  const onSelectUser = (user: any) => {
+  setFilterData((prev:any) => ({
+    ...prev,
+    username: user.username   // ✅ only string
+  }))
+}
   const getDepositUpdateStatus = async (item: any, type: string) => {
     if (type == 'rejected') {
       setRejectedModal(true)
@@ -143,6 +148,16 @@ const res = await depositWithdrawService.getDepositWithdrawListstwo(payload);
     navigate.go('/staff/login');
 };
 
+useEffect(() => {
+  if (depositStatement.length > 0) {
+    const uniqueUsers = [
+      //@ts-ignore
+      ...new Set(depositStatement.map((item: any) => item.username))
+    ];
+    setUserList(uniqueUsers);
+  }
+}, [depositStatement]);
+
   return (
     <>
       {mobileSubheader.subheaderdesktopadmin('Deposit Statements')}
@@ -169,10 +184,24 @@ const res = await depositWithdrawService.getDepositWithdrawListstwo(payload);
                 <div className='row row5'>
                   <div className='col-6 col-lg-2 mbc-5'>
                     <label className='label'>User</label>
-                    <CustomAutoComplete
+                    {/* <CustomAutoComplete
                       onSuggestionsFetchRequested={onSuggestionsFetchRequested}
-                      onChangeSelectValue={onSelectUser}
-                    />
+                      onSelectUser={onSelectUser}
+                    /> */}
+                     <select
+    name="username"
+    value={filterData.username}
+    onChange={handleformchange}
+    className="form-control"
+  >
+    <option value="">All Users</option>
+
+    {userList.map((user: string, index: number) => (
+      <option key={index} value={user}>
+        {user}
+      </option>
+    ))}
+  </select>
                   </div>
                   <div className='col-6 col-lg-2 mbc-5'>
                     <div className='form-group mb-0'>

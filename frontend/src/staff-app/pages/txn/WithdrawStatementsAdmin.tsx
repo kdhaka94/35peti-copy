@@ -15,6 +15,7 @@ import CustomAutoComplete from "../../../admin-app/components/CustomAutoComplete
 
 const WithdrawStatement = () => {
   const { payStatus } = useParams();
+  const [userList, setUserList] = useState<string[]>([]);
   const [filterData, setFilterData] = useState<any>({
     startDate: moment().subtract(7, "days").format("YYYY-MM-DD"),
     endDate: moment().format("YYYY-MM-DD"),
@@ -150,6 +151,16 @@ UPI: ${item.bankDetail.upiId || "N/A"}
     navigate.go('/staff/login');
 };
 
+useEffect(() => {
+  if (withdrawStatement.length > 0) {
+    const uniqueUsers = [
+      //@ts-ignore
+      ...new Set(withdrawStatement.map((item: any) => item.username))
+    ];
+    setUserList(uniqueUsers);
+  }
+}, [withdrawStatement]);
+
   return (
     <>
       {mobileSubheader.subheaderdesktopadmin("Withdraw Statements")}
@@ -175,10 +186,23 @@ UPI: ${item.bankDetail.upiId || "N/A"}
 
                   <div className="col-lg-2 mbc-5">
                     <label>User</label>
-                    <CustomAutoComplete
+                    {/* <CustomAutoComplete
                       onSuggestionsFetchRequested={onSuggestionsFetchRequested}
                       onChangeSelectValue={onSelectUser}
-                    />
+                    /> */}<select
+    name="username"
+    value={filterData.username}
+    onChange={handleFormChange}
+    className="form-control"
+  >
+    <option value="">All Users</option>
+
+    {userList.map((user: string, index: number) => (
+      <option key={index} value={user}>
+        {user}
+      </option>
+    ))}
+  </select>
                   </div>
 
                   <div className=" col-6 col-lg-2 mbc-5">
