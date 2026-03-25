@@ -33,7 +33,8 @@ export class WhiteLabelController extends ApiController {
         customCSS,
         customJS,
         headerHTML,
-        footerHTML
+        footerHTML,
+        whatsappNumber
       } = req.body
 
       // Validate that the target user exists and is an admin
@@ -67,7 +68,8 @@ export class WhiteLabelController extends ApiController {
         customCSS,
         customJS,
         headerHTML,
-        footerHTML
+        footerHTML,
+        whatsappNumber
       }
 
       const whiteLabel = new WhiteLabel(whiteLabelData)
@@ -98,6 +100,7 @@ export class WhiteLabelController extends ApiController {
         customJS,
         headerHTML,
         footerHTML,
+        whatsappNumber,
         isActive
       } = req.body
 
@@ -134,6 +137,7 @@ export class WhiteLabelController extends ApiController {
         customJS: customJS !== undefined ? customJS : whiteLabel.customJS,
         headerHTML: headerHTML !== undefined ? headerHTML : whiteLabel.headerHTML,
         footerHTML: footerHTML !== undefined ? footerHTML : whiteLabel.footerHTML,
+        whatsappNumber: whatsappNumber !== undefined ? whatsappNumber : whiteLabel.whatsappNumber,
         isActive: isActive !== undefined ? isActive : whiteLabel.isActive
       }
 
@@ -176,7 +180,8 @@ export class WhiteLabelController extends ApiController {
           customCSS: '',
           customJS: '',
           headerHTML: '',
-          footerHTML: ''
+          footerHTML: '',
+          whatsappNumber: ''
         })
       }
 
@@ -207,7 +212,8 @@ export class WhiteLabelController extends ApiController {
           secondaryColor: '#6c757d',
           backgroundColor: '#ffffff',
           textColor: '#212529',
-          fontFamily: 'Arial, sans-serif'
+          fontFamily: 'Arial, sans-serif',
+          whatsappNumber: ''
         })
         await whiteLabel.save()
       }

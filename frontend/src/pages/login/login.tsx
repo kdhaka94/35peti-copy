@@ -8,6 +8,7 @@ import { CustomLink, useNavigateCustom } from '../_layout/elements/custom-link'
 import { isMobile } from 'react-device-detect'
 import api from '../../utils/api'
 import SubmitButton from '../../components/SubmitButton'
+import WhatsAppButton from '../../components/WhatsAppButton'
 import { whiteLabelService } from '../../services/white-label.service'
 import { useWhiteLabel } from '../../context/WhiteLabelContext'
 
@@ -116,10 +117,11 @@ const Login = () => {
 
 
   const API_URL = process.env.REACT_APP_API_BACKURL || "";
+  const isDefaultDomain = window.location.hostname.includes("35peti") || window.location.hostname.includes("localhost");
 
   const logoSrc = whiteLabel?.logoImage
     ? `${API_URL}${whiteLabel.logoImage}`
-    : "";
+    : isDefaultDomain ? "/imgs/logo.png" : "";
   return (
     <div>
       <div className='login'>
@@ -222,7 +224,7 @@ const Login = () => {
         </div>
       </div>
       <section className="footer footer-login"><div className="footer-top"><div className="footer-links"><nav className="navbar navbar-expand-sm"><ul className="navbar-nav"><li className="nav-item"><a className="nav-link" href="/terms-and-conditions" target="_blank"> Terms and Conditions </a></li><li className="nav-item"><a className="nav-link" href="/responsible-gaming" target="_blank"> Responsible Gaming </a></li></ul></nav></div><div className="support-detail"><h2>24X7 Support</h2><p></p></div><div className="social-icons-box"></div></div></section>
-
+      <WhatsAppButton phoneNumber={whiteLabel?.whatsappNumber || (isDefaultDomain ? "911234567890" : undefined)} />
     </div>
 
   )

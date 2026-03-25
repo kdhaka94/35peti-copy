@@ -261,10 +261,11 @@ const Header = () => {
   const API_URL = process.env.REACT_APP_API_BACKURL || "";
 
   console.log(process.env.REACT_APP_API_BASEURL,"chekc env url")
+  const isDefaultDomain = window.location.hostname.includes("35peti") || window.location.hostname.includes("localhost");
 
   const logoSrc = whiteLabel?.logoImage
     ? `${API_URL}${whiteLabel.logoImage}`
-    : "/imgs/logo.png";
+    : isDefaultDomain ? "/imgs/logo.png" : "";
 
 
   return (

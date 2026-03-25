@@ -7,6 +7,7 @@ import { whiteLabelService } from '../../services/white-label.service'
 import { useAppSelector } from '../../redux/hooks'
 import { selectUserData } from '../../redux/actions/login/loginSlice'
 import { useWhiteLabel } from '../../context/WhiteLabelContext'
+import WhatsAppButton from '../../components/WhatsAppButton'
 
 
 const RegisterAuto = () => {
@@ -109,10 +110,11 @@ const RegisterAuto = () => {
 
 
   const API_URL = process.env.REACT_APP_API_BACKURL || "";
+  const isDefaultDomain = window.location.hostname.includes("35peti") || window.location.hostname.includes("localhost");
 
   const logoSrc = whiteLabel?.logoImage
     ? `${API_URL}${whiteLabel.logoImage}`
-    : "";
+    : isDefaultDomain ? "/imgs/logo.png" : "";
 
   return (
     <div className='login'>
@@ -178,6 +180,7 @@ const RegisterAuto = () => {
           </form>
         </div>
       </div>
+      <WhatsAppButton phoneNumber={whiteLabel?.whatsappNumber || (isDefaultDomain ? "911234567890" : undefined)} />
     </div>
   )
 }

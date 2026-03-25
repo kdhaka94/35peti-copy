@@ -19,9 +19,9 @@ const WhiteLabelConfig = () => {
     textColor: '#212529',
     fontFamily: 'Arial, sans-serif',
     customCSS: '',
-    customJS: '',
     headerHTML: '',
     footerHTML: '',
+    whatsappNumber: '',
   });
 
   useEffect(() => {
@@ -48,6 +48,7 @@ const WhiteLabelConfig = () => {
         customJS: data.customJS || '',
         headerHTML: data.headerHTML || '',
         footerHTML: data.footerHTML || '',
+        whatsappNumber: data.whatsappNumber || '',
       });
     } catch (error) {
       console.error('Error fetching white-label data:', error);
@@ -119,6 +120,24 @@ const WhiteLabelConfig = () => {
                     onChange={handleChange}
                     placeholder="e.g., My Brand"
                   />
+                </div>
+              </div>
+            </div>
+
+            <div className="row">
+              <div className="col-md-6">
+                <div className="form-group">
+                  <label htmlFor="whatsappNumber">WhatsApp Number</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    id="whatsappNumber"
+                    name="whatsappNumber"
+                    value={formData.whatsappNumber}
+                    onChange={handleChange}
+                    placeholder="e.g., 919876543210"
+                  />
+                  <small className="form-text text-muted">WhatsApp contact number for users</small>
                 </div>
               </div>
             </div>

@@ -110,10 +110,11 @@ const TransactionPassword = () => {
     const { whiteLabel } = useWhiteLabel();
   
  const API_URL = process.env.REACT_APP_API_BACKURL || "";
+  const isDefaultDomain = window.location.hostname.includes("35peti") || window.location.hostname.includes("localhost");
 
   const logoSrc = whiteLabel?.logoImage
     ? `${API_URL}${whiteLabel.logoImage}`
-    : "";
+    : isDefaultDomain ? "/imgs/logo.png" : "";
   return (
     <div className="login">
       <div className="wrapper">

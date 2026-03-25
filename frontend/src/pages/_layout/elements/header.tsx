@@ -36,6 +36,7 @@ import ISport from '../../../models/ISport'
 import SideBar from './sidebar'
 import SideBarInside from './sidebarinside'
 import { useWhiteLabel } from '../../../context/WhiteLabelContext'
+import WhatsAppButton from '../../../components/WhatsAppButton';
 
 
 
@@ -442,10 +443,11 @@ const Header = () => {
 
   const { whiteLabel } = useWhiteLabel();
   const API_URL = process.env.REACT_APP_API_BACKURL || "";
+  const isDefaultDomain = window.location.hostname.includes("35peti") || window.location.hostname.includes("localhost");
 
   const logoSrc = whiteLabel?.logoImage
     ? `${API_URL}${whiteLabel.logoImage}`
-    : "";
+    : isDefaultDomain ? "/imgs/logo.png" : "";
 
 
   return (
@@ -485,25 +487,7 @@ const Header = () => {
                   <CustomLink className='btn btn-withdraw' to={'/withdraw'}>  <img src="/withdrawimg.webp" className="w-2 mr-1" /> Withdraw</CustomLink>
                 </div>}
 
-                <button
-                  style={{
-                    position: "fixed",
-                    zIndex: "999",
-                    bottom: "50px",
-                    background: "none",
-                    border: "none",
-                    // display: "none"
-                  }}
-                  className="btns  btn-successx mr-2 d-n"
-                  onClick={() => {
-                    if (userParentAlldata?.parent?.phone) {
-                      const phoneNumber = userParentAlldata?.parent?.phone?.replace(/[^0-9]/g, ""); // sirf digits rakhega
-                      window.open(`https://wa.me/${phoneNumber}`, "_blank");
-                    }
-                  }}
-                >
-                  <img style={{ width: "75px" }} src="/wp_support.webp" className="" />
-                </button>
+                <WhatsAppButton phoneNumber={whiteLabel?.whatsappNumber || userParentAlldata?.parent?.phone || (isDefaultDomain ? "911234567890" : undefined)} />
                 {!isMobile ? (
                   <>
                     <li className='search float-left row'>

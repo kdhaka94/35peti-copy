@@ -17,6 +17,7 @@ export interface IWhiteLabel {
   customJS?: string; // Custom JavaScript
   headerHTML?: string; // Custom HTML for header
   footerHTML?: string; // Custom HTML for footer
+  whatsappNumber?: string; // WhatsApp contact number
   isActive: boolean; // Whether this white-label is active
   createdAt: Date;
   updatedAt: Date;
@@ -42,6 +43,7 @@ export const whiteLabelSchema: Schema = new Schema(
     customJS: String,
     headerHTML: String,
     footerHTML: String,
+    whatsappNumber: String,
     isActive: { type: Boolean, default: true },
   },
   {
