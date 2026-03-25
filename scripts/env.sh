@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+export ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 # ============================================================
 # ENV SETUP

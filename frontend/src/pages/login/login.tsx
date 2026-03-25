@@ -119,7 +119,7 @@ const Login = () => {
 
   const logoSrc = whiteLabel?.logoImage
     ? `${API_URL}${whiteLabel.logoImage}`
-    : "/imgs/logo.png";
+    : "";
   return (
     <div>
       <div className='login'>
