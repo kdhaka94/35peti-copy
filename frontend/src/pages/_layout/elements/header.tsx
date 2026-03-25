@@ -445,7 +445,7 @@ const Header = () => {
 
   const logoSrc = whiteLabel?.logoImage
     ? `${API_URL}${whiteLabel.logoImage}`
-    : "/imgs/logo.png";
+    : "";
 
 
   return (

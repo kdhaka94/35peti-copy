@@ -10,14 +10,19 @@ const CustomAutoComplete = forwardRef(
     const [value, setValue] = React.useState('')
     const [suggestions, setSuggestions] = React.useState([])
 
-    const onChangeAuto = (event: any, { newValue }: any) => {
+    const onChangeAuto = (event: any, { newValue, method }: any) => {
       setValue(newValue)
+      if (method === 'type') {
+        onSelectUser({ _id: '', username: newValue })
+      }
     }
 
     const onFetchData = ({ value }: any) => {
       setValue(value)
       onSuggestionsFetchRequested({ value: value }).then((res: AxiosResponse) => {
-        setSuggestions(res.data.data)
+        setSuggestions(res.data.data || [])
+      }).catch(() => {
+        setSuggestions([])
       })
     }
 
@@ -36,8 +41,7 @@ const CustomAutoComplete = forwardRef(
       onChange: onChangeAuto,
     }
     const onSuggestionsClearRequested = () => {
-      //setValue('')
-      //setSuggestions([])
+      setSuggestions([])
     }
 
     useImperativeHandle(

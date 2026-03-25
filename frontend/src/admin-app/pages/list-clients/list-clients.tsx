@@ -118,7 +118,7 @@ const ListClients = () => {
 
   React.useEffect(() => {
     const search = searchParams.get("search") ? searchParams.get("search") : "";
-    getList({ username: username!, search: search!, type: "" });
+    getList({ username: username!, search: search!, type: "", status: activeDeactive ? "true" : "false" });
     setPage(1);
   }, [username, searchParams.get("search"), callbacklist]);
 
@@ -217,7 +217,7 @@ const ListClients = () => {
     //   clientlistdata(updateListOfItems)
     //   setUserList(updateListOfItems)
     // }
-    getList({ ...searchObj, search: "false" });
+    getList({ ...searchObj, search: "false", status: activeDeactive ? "true" : "false" });
   };
   const logOutAllUsers = () => {
     socketUser.emit("logoutAll");
@@ -300,6 +300,17 @@ const ListClients = () => {
   };
 
   const clientlistdata = (userd: any) => {
+    if (userd?.totals) {
+      setUserListTotal({
+        totalcr: userd.totals.totalcr || 0,
+        totalbalance: userd.totals.totalbalance || 0,
+        clientpl: userd.totals.clientpl || 0,
+        exposer: userd.totals.exposer || 0,
+        totalExposer: userd.totals.exposer || 0,
+        avl: userd.totals.avl || 0,
+      });
+      return;
+    }
     let objTotal: any = {
       totalcr: 0,
       totalbalance: 0,
@@ -363,7 +374,7 @@ const ListClients = () => {
   const handleSearch = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     //setSearchClient('')
-    getList({ ...searchObj, search: "true" });
+    getList({ ...searchObj, search: "true", status: activeDeactive ? "true" : "false" });
   };
 
   const getcurrentpartnership = (users: any) => {
@@ -453,10 +464,10 @@ const ListClients = () => {
   };
 
   const onSearch = (e: string) => {
-    if (e) getList({ username: e, search: "true", type: "" });
+    if (e) getList({ username: e, search: "true", type: "", status: activeDeactive ? "true" : "false" });
     else if (username)
-      getList({ username: username, search: "false", type: "" });
-    else getList({ username: "", search: "false", type: "" });
+      getList({ username: username, search: "false", type: "", status: activeDeactive ? "true" : "false" });
+    else getList({ username: "", search: "false", type: "", status: activeDeactive ? "true" : "false" });
   };
 
   const typesOfClients = (e: MouseEvent<HTMLAnchorElement>, status: string) => {
@@ -931,6 +942,15 @@ const ListClients = () => {
     </tbody> */}
 
                   <tbody>
+                    <tr style={{ background: "#f1f1f1", fontSize: "12px", fontWeight: "bold" }}>
+                      <td style={td} colSpan={2} className="text-center">Total</td>
+                      <td style={td}>{usersTotal?.totalcr?.toFixed(2)}</td>
+                      <td style={td}>{usersTotal?.totalbalance?.toFixed(2)}</td>
+                      <td style={td}>{usersTotal?.clientpl?.toFixed(2)}</td>
+                      <td style={td}>{usersTotal?.exposer?.toFixed(2)}</td>
+                      <td style={td}>{usersTotal?.avl?.toFixed(2)}</td>
+                      <td style={td} colSpan={8}></td>
+                    </tr>
                     {users?.items?.map((user: User, index: number) => {
                       if (
                         activeDeactive !== user.isLogin &&

@@ -1114,13 +1114,22 @@ export class AccountController extends ApiController {
   getAccountStmtList = async (req: Request, res: Response) => {
   try {
     const { page = 1 }: any = req.query
-    const { startDate, endDate, reportType, userId, gameId }: any = req.body
+    const { startDate, endDate, reportType, userId, gameId, username }: any = req.body
 
     const limit = 20
     const skip = (Number(page) - 1) * limit
 
     const user: any = req.user
-    const userid = userId ? Types.ObjectId(userId) : Types.ObjectId(user._id)
+    let userid = userId ? Types.ObjectId(userId) : null
+    
+    if (!userid && username) {
+      const foundUser = await User.findOne({ username })
+      if (foundUser) {
+        userid = foundUser._id
+      }
+    }
+    
+    userid = userid || Types.ObjectId(user._id)
 
     let filter: any = {
       userId: userid,
@@ -1184,8 +1193,15 @@ export class AccountController extends ApiController {
             { $skip: skip },
             { $limit: limit }
           ],
-          totalCount: [
-            { $count: "count" }
+          totalStats: [
+            { 
+               $group: { 
+                 _id: null, 
+                 count: { $sum: 1 },
+                 totalCredit: { $sum: { $cond: [{ $gt: ["$amount", 0] }, "$amount", 0] } },
+                 totalDebit: { $sum: { $cond: [{ $lt: ["$amount", 0] }, "$amount", 0] } }
+               } 
+            }
           ]
         }
       }
@@ -1194,7 +1210,9 @@ export class AccountController extends ApiController {
     const result = await AccoutStatement.aggregate(aggregatePipeline)
 
     const items = result[0]?.data || []
-    const total = result[0]?.totalCount?.[0]?.count || 0
+    const total = result[0]?.totalStats?.[0]?.count || 0
+    const totalCredit = result[0]?.totalStats?.[0]?.totalCredit || 0
+    const totalDebit = result[0]?.totalStats?.[0]?.totalDebit || 0
 
     // ===== OPENING BALANCE =====
     const openingBalance = await AccoutStatement.aggregate([
@@ -1211,6 +1229,9 @@ export class AccountController extends ApiController {
         }
       }
     ])
+    
+    // ===== CREDIT REFERENCE =====
+    const userDetails = await User.findById(userid).select('creditRefrences');
 
     return this.success(res, {
       items,
@@ -1218,7 +1239,10 @@ export class AccountController extends ApiController {
       limit,
       total,
       totalPages: Math.ceil(total / limit),
-      openingBalance: openingBalance?.[0]?.total || 0
+      openingBalance: openingBalance?.[0]?.total || 0,
+      totalCredit,
+      totalDebit,
+      creditReference: userDetails?.creditRefrences || 0
     })
 
   } catch (e: any) {
@@ -1229,7 +1253,7 @@ export class AccountController extends ApiController {
   profitloss = async (req: Request, res: Response) => {
     try {
       const { page }: any = req.query
-      const { startDate, endDate, userId }: any = req.body
+      const { startDate, endDate, userId, username }: any = req.body
       const pageNo = page ? (page as string) : '1'
       const user: any = req.user
       const aggregateFilter = [
@@ -1243,8 +1267,18 @@ export class AccountController extends ApiController {
           },
         },
       ]
+      
+      let userid = userId ? Types.ObjectId(userId) : null
+      if (!userid && username) {
+        const foundUser = await User.findOne({ username })
+        if (foundUser) {
+          userid = foundUser._id
+        }
+      }
+      userid = userid || Types.ObjectId(user._id)
+
       var filter: any = {
-        userId: userId ? Types.ObjectId(userId) : Types.ObjectId(user._id),
+        userId: userid,
         betId: { $ne: null },
         createdAt: {
           $gte: new Date(`${startDate} 00:00:00`),

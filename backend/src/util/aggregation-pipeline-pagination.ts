@@ -1,7 +1,7 @@
 /* eslint-disable max-lines-per-function */
 import { FilterQuery } from 'mongoose'
 
-export const paginationPipeLine = (page = '1', filter: any, limit = 50) => {
+export const paginationPipeLine = (page = '1', filter: any, limit = 50, totalsGroup?: any) => {
   const skip = (Number(page) - 1) * limit
 
   return [
@@ -26,6 +26,7 @@ export const paginationPipeLine = (page = '1', filter: any, limit = 50) => {
             },
           },
         ],
+        ...(totalsGroup ? { totals: [{ $group: { _id: null, ...totalsGroup } }] } : {}),
       },
     },
     {
@@ -55,6 +56,7 @@ export const paginationPipeLine = (page = '1', filter: any, limit = 50) => {
           },
         },
         totalItems: '$total.count',
+        ...(totalsGroup ? { totals: { $arrayElemAt: ['$totals', 0] } } : {}),
       },
     },
   ]

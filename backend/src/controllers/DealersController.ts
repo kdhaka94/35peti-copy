@@ -360,6 +360,28 @@ console.log(logoImagePath,"logoImagePath", req.file)
     ]
     let filters: any = []
 
+    const toNum = (field: any) => ({ $convert: { input: { $ifNull: [field, 0] }, to: "double", onError: 0, onNull: 0 } });
+    const totalsGroup = {
+      totalcr: { $sum: toNum("$creditRefrences") },
+      totalbalance: {
+        $sum: { $add: [toNum("$creditRefrences"), toNum("$balance.profitLoss")] }
+      },
+      clientpl: { $sum: toNum("$balance.profitLoss") },
+      exposer: {
+        $sum: { $add: [toNum("$balance.exposer"), toNum("$balance.casinoexposer")] }
+      },
+      avl: {
+        $sum: {
+          $subtract: [
+            toNum("$balance.balance"),
+            { $add: [toNum("$balance.exposer"), toNum("$balance.casinoexposer")] }
+          ]
+        }
+      }
+    };
+
+    const statusMatch = status ? { isLogin: status === 'true' } : {};
+
     if (username && search !== 'true') {
       const user: IUserModel | null = await this.getUser(username)
       filters = paginationPipeLine(
@@ -369,12 +391,14 @@ console.log(logoImagePath,"logoImagePath", req.file)
             $match: {
               parentId: user?._id,
               parentStr: { $elemMatch: { $eq: Types.ObjectId(currentUser._id) } },
+              ...statusMatch
             },
           },
           ...aggregateFilter,
           { $sort: { username: 1 } },
         ],
         pageLimit,
+        totalsGroup
       )
     } else if (search === 'true' && type) {
       //if (username) const user: IUserModel | null = await this.getUser(username)
@@ -385,12 +409,14 @@ console.log(logoImagePath,"logoImagePath", req.file)
             $match: {
               role: type,
               parentStr: { $elemMatch: { $eq: Types.ObjectId(currentUser._id) } },
+              ...statusMatch
             },
           },
           ...aggregateFilter,
           { $sort: { username: 1 } },
         ],
         pageLimit,
+        totalsGroup
       )
     } else if (username && search === 'true') {
       filters = paginationPipeLine(
@@ -400,12 +426,14 @@ console.log(logoImagePath,"logoImagePath", req.file)
             $match: {
               username: new RegExp(username as string, 'i'),
               parentStr: { $elemMatch: { $eq: Types.ObjectId(currentUser._id) } },
+              ...statusMatch
             },
           },
           ...aggregateFilter,
           { $sort: { username: 1 } },
         ],
         pageLimit,
+        totalsGroup
       )
     } else {
       const { _id, role }: any = req?.user
@@ -416,27 +444,30 @@ console.log(logoImagePath,"logoImagePath", req.file)
             {
               $match: {
                 parentId: Types.ObjectId(_id),
-                isLogin: status === 'true',
+                ...statusMatch
               },
             },
             ...aggregateFilter,
             { $sort: { username: 1 } },
           ],
           pageLimit,
+          totalsGroup
         )
       } else {
         if (role !== 'admin') {
           filters = paginationPipeLine(
             pageNo,
-            [{ $match: { parentId: Types.ObjectId(_id) } }, ...aggregateFilter, { $sort: { username: 1 } },],
+            [{ $match: { parentId: Types.ObjectId(_id), ...statusMatch } }, ...aggregateFilter, { $sort: { username: 1 } },],
             pageLimit,
+            totalsGroup
           )
         } else {
           console.log(_id)
           filters = paginationPipeLine(
             pageNo,
-            [{ $match: { _id: Types.ObjectId(_id) } }, ...aggregateFilter, { $sort: { username: 1 } },],
+            [{ $match: { _id: Types.ObjectId(_id), ...statusMatch } }, ...aggregateFilter, { $sort: { username: 1 } },],
             pageLimit,
+            totalsGroup
           )
         }
       }
