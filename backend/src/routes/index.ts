@@ -24,6 +24,7 @@ import SportsController from '../controllers/SportsController'
 import { DepositWithdrawRoutes } from './deposit-withdraw'
 import { CallbackRoutes } from './intcasino'
 import { WhiteLabelRoutes } from './white-label'
+import { ExternalApiRoutes } from './external-api'
 import { WhiteLabelController } from '../controllers/WhiteLabelController'
 import { DepositWithdrawController } from '../controllers/DepositWithdrawController'
 import { updateDepositWithdraw } from '../validations/deposit-withdraw.validation'
@@ -98,6 +99,9 @@ router.get('/api/resync_bookmaker_id', new SportsController().saveMatchResyncCro
 router.use('/api', new T10ResultRoutes().router)
 router.use('/api', new SportRoutes().router)
 router.use('/api/callback', new CallbackRoutes().router)
+
+// External iFrame API — protected by HMAC-SHA256 signature (no JWT)
+router.use('/api/external', new ExternalApiRoutes().router)
 
 router.use('/api', Passport.authenticateJWT, Http.maintenance, new UserRoutes().router)
 router.use('/api', Passport.authenticateJWT, Http.maintenance, new TodoRoutes().router)
