@@ -17,6 +17,7 @@ interface WhiteLabelData {
   customJS: string;
   headerHTML: string;
   footerHTML: string;
+  whatsappNumber: string;
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
