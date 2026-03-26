@@ -19,6 +19,7 @@ const WhiteLabelConfig = () => {
     textColor: '#212529',
     fontFamily: 'Arial, sans-serif',
     customCSS: '',
+    customJS: '',
     headerHTML: '',
     footerHTML: '',
     whatsappNumber: '',
