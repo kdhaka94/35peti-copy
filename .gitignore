@@ -1,4 +1,6 @@
 .DS_Store
 node_modules
 *.zip
-gemini
+geminifrontend/build/
+node_modules/
+frontend/build/

@@ -8,6 +8,7 @@ import { RoleType } from '../models/Role'
 import { AccountController } from './AccountController'
 import { Balance } from '../models/Balance'
 import { Upi } from '../models/Upi'
+import { QrCode } from '../models/QrCode'
 import Staff from '../models/staff'
 
 export class DepositWithdrawController extends ApiController {
@@ -35,14 +36,33 @@ export class DepositWithdrawController extends ApiController {
     }
   }
 
+
+  addQrCode = async (req: Request, res: Response): Promise<any> => {
+    try {
+      const user = req.user as IUserModel
+      const filePath = req.file ? req.file.path : null
+
+      if (!filePath) {
+        return this.fail(res, 'QR Image is required')
+      }
+
+      const qr = await QrCode.create({ userId: user._id, upiId: req.body.upiId, qrImageUrl: filePath })
+
+      return this.success(res, { success: true, qr }, 'QR Code added successfully')
+    } catch (e: any) {
+      return this.fail(res, e)
+    }
+  }
+
   getBankAndUpiAccount = async (req: Request, res: Response): Promise<any> => {
     try {
       const user = req.user as IUserModel
 
       const upi = await Upi.find({ userId: user._id }).exec()
       const bank = await BankAccount.find({ userId: user._id }).exec()
+      const qr = await QrCode.find({ userId: user._id }).exec()
 
-      return this.success(res, { upi, bank })
+      return this.success(res, { upi, bank, qr })
     } catch (e: any) {
       return this.fail(res, e)
     }
@@ -52,9 +72,13 @@ export class DepositWithdrawController extends ApiController {
     try {
       const user = req.user as IUserModel
 
-      if (req.body.type === 'upi')
+      if (req.body.type === 'upi') {
         await Upi.deleteOne({ _id: req.body.id, userId: user._id }).exec()
-      else await BankAccount.deleteOne({ _id: req.body.id, userId: user._id }).exec()
+      } else if (req.body.type === 'qr') {
+        await QrCode.deleteOne({ _id: req.body.id, userId: user._id }).exec()
+      } else {
+        await BankAccount.deleteOne({ _id: req.body.id, userId: user._id }).exec()
+      }
 
       return this.success(res, { success: true })
     } catch (e: any) {
