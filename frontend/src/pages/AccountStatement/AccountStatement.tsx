@@ -167,29 +167,36 @@ const AccountStatement = () => {
 
   var getAccountStmt = async (page: number) => {
     try {
-     
+      if(filterdata.reportType == "thcgame"){
+        return alert('Third Party Casino is not Avaiable')
+      }
 
-        if(filterdata.reportType == "thcgame"){
-      return alert('Third Party Casino is not Avaiable')
-    }
-  const res = await accountService.getAccountList(page, filterdata)
+      const res = await accountService.getAccountList(page, filterdata)
       const items = res?.data?.data?.items || []
       const openingBalance = res?.data?.data?.openingBalance || 0
       const totalPages = res?.data?.data?.totalPages || 1
       setOpenBalance(openingBalance)
 
-      const formattedAccount = dataformat(items, openingBalance)
+      let formattedAccount = dataformat(items, openingBalance)
 
       // 🔥 Operation API call (username required)
       let operationData: any[] = []
       const data = await authService.getUser()
-      console.log(data.data.data.user, "FGHJK")
-      //   const username = filterdata?.username
       const username = data.data.data.user?.username
-      // console.log(user, "dfghjkl")
       const opRes = await betService.postsettelement2({ username })
       operationData = opRes?.data?.data?.operations || []
 
+      if (filterdata.reportType === 'change') {
+        formattedAccount = []
+        operationData = operationData.filter((op: any) =>
+          op.operation === 'Password Change' ||
+          (op.description && op.description.toLowerCase().includes('password change'))
+        )
+      } else {
+        // Exclude password change operations from normal view or keep them?
+        // Based on "with password change filter only those logs", I'll keep them as is unless specified otherwise.
+        // Or if filter is ALL, include all operations? Let's just include all operations if not 'change' as it was.
+      }
 
       const merged = mergeAccountAndOperation(formattedAccount, operationData)
 
@@ -457,6 +464,7 @@ const AccountStatement = () => {
                       <option value='cgame'>Casino Report</option>
                       <option value='sgame'>Sport Report </option>
                        <option value='thcgame'>Third Party Casino Report </option>
+                      <option value='change'>Password Change</option>
                     </select>
                   </div>
                 </div>
