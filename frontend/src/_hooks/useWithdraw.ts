@@ -58,11 +58,7 @@ const useWithdraw = () => {
     } else {
       data.accountType = 'upi'
     }
- else if (data?.bankDetail?.qrImageUrl) {
-      data.accountType = 'qr'
-    } else {
-      data.accountType = 'upi'
-    }
+
 
 
     console.log('data...', data)
