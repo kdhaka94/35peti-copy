@@ -135,7 +135,7 @@ export class DepositWithdrawController extends ApiController {
         query.parentStr = { $elemMatch: { $eq: Types.ObjectId(user._id) } }
       }
 
-      if (username) query.username = username
+      if (username) query.username = { $regex: username, $options: 'i' }
 
       if (startDate) {
         query.createdAt = {
@@ -177,7 +177,7 @@ export class DepositWithdrawController extends ApiController {
   //     //   query.parentStr = { $elemMatch: { $eq: Types.ObjectId(user._id) } }
   //     // }
 
-  //     if (username) query.username = username
+  //     if (username) query.username = { $regex: username, $options: 'i' }
 
   //     if (startDate) {
   //       query.createdAt = {
@@ -223,7 +223,7 @@ getDepositWithdrawtwo = async (req: Request, res: Response): Promise<any> => {
     }
 
     if (username) {
-      query.username = username;
+      query.username = { $regex: username, $options: 'i' };
     }
 
     if (startDate || endDate) {

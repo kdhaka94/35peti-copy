@@ -223,6 +223,13 @@ const Txn = () => {
                             link="deposit"
                             payStatus="rejected"
                         />
+                        <StatCard
+                            color="warning"
+                            value={depositStats?.pendingAmount ?? 0}
+                            label={`Pending Deposits : ${depositStats?.pendingCount ?? 0}`}
+                            link="deposit"
+                            payStatus="pending"
+                        />
                     </>
                 )}
 
