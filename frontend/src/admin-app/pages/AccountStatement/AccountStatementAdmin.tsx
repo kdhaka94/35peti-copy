@@ -619,66 +619,7 @@ const AccountStatementAdmin = () => {
   //   }
   // }
 
-  //   const getAccountStmt = async (page: number) => {
-  //   try {
-  // let operationData: any[] = []
-  //     // 🔥 CHANGE PASSWORD REPORT CASE
-
-      // if(filterdata.reportType == "thcgame"){
-      //   return alert('Third Party Casino is not Avaiable')
-      // }
-  //     if (filterdata.reportType === 'change') {
-  //      let username =   userState.user.role == "admin" ? 'superadmin' : userState.user.username;
-  //       const res = await betService.postsettelement2({username})
-
-  //       operationData = res?.data?.data.operations || []
-       
-
-  //       // agar pagination chahiye
-  //       // setparseAccountStmt([])
-  //       // setMergedList(reportData)
-  //       // setPage(page)
-
-  //     let merged = mergeAccountAndOperation([], operationData)
-
-  //     setMergedList(merged)
-  //     setparseAccountStmt(merged)
-  //     setPage(page)
-
-  //       return // ⛔ yahin se exit, neeche wali API call nahi hogi
-  //     }
-
-  //     // ✅ NORMAL ACCOUNT STATEMENT FLOW
-  //     const res = await accountService.getAccountList(page, filterdata)
-
-  //     const items = res?.data?.data?.items || []
-  //     const openingBalance = res?.data?.data?.openingBalance || 0
-  //       const totalPages = res?.data?.data?.totalPages || 1
-
-  //     setOpenBalance(openingBalance)
-
-  //     const formattedAccount = dataformat(items, openingBalance)
-
-
-  //     if (filterdata?.username) {
-  //       const username = filterdata?.username
-  //       const opRes = await betService.postsettelement2({ username })
-  //       operationData = opRes?.data?.data?.operations || []
-  //     }
-
-  //     let merged = mergeAccountAndOperation(formattedAccount, operationData)
-
-  //     setMergedList(merged)
-  //     setparseAccountStmt(merged)
-  //     setPage(page)
-
-  //   } catch (err) {
-  //     toast.error('Error loading data')
-  //   }
-  // }
-
-
-  const getAccountStmt = async (page: number) => {
+    const getAccountStmt = async (page: number) => {
     try {
       let operationData: any[] = []
 
@@ -709,6 +650,12 @@ const AccountStatementAdmin = () => {
         const res = await betService.postsettelement2({username})
 
         operationData = res?.data?.data.operations || []
+
+        // Only keep password changes
+        operationData = operationData.filter((op: any) =>
+          op.operation === 'Password Change' ||
+          (op.description && op.description.toLowerCase().includes('password change'))
+        )
         formattedAccount =[]
 
         }
@@ -719,9 +666,9 @@ const AccountStatementAdmin = () => {
       // 🔥 PAGINATION STATE SET
       setMergedList(merged)
       setparseAccountStmt(merged)
-      setCurrentItems(merged)   // 👈 current page ka data
-      setPageCount(totalPages)  // 👈 SERVER SE
+      setCurrentItems(merged)
       setPage(page)
+      setPageCount(totalPages)
 
     } catch (err) {
       toast.error('Error loading data')
