@@ -742,8 +742,20 @@ const AccountStatementAdmin = () => {
   }
 
   const onSelectUser = (user: any) => {
-    setfilterdata((prev: any) => ({ ...prev, userId: user._id, username: user.username }))
+    // If the user types in the input (method=type), it sends _id="" but leaves the username.
+    // If they select an option, it passes both _id and username.
+    setfilterdata((prev: any) => ({
+      ...prev,
+      userId: user._id || '',
+      username: user.username
+    }))
   }
+
+  // Clear user ID when input gets completely erased to default to ALL
+  const onSuggestionsClear = () => {
+    // Not strictly needed since onSelectUser handles empty string well, but good for UX if they empty it
+  }
+
 
 
   React.useEffect(() => {
