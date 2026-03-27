@@ -12,8 +12,8 @@ export const deleteBankUpiValidation = [
   check('type', 'type is required')
     .not()
     .isEmpty()
-    .isIn(['upi', 'bank'])
-    .withMessage('type should be upi or bank'),
+    .isIn(['upi', 'bank', 'qr'])
+    .withMessage('type should be upi or bank or qr'),
   check('id', 'id is required').not().isEmpty(),
 ]
 
@@ -44,4 +44,8 @@ export const updateDepositWithdraw = [
   check('narration', 'Narration is required').not().isEmpty(),
   check('balanceUpdateType', 'Balance type required').not().isEmpty().isIn(['W', 'D']),
   check('status', 'Status required').not().isEmpty().isIn(['approved', 'rejected']),
+]
+
+export const addQrCodeValidation = [
+  check('upiId', 'Upi id is required').not().isEmpty(),
 ]
