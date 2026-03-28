@@ -54,10 +54,10 @@ export class WhiteLabelRoutes {
     )
 
     // Public route to get white-label settings by domain
-    // this.router.get(
-    //   '/domain/:domain',
-    //   this.whiteLabelController.getWhiteLabelByDomain
-    // )
+    this.router.get(
+      '/domain/:domain',
+      this.whiteLabelController.getWhiteLabelByDomain
+    )
 
     // Get white-label by user ID
     this.router.get(
