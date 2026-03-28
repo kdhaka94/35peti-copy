@@ -14,4 +14,3 @@ node_modules/
 # Optionally, ignore other config or temp files
 npm-debug.log*
 yarn-error.log*
-build/

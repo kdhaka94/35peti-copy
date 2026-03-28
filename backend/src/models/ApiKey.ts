@@ -16,7 +16,7 @@ export interface IApiKeyModel extends IApiKey, Document {}
 
 const ApiKeySchema: Schema = new Schema(
   {
-    whiteLabelId: { type: Schema.Types.ObjectId, ref: 'WhiteLabel', required: true },
+    whiteLabelId: { type: Types.ObjectId, ref: 'WhiteLabel', required: true },
     key: { type: String, required: true, unique: true },
     secretHash: { type: String, required: true },
     label: { type: String },

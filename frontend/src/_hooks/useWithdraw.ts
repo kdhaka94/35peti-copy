@@ -19,7 +19,7 @@ const validationSchema = Yup.object().shape({
 })
 
 const useWithdraw = () => {
-  const [bankUpiLists, setBankUpiLists] = useState({ upi: [], bank: [], qr: [] })
+  const [bankUpiLists, setBankUpiLists] = useState({ upi: [], bank: [] })
   const {
     register,
     handleSubmit,
@@ -45,21 +45,9 @@ const useWithdraw = () => {
   const onSubmit: SubmitHandler<WithdrawInput> = async (data) => {
     data.remark = 'ok'
     data.type = 'withdraw'
-
-
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     //@ts-expect-error
-    if (data?.bankDetail?.accountHolderName) {
-      data.accountType = 'bank'
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    //@ts-expect-error
-    } else if (data?.bankDetail?.qrImageUrl) {
-      data.accountType = 'qr'
-    } else {
-      data.accountType = 'upi'
-    }
-
-
+    data.accountType = data?.bankDetail?.accountHolderName ? 'bank' : 'upi'
 
     console.log('data...', data)
     if (data.bankDetail) {

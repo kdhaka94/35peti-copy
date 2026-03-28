@@ -1129,26 +1129,14 @@ export class AccountController extends ApiController {
       }
     }
 
+    userid = userid || Types.ObjectId(user._id)
+
     let filter: any = {
+      userId: userid,
       createdAt: {
         $gte: new Date(`${startDate} 00:00:00`),
         $lte: new Date(`${endDate} 23:59:59`),
       },
-    }
-
-    if (userid) {
-      filter.userId = userid
-    } else {
-      // If no specific user is selected, show statements for all users under this admin/parent
-      if (user.role === 'admin') {
-        // Admin sees all
-      } else {
-        // Master/Agent sees their children
-        const children = await User.find({ parentStr: user._id }, { _id: 1 })
-        const childrenIds = children.map(c => c._id)
-        childrenIds.push(user._id)
-        filter.userId = { $in: childrenIds }
-      }
     }
 
     // ===== CASINO GAME =====
@@ -1227,24 +1215,12 @@ export class AccountController extends ApiController {
     const totalDebit = result[0]?.totalStats?.[0]?.totalDebit || 0
 
     // ===== OPENING BALANCE =====
-    let openingBalanceFilter: any = {
-      createdAt: { $lt: new Date(`${startDate} 00:00:00`) }
-    }
-
-    if (userid) {
-      openingBalanceFilter.userId = userid
-    } else {
-      if (user.role !== 'admin') {
-        const children = await User.find({ parentStr: user._id }, { _id: 1 })
-        const childrenIds = children.map(c => c._id)
-        childrenIds.push(user._id)
-        openingBalanceFilter.userId = { $in: childrenIds }
-      }
-    }
-
     const openingBalance = await AccoutStatement.aggregate([
       {
-        $match: openingBalanceFilter
+        $match: {
+          userId: userid,
+          createdAt: { $lt: new Date(`${startDate} 00:00:00`) }
+        }
       },
       {
         $group: {
@@ -1255,11 +1231,7 @@ export class AccountController extends ApiController {
     ])
     
     // ===== CREDIT REFERENCE =====
-    let creditReference: any = 0;
-    if (userid) {
-       const userDetails = await User.findById(userid).select('creditRefrences');
-       creditReference = userDetails?.creditRefrences || 0;
-    }
+    const userDetails = await User.findById(userid).select('creditRefrences');
 
     return this.success(res, {
       items,
@@ -1270,7 +1242,7 @@ export class AccountController extends ApiController {
       openingBalance: openingBalance?.[0]?.total || 0,
       totalCredit,
       totalDebit,
-      creditReference
+      creditReference: userDetails?.creditRefrences || 0
     })
 
   } catch (e: any) {
