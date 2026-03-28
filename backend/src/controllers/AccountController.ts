@@ -1128,7 +1128,7 @@ export class AccountController extends ApiController {
         userid = foundUser._id
       }
     }
-    
+
     userid = userid || Types.ObjectId(user._id)
 
     let filter: any = {

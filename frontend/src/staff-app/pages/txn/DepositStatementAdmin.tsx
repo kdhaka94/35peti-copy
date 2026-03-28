@@ -188,20 +188,14 @@ useEffect(() => {
                       onSuggestionsFetchRequested={onSuggestionsFetchRequested}
                       onSelectUser={onSelectUser}
                     /> */}
-                     <select
-    name="username"
-    value={filterData.username}
-    onChange={handleformchange}
-    className="form-control"
-  >
-    <option value="">All Users</option>
-
-    {userList.map((user: string, index: number) => (
-      <option key={index} value={user}>
-        {user}
-      </option>
-    ))}
-  </select>
+                     <input
+                      name="username"
+                      type="text"
+                      placeholder="Search Username"
+                      value={filterData.username}
+                      onChange={handleformchange}
+                      className="form-control"
+                    />
                   </div>
                   <div className='col-6 col-lg-2 mbc-5'>
                     <div className='form-group mb-0'>
