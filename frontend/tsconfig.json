@@ -21,3 +21,8 @@
   },
   "include": ["src", "types/react-to-pdf.d.ts"]
 }
+{
+  "compilerOptions": {
+    "types": ["jest", "node"]
+  }
+}

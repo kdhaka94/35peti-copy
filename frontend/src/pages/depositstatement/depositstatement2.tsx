@@ -179,10 +179,10 @@ const DepositStatement2 = () => {
                     <td>{deposit.type}</td>
                     <td>{deposit.amount}</td>
                     <td>{dateData}</td>
-                    <td>{deposit.status}</td>
+                    <td>{deposit.status === 'pending' && deposit.isUserCancelled ? 'Pending (User Cancelled)' : deposit.status}</td>
                     <td>{deposit.remark}</td>
                     <td>
-  {deposit?.status === 'pending' && deposit?.type === "withdraw"  && (
+  {deposit?.status === 'pending' && deposit?.type === "withdraw" && !deposit?.isUserCancelled && (
     <button
       className="btn btn-danger btn-sm"
       onClick={() => handleCancel(deposit)}

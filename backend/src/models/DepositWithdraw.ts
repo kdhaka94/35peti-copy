@@ -26,6 +26,7 @@ interface IDepositWithdraw {
   imageUrl?: string
   accountType?: 'upi' | 'bank'
   utrno?: number
+  isUserCancelled?: boolean
   accountId?: Types.ObjectId
 }
 
@@ -46,6 +47,7 @@ const DepositWithdrawSchema = new Schema(
     parentStr: [],
     username: String,
     utrno: Number,
+    isUserCancelled: { type: Boolean, default: false },
     accountId: { type: Types.ObjectId, ref: 'PaymentAccount' }
   },
   {
