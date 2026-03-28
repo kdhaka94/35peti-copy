@@ -35,4 +35,13 @@ export const whiteLabelService = {
   getWhiteLabelByUserId: (userId: string) => {
     return api.get(`/white-label/user/${userId}`);
   },
+
+  // Upload logo image for white-label
+  uploadLogo: (file: File) => {
+    const formData = new FormData();
+    formData.append('logoImage', file);
+    return api.post('/upload-logo', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+  },
 };

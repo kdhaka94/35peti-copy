@@ -3,6 +3,7 @@ import { WhiteLabelController } from '../controllers/WhiteLabelController'
 import { ExternalApiController } from '../controllers/ExternalApiController'
 import Passport from '../passport/Passport'
 import Http from '../middlewares/Http'
+import { uploadLogo } from '../middlewares/uploadLogo'
 
 const extApiCtrl = new ExternalApiController()
 
@@ -51,6 +52,15 @@ export class WhiteLabelRoutes {
       Passport.authenticateJWT,
       Http.maintenance,
       this.whiteLabelController.updateWhiteLabel
+    )
+
+    // Upload logo image for white-label
+    this.router.post(
+      '/upload-logo',
+      Passport.authenticateJWT,
+      Http.maintenance,
+      uploadLogo.single('logoImage'),
+      this.whiteLabelController.uploadLogoImage
     )
 
     // Public route to get white-label settings by domain

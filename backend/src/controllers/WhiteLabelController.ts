@@ -289,4 +289,31 @@ export class WhiteLabelController extends ApiController {
       return this.fail(res, error.message || 'Error fetching white-label')
     }
   }
+
+  // Upload and update white-label logo image file
+  uploadLogoImage = async (req: Request, res: Response): Promise<Response> => {
+    try {
+      const currentUser: any = req.user
+
+      if (!req.file) {
+        return this.fail(res, 'No logo image file provided')
+      }
+
+      const logoImagePath = req.file.path.replace(/\\/g, '/')
+
+      const whiteLabel = await WhiteLabel.findOneAndUpdate(
+        { userId: currentUser._id },
+        { $set: { logoImage: logoImagePath } },
+        { new: true }
+      )
+
+      if (!whiteLabel) {
+        return this.fail(res, 'White-label setup not found for your account')
+      }
+
+      return this.success(res, { whiteLabel, logoImage: logoImagePath }, 'Logo uploaded successfully')
+    } catch (error: any) {
+      return this.fail(res, error.message || 'Error uploading logo')
+    }
+  }
 }
