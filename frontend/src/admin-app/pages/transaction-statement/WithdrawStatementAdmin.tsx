@@ -301,7 +301,7 @@ UPI: ${item.bankDetail.upiId || "N/A"}
                               </p>
                             ) : item.status == 'pending' ? (
                               <p style={{ color: 'orange', textTransform: 'capitalize' }}>
-                                {item.status}
+                                {item.isUserCancelled ? 'Pending (User Cancelled)' : item.status}
                               </p>
                             ) : (
                               <p style={{ color: 'green', textTransform: 'capitalize' }}>
