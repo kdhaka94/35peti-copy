@@ -2,6 +2,7 @@ import './withdraw.css'
 import useDeposit from '../../_hooks/useDeposit'
 import AddAccountModalPari from './AddBankModalPari'
 import AddUpiModalPari from './AddUpiModalPari'
+import AddQrModalPari from './AddQrModalPari'
 import useWithdraw from '../../_hooks/useWithdraw'
 import WithdrawStatement2 from '../withdrawstatement/withdrawstatement2'
 
@@ -156,9 +157,59 @@ const Withdraw = () => {
             </div>
           </div>
         </div>
+
+        <div className='card mb-10'>
+          <div className='add-new-detail'>
+            <div className='payment-icons-title'>
+              <div>
+                <h3>QR Code Transfer</h3>
+              </div>
+              <div className='btn btn-primary  wd-100p' data-toggle='modal' data-target='#qrModal'>
+                Add New
+              </div>
+            </div>
+            <hr className='mt-0' />
+
+            <div className='account-detail mb-10'>
+              <div className='container-fluid'>
+                <div className='row'>
+                  {bankUpiLists &&
+                    bankUpiLists?.qr?.map((qr: any) => (
+                      <div className='col-lg-3' key={qr?._id}>
+                        <div className='bank-box'>
+                          <input
+                            type='radio'
+                            className='form-check-input'
+                            {...register('bankDetail')}
+                            value={JSON.stringify(qr)}
+                            onChange={() => setValue('bankDetail', JSON.stringify(qr))}
+                          />
+                          <label className='form-check-label ml-15'>
+                            <div className='account-detail-box'>
+                              <div className='payment-detail-box'>
+                                <span>UPI ID: </span>
+                                <span className='text-right'>{qr?.upiId}</span>
+                              </div>
+                              <p className='mt-10 mb-0'>
+                                <i
+                                  onClick={() => handleDelete('qr', qr?._id)}
+                                  className='fas fa-trash-alt delete'
+                                />
+                              </p>
+                            </div>
+                          </label>
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </form>
       <AddAccountModalPari onSuccess={getBankAndUpiList} />
       <AddUpiModalPari onSuccess={getBankAndUpiList} />
+      <AddQrModalPari onSuccess={getBankAndUpiList} />
 
       <WithdrawStatement2 />
     </div>

@@ -296,6 +296,14 @@ useEffect(() => {
                             <button onClick={() => handleCopy(item)}>
                               Copy
                             </button>
+                            {item.accountType === 'qr' && item.bankDetail?.qrImageUrl && (
+                              <button
+                                onClick={() => handleClick(item.bankDetail)}
+                                style={{ marginLeft: '5px' }}
+                              >
+                                View QR
+                              </button>
+                            )}
                           </td>
                           <td>{item.bankDetail.accountHolderName}</td>
                           <td>{item.bankDetail.accountNumber}</td>
