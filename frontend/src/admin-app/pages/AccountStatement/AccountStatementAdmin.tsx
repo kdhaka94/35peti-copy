@@ -619,7 +619,66 @@ const AccountStatementAdmin = () => {
   //   }
   // }
 
-    const getAccountStmt = async (page: number) => {
+  //   const getAccountStmt = async (page: number) => {
+  //   try {
+  // let operationData: any[] = []
+  //     // 🔥 CHANGE PASSWORD REPORT CASE
+
+      // if(filterdata.reportType == "thcgame"){
+      //   return alert('Third Party Casino is not Avaiable')
+      // }
+  //     if (filterdata.reportType === 'change') {
+  //      let username =   userState.user.role == "admin" ? 'superadmin' : userState.user.username;
+  //       const res = await betService.postsettelement2({username})
+
+  //       operationData = res?.data?.data.operations || []
+
+
+  //       // agar pagination chahiye
+  //       // setparseAccountStmt([])
+  //       // setMergedList(reportData)
+  //       // setPage(page)
+
+  //     let merged = mergeAccountAndOperation([], operationData)
+
+  //     setMergedList(merged)
+  //     setparseAccountStmt(merged)
+  //     setPage(page)
+
+  //       return // ⛔ yahin se exit, neeche wali API call nahi hogi
+  //     }
+
+  //     // ✅ NORMAL ACCOUNT STATEMENT FLOW
+  //     const res = await accountService.getAccountList(page, filterdata)
+
+  //     const items = res?.data?.data?.items || []
+  //     const openingBalance = res?.data?.data?.openingBalance || 0
+  //       const totalPages = res?.data?.data?.totalPages || 1
+
+  //     setOpenBalance(openingBalance)
+
+  //     const formattedAccount = dataformat(items, openingBalance)
+
+
+  //     if (filterdata?.username) {
+  //       const username = filterdata?.username
+  //       const opRes = await betService.postsettelement2({ username })
+  //       operationData = opRes?.data?.data?.operations || []
+  //     }
+
+  //     let merged = mergeAccountAndOperation(formattedAccount, operationData)
+
+  //     setMergedList(merged)
+  //     setparseAccountStmt(merged)
+  //     setPage(page)
+
+  //   } catch (err) {
+  //     toast.error('Error loading data')
+  //   }
+  // }
+
+
+  const getAccountStmt = async (page: number) => {
     try {
       let operationData: any[] = []
 
@@ -650,12 +709,6 @@ const AccountStatementAdmin = () => {
         const res = await betService.postsettelement2({username})
 
         operationData = res?.data?.data.operations || []
-
-        // Only keep password changes
-        operationData = operationData.filter((op: any) =>
-          op.operation === 'Password Change' ||
-          (op.description && op.description.toLowerCase().includes('password change'))
-        )
         formattedAccount =[]
 
         }
@@ -666,9 +719,9 @@ const AccountStatementAdmin = () => {
       // 🔥 PAGINATION STATE SET
       setMergedList(merged)
       setparseAccountStmt(merged)
-      setCurrentItems(merged)
+      setCurrentItems(merged)   // 👈 current page ka data
+      setPageCount(totalPages)  // 👈 SERVER SE
       setPage(page)
-      setPageCount(totalPages)
 
     } catch (err) {
       toast.error('Error loading data')
@@ -689,20 +742,8 @@ const AccountStatementAdmin = () => {
   }
 
   const onSelectUser = (user: any) => {
-    // If the user types in the input (method=type), it sends _id="" but leaves the username.
-    // If they select an option, it passes both _id and username.
-    setfilterdata((prev: any) => ({
-      ...prev,
-      userId: user._id || '',
-      username: user.username
-    }))
+    setfilterdata((prev: any) => ({ ...prev, userId: user._id, username: user.username }))
   }
-
-  // Clear user ID when input gets completely erased to default to ALL
-  const onSuggestionsClear = () => {
-    // Not strictly needed since onSelectUser handles empty string well, but good for UX if they empty it
-  }
-
 
 
   React.useEffect(() => {

@@ -189,20 +189,14 @@ useEffect(() => {
                     {/* <CustomAutoComplete
                       onSuggestionsFetchRequested={onSuggestionsFetchRequested}
                       onChangeSelectValue={onSelectUser}
-                    /> */}<select
-    name="username"
-    value={filterData.username}
-    onChange={handleFormChange}
-    className="form-control"
-  >
-    <option value="">All Users</option>
-
-    {userList.map((user: string, index: number) => (
-      <option key={index} value={user}>
-        {user}
-      </option>
-    ))}
-  </select>
+                    /> */}<input
+                      name="username"
+                      type="text"
+                      placeholder="Search Username"
+                      value={filterData.username}
+                      onChange={handleFormChange}
+                      className="form-control"
+                    />
                   </div>
 
                   <div className=" col-6 col-lg-2 mbc-5">
@@ -302,6 +296,14 @@ useEffect(() => {
                             <button onClick={() => handleCopy(item)}>
                               Copy
                             </button>
+                            {item.accountType === 'qr' && item.bankDetail?.qrImageUrl && (
+                              <button
+                                onClick={() => handleClick(item.bankDetail)}
+                                style={{ marginLeft: '5px' }}
+                              >
+                                View QR
+                              </button>
+                            )}
                           </td>
                           <td>{item.bankDetail.accountHolderName}</td>
                           <td>{item.bankDetail.accountNumber}</td>
