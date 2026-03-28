@@ -4,7 +4,7 @@ import Http from '../middlewares/Http'
 import multer from 'multer'
 import path from 'node:path'
 import { DepositWithdrawController } from '../controllers/DepositWithdrawController'
-import { addBankAccountValidation, addDepositWithdraw, deleteBankUpiValidation, getDepositWithdraw, updateDepositWithdraw, upiValidation, addQrCodeValidation } from '../validations/deposit-withdraw.validation'
+import { addBankAccountValidation, addDepositWithdraw, deleteBankUpiValidation, getDepositWithdraw, updateDepositWithdraw, upiValidation } from '../validations/deposit-withdraw.validation'
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -45,15 +45,6 @@ export class DepositWithdrawRoutes {
       upiValidation,
       Http.validateRequest,
       this.DepositWithdrawController.addUpi,
-    )
-
-    this.router.post(
-      '/add-qr-code',
-      upload.single('qrImage'),
-      Passport.authenticateJWT,
-      addQrCodeValidation,
-      Http.validateRequest,
-      this.DepositWithdrawController.addQrCode,
     )
 
     this.router.post(

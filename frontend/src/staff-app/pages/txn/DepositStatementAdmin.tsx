@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { isMobile } from 'react-device-detect'
 import mobileSubheader from '../../../admin-app/pages/_layout/elements/mobile-subheader'
+// import CustomAutoComplete from '../../components/CustomAutoComplete'
 import moment from 'moment'
 import userService from '../../../services/user.service'
 import depositWithdrawService from '../../../services/deposit-withdraw.service'
@@ -182,9 +183,18 @@ useEffect(() => {
               >
                 <div className='row row5'>
                   <div className='col-6 col-lg-2 mbc-5'>
-                    <label className='label'>User</label>                    <CustomAutoComplete
+                    <label className='label'>User</label>
+                    {/* <CustomAutoComplete
                       onSuggestionsFetchRequested={onSuggestionsFetchRequested}
                       onSelectUser={onSelectUser}
+                    /> */}
+                     <input
+                      name="username"
+                      type="text"
+                      placeholder="Search Username"
+                      value={filterData.username}
+                      onChange={handleformchange}
+                      className="form-control"
                     />
                   </div>
                   <div className='col-6 col-lg-2 mbc-5'>

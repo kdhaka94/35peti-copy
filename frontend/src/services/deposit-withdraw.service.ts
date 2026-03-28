@@ -7,16 +7,6 @@ class DepositWithdrawService {
   addUpiAccount(payload: any) {
     return api.post(`add-upi`, payload)
   }
-
-  addQrAccount(payload: any) {
-    return api.post(`add-qr-code`, payload, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-        Accept: 'application/json',
-      },
-    })
-  }
-
   deleteUpiBank(payload: any) {
     return api.post(`delete-upi-bank`, payload)
   }
