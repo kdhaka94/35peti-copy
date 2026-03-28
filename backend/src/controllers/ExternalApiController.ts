@@ -1,5 +1,7 @@
 import { Request, Response } from 'express'
 import { Types } from 'mongoose'
+import crypto from 'crypto'
+import { createClient } from 'redis'
 import { ApiController } from './ApiController'
 import { AccoutStatement, ChipsType, IAccoutStatement } from '../models/AccountStatement'
 import { Balance } from '../models/Balance'
@@ -9,11 +11,26 @@ import { WhiteLabel } from '../models/WhiteLabel'
 import { ApiKey, generateApiKeyPair, hashSecret } from '../models/ApiKey'
 import UserSocket from '../sockets/user-socket'
 
+// Redis client for iframe session tokens
+const iframeRedis = createClient({
+  socket: {
+    host: process.env.REDIS_QUEUE_HOST || 'localhost',
+    port: +(process.env.REDIS_QUEUE_PORT || 6379),
+  },
+})
+iframeRedis.connect().catch((err: any) => {
+  console.error('[ExternalApiController] Redis connection error:', err)
+})
+
+const SESSION_TOKEN_TTL = 5 * 60 // 5 minutes
+
 export class ExternalApiController extends ApiController {
   constructor() {
     super()
     this.updateBalance = this.updateBalance.bind(this)
     this.getBalance = this.getBalance.bind(this)
+    this.launchIframe = this.launchIframe.bind(this)
+    this.validateSession = this.validateSession.bind(this)
   }
 
   // ── Internal helpers (same logic as AccountController helpers) ──────────────
@@ -233,6 +250,115 @@ export class ExternalApiController extends ApiController {
 
       return this.success(res, { username, balance, exposer, available })
     } catch (e: any) {
+      return this.fail(res, e)
+    }
+  }
+
+  // ── POST /api/external/iframe/launch ───────────────────────────────────────
+  /**
+   * Generates a short-lived session token for a user to enter an iframe game.
+   * Body: { username, gameUrl? }
+   * Returns: { token, gameUrl }
+   */
+  async launchIframe(req: Request, res: Response): Promise<Response> {
+    try {
+      const { username, gameUrl } = req.body
+      const apiKeyDoc: any = (req as any).apiKeyDoc
+
+      if (!username) {
+        return this.fail(res, 'username is required')
+      }
+
+      const whiteLabel = await WhiteLabel.findById(apiKeyDoc.whiteLabelId)
+      if (!whiteLabel || !whiteLabel.isActive) {
+        return this.fail(res, 'White-label is not active')
+      }
+
+      const parentUser = await User.findById(whiteLabel.userId)
+      if (!parentUser) {
+        return this.fail(res, 'White-label owner not found')
+      }
+
+      // Verify user exists under this white-label
+      const targetUser: any = await User.findOne({
+        username,
+        parentStr: { $elemMatch: { $eq: Types.ObjectId(parentUser._id) } },
+      })
+      if (!targetUser) {
+        return this.fail(res, `User '${username}' not found under this white-label`)
+      }
+
+      // Get current balance
+      const balDoc: any = await Balance.findOne({ userId: targetUser._id })
+      const balance = balDoc?.balance ?? 0
+      const exposer = balDoc?.exposer ?? 0
+
+      // Generate a random session token
+      const token = crypto.randomBytes(32).toString('hex')
+      const sessionData = JSON.stringify({
+        username,
+        userId: targetUser._id.toString(),
+        whiteLabelId: whiteLabel._id.toString(),
+        parentUserId: parentUser._id.toString(),
+        balance,
+        available: balance - exposer,
+        createdAt: Date.now(),
+      })
+
+      // Store in Redis with TTL
+      await iframeRedis.set(`iframe-session:${token}`, sessionData, { EX: SESSION_TOKEN_TTL })
+
+      const finalGameUrl = gameUrl || 'https://mrd0018.com'
+
+      return this.success(res, {
+        token,
+        gameUrl: `${finalGameUrl}/iframe-game?token=${token}`,
+        expiresIn: SESSION_TOKEN_TTL,
+      }, 'Session token created')
+    } catch (e: any) {
+      console.error('[ExternalApiController.launchIframe]', e)
+      return this.fail(res, e)
+    }
+  }
+
+  // ── POST /api/external/iframe/validate ─────────────────────────────────────
+  /**
+   * Called by the iframe host (mrd0018) to validate a session token.
+   * Body: { token }
+   * Returns: { username, balance, available }
+   */
+  async validateSession(req: Request, res: Response): Promise<Response> {
+    try {
+      const { token } = req.body
+
+      if (!token) {
+        return this.fail(res, 'token is required')
+      }
+
+      const sessionStr = await iframeRedis.get(`iframe-session:${token}`)
+      if (!sessionStr) {
+        return this.fail(res, 'Session token is invalid or expired')
+      }
+
+      const session = JSON.parse(sessionStr)
+
+      // Fetch fresh balance
+      const balDoc: any = await Balance.findOne({ userId: session.userId })
+      const balance = balDoc?.balance ?? 0
+      const exposer = balDoc?.exposer ?? 0
+
+      // Consume the token (one-time use)
+      await iframeRedis.del(`iframe-session:${token}`)
+
+      return this.success(res, {
+        username: session.username,
+        userId: session.userId,
+        balance,
+        exposer,
+        available: balance - exposer,
+      }, 'Session validated')
+    } catch (e: any) {
+      console.error('[ExternalApiController.validateSession]', e)
       return this.fail(res, e)
     }
   }

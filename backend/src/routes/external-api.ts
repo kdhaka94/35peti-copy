@@ -25,5 +25,21 @@ export class ExternalApiRoutes {
      * Headers: X-Api-Key, X-Timestamp, X-Nonce, X-Signature
      */
     this.router.get('/balance', externalApiAuth, controller.getBalance)
+
+    /**
+     * POST /api/external/iframe/launch
+     * Headers: X-Api-Key, X-Timestamp, X-Nonce, X-Signature
+     * Body: { username, gameUrl? }
+     * Returns: { token, gameUrl, expiresIn }
+     */
+    this.router.post('/iframe/launch', externalApiAuth, controller.launchIframe)
+
+    /**
+     * POST /api/external/iframe/validate
+     * Headers: X-Api-Key, X-Timestamp, X-Nonce, X-Signature
+     * Body: { token }
+     * Returns: { username, userId, balance, exposer, available }
+     */
+    this.router.post('/iframe/validate', externalApiAuth, controller.validateSession)
   }
 }
