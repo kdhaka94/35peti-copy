@@ -1402,7 +1402,7 @@ async getSportListnew(req: Request, res: Response): Promise<Response> {
       //     .flat()
       // })
       // .catch((e) => console.log('error', e))
-      const response = await axios.get(`http://130.250.191.174:3009/esid?sid=${EventTypeID}&key=dijbfuwd719e12rqhfbjdqdnkqnd11eqdqd`)
+      const response = await axios.get(`http://130.250.191.212:3009/esid?sid=${EventTypeID}&key=dijbfuwd719e12rqhfbjdqdnkqnd11eqdqdnkanknakn`)
         .then(async (series: any) => {
           // console.log(series, "series from api");
 
@@ -1676,7 +1676,7 @@ async getSportListnew(req: Request, res: Response): Promise<Response> {
   //   try {
   //     const { EventTypeID } = req.query
   //     if (!EventTypeID) return this.fail(res, 'EventTypeID is required field')
-  //     const responseone = await axios.get(`http://130.250.191.174:3009/esid?sid=${EventTypeID}&key=dijbfuwd719e12rqhfbjdqdnkqnd11eqdqd`)
+  //     const responseone = await axios.get(`http://130.250.191.212:3009/esid?sid=${EventTypeID}&key=dijbfuwd719e12rqhfbjdqdnkqnd11eqdqd`)
   //     const parseCompetitionWiseMatches = (apiResponse) => {
   //       if (!apiResponse?.success || !apiResponse?.data) {
   //         return { data: [] };
@@ -1745,7 +1745,7 @@ async getSportListnew(req: Request, res: Response): Promise<Response> {
       }
 
       const responseone = await axios.get(
-        `http://130.250.191.174:3009/esid?sid=${EventTypeID}&key=dijbfuwd719e12rqhfbjdqdnkqnd11eqdqd`
+        `http://130.250.191.212:3009/esid?sid=${EventTypeID}&key=dijbfuwd719e12rqhfbjdqdnkqnd11eqdqdnkanknakn`
       );
 
       const parseCompetitionWiseMatches = (apiResponse: any) => {

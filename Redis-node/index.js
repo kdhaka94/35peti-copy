@@ -75,7 +75,7 @@
 //   // console.log(match)
 //   if (match.length > 0) {
 //     match.forEach((m) => {
-//       axios.get(`http://130.250.191.174:3009/getPriveteData?gmid=${m?.matchId}&sid=${m?.sportId}&key=dijbfuwd719e12rqhfbjdqdnkqnd11eqdqd`).then((res) => {
+//       axios.get(`http://130.250.191.212:3009/getPriveteData?gmid=${m?.matchId}&sid=${m?.sportId}&key=dijbfuwd719e12rqhfbjdqdnkqnd11eqdqd`).then((res) => {
 //         // console.log(res.data.data, "Fancy  data is Here hahaha")
 //         FancyData[m?.matchId] = res?.data?.data
 //         // console.log(res.data.data)
@@ -618,7 +618,7 @@ const getFancyDataApi = async () => {
     await Promise.all(
       matches.map(async (m) => {
         try {
-          const url = `http://130.250.191.174:3009/getPriveteData?gmid=${m?.matchId}&sid=${m?.sportId}&key=dijbfuwd719e12rqhfbjdqdnkqnd11eqdqd`;
+          const url = `http://130.250.191.212:3009/getPriveteData?gmid=${m?.matchId}&sid=${m?.sportId}&key=dijbfuwd719e12rqhfbjdqdnkqnd11eqdqdnkanknakn`;
           const res = await axios.get(url);
 
           FancyData[m?.matchId] = res?.data?.data || [];
