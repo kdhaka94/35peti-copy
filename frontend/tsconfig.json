@@ -22,3 +22,8 @@
   "include": ["src", "types/react-to-pdf.d.ts"],
   "exclude": ["src/**/*.test.ts", "src/**/*.test.tsx", "src/**/*.spec.ts", "src/**/*.spec.tsx"]
 }
+{
+  "compilerOptions": {
+    "types": ["jest", "node"]
+  }
+}

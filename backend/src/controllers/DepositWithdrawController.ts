@@ -315,6 +315,14 @@ getDepositWithdrawtwo = async (req: Request, res: Response): Promise<any> => {
         status: 'pending',
       })
       if (!txn) return this.fail(res, 'Entry not found')
+
+      // If user is cancelling, just mark it as user cancelled but keep status pending
+      if (user.role === RoleType.user) {
+        txn.isUserCancelled = true
+        await txn.save()
+        return this.success(res, { success: true }, 'Withdrawal cancellation requested successfully.')
+      }
+
       txn.remark = req.body.narration
       if (status === 'approved') {
         req.body.amount = txn.amount

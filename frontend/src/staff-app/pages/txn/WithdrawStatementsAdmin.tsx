@@ -312,7 +312,7 @@ useEffect(() => {
                           <td>{item.accountType}</td>
                           <td>{item.amount}</td>
                           <td style={{ textTransform: "capitalize" }}>
-                            {item.status}
+                            {item.status === 'pending' && item.isUserCancelled ? 'Pending (User Cancelled)' : item.status}
                           </td>
                           <td>
                             {item.status === "pending" ? (
