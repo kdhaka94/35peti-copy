@@ -262,25 +262,27 @@ UPI: ${item.bankDetail.upiId || "N/A"}
                   <tbody>
                     {withdrawStatement ? (
                       withdrawStatement.map((item: any) => (
+
                         <tr key={item._id}>
                           <td style={{ textAlign: 'center' }}>
                             {moment(item.createdAt).format('DD/MM/YYYY h:mm:ss A')}
                           </td>
                           <td style={{ textAlign: 'center' }}>{item.username}</td>
-                          {/* <td style={{ textAlign: 'center' }}>
-                            <button
-                              data-toggle='modal'
-                              data-target='#bankModal'
-                              onClick={() => handleClick(item.bankDetail)}
-                            >
-                              View
-                            </button>
-                          </td> */}
 
                           <td style={{ textAlign: 'center' }}>
                             <button onClick={() => handleCopy(item)}>
                               Copy
                             </button>
+                            {item.accountType === 'qr' && item.bankDetail?.qrImageUrl && (
+                              <button
+                                data-toggle='modal'
+                                data-target='#bankModal'
+                                onClick={() => handleClick(item.bankDetail)}
+                                style={{ marginLeft: '5px' }}
+                              >
+                                View QR
+                              </button>
+                            )}
                           </td>
 
                           <td style={{ textAlign: 'center' }}>{item.bankDetail.accountHolderName}</td>
@@ -290,6 +292,7 @@ UPI: ${item.bankDetail.upiId || "N/A"}
 
                           {/* <td></td> */}
                           <td style={{ textAlign: 'center' }}>{item.accountType}</td>
+
                           <td style={{ textAlign: 'center' }}>{item.amount}</td>
                           <td style={{ textAlign: 'center' }}>
                             {item.status == 'rejected' ? (

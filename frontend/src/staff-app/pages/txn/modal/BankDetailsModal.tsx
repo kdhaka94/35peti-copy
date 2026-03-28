@@ -21,12 +21,13 @@ const BankDetailModal = ({ bankDetails }: { bankDetails: any }) => {
             </button>
           </div>
           <div className='modal-body'>
-            {bankDetails.imageUrl ? (
+            {bankDetails.imageUrl || bankDetails.qrImageUrl ? (
               <div className='container-fluid'>
                 <div className='row m-b-20'>
                   <div className='col-md-12'>
                     <img
-                      src={`${process.env.REACT_APP_API_BACKURL}${bankDetails.imageUrl}`}
+
+                        src={`${process.env.REACT_APP_API_BACKURL}${bankDetails?.imageUrl || bankDetails?.qrImageUrl}`}
                       alt='image'
                       style={{ height: 'auto', width: '100%' }}
                     />
