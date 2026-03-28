@@ -481,18 +481,20 @@ const Header = () => {
                           <b>{'Mange -TV'}</b>
                         </CustomLink>
                       </li>}
-                      {/* <li>
-                        <CustomLink to='/white-label' className='dropdown-item'>
-                          <b>{'White-Label'}</b>
-                        </CustomLink>
-                      </li> */}
-                      {/* {userState.user.role === RoleType.admin && (
+                      {(userState.user.role === RoleType.sadmin || userState.user.role === RoleType.admin) && (
+                        <li>
+                          <CustomLink to='/white-label' className='dropdown-item'>
+                            <b>{'White-Label'}</b>
+                          </CustomLink>
+                        </li>
+                      )}
+                      {userState.user.role === RoleType.admin && (
                         <li>
                           <CustomLink to='/super-white-labels' className='dropdown-item'>
                             <b>{'All White-Labels'}</b>
                           </CustomLink>
                         </li>
-                      )} */}
+                      )}
                     </ul>
                   </li>
 
