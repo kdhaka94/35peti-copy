@@ -1,9 +1,14 @@
 import multer from "multer"
 import path from "path"
+import fs from "fs"
+
+// Ensure the upload directory exists (survives deploys/restarts)
+const LOGO_UPLOAD_DIR = "uploads-settings/logo-images"
+fs.mkdirSync(LOGO_UPLOAD_DIR, { recursive: true })
 
 const logoStorage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null,"uploads-settings/logo-images")
+    cb(null, LOGO_UPLOAD_DIR)
   },
   filename: (req, file, cb) => {
     const ext = path.extname(file.originalname)

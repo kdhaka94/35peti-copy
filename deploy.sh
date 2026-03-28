@@ -54,7 +54,7 @@ echo " Pulling latest code from origin/main"
 echo "========================================="
 cd "\$APP_DIR"
 git reset --hard HEAD
-git clean -fd -e backend/uploads
+git clean -fd -e backend/uploads -e backend/uploads-settings
 git pull origin main
 
 if [ "${SKIP_BACKEND}" = false ]; then
