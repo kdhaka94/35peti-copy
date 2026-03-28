@@ -1,4 +1,4 @@
-import mongoose, { Document, Schema, Types } from 'mongoose'
+import { model, Document, Schema, Types } from 'mongoose'
 import crypto from 'crypto'
 
 export interface IApiKey {
@@ -48,4 +48,5 @@ export function verifySecret(secret: string, secretHash: string): boolean {
   return crypto.timingSafeEqual(Buffer.from(hash), Buffer.from(secretHash))
 }
 
-export const ApiKey = mongoose.model<IApiKeyModel>('ApiKey', ApiKeySchema)
+export const ApiKey = model<IApiKeyModel>('ApiKey', ApiKeySchema)
+
