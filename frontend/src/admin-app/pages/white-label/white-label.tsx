@@ -3,11 +3,15 @@ import { whiteLabelService } from '../../../services/white-label.service';
 import { useSelector } from 'react-redux';
 import { selectUserData } from '../../../redux/actions/login/loginSlice';
 import User from '../../../models/User';
+import { toast } from 'react-toastify';
 
 const WhiteLabelConfig = () => {
   const userState = useSelector(selectUserData);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [currentLogoImage, setCurrentLogoImage] = useState('');
+  const API_URL = process.env.REACT_APP_API_BACKURL || '';
   const [formData, setFormData] = useState({
     domain: '',
     companyName: '',
@@ -34,7 +38,7 @@ const WhiteLabelConfig = () => {
       setLoading(true);
       const response = await whiteLabelService.getMyWhiteLabel();
       const data = response.data.data.whiteLabel;
-      
+      setCurrentLogoImage(data.logoImage || '');
       setFormData({
         domain: data.domain || '',
         companyName: data.companyName || '',
@@ -71,12 +75,30 @@ const WhiteLabelConfig = () => {
     try {
       setSaving(true);
       await whiteLabelService.updateWhiteLabel(formData);
-      alert('White-label settings saved successfully!');
+      toast.success('White-label settings saved successfully!');
     } catch (error) {
       console.error('Error saving white-label settings:', error);
-      alert('Failed to save white-label settings');
+      toast.error('Failed to save white-label settings');
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      setUploading(true);
+      const response = await whiteLabelService.uploadLogo(file);
+      const newPath = response.data?.data?.logoImage || '';
+      setCurrentLogoImage(newPath);
+      toast.success('Logo uploaded successfully!');
+    } catch (error) {
+      console.error('Error uploading logo:', error);
+      toast.error('Failed to upload logo');
+    } finally {
+      setUploading(false);
+      e.target.value = '';
     }
   };
 
@@ -139,6 +161,33 @@ const WhiteLabelConfig = () => {
                     placeholder="e.g., 919876543210"
                   />
                   <small className="form-text text-muted">WhatsApp contact number for users</small>
+                </div>
+              </div>
+            </div>
+
+            <div className="row">
+              <div className="col-md-12">
+                <div className="form-group">
+                  <label>Logo Image (Upload)</label>
+                  {currentLogoImage && (
+                    <div className="mb-2">
+                      <img
+                        src={`${API_URL}${currentLogoImage}`}
+                        alt="Current logo"
+                        style={{ maxHeight: 80, maxWidth: 200, objectFit: 'contain', border: '1px solid #ddd', padding: 4, borderRadius: 4, background: '#f8f9fa' }}
+                      />
+                    </div>
+                  )}
+                  <input
+                    type="file"
+                    className="form-control"
+                    accept="image/*"
+                    onChange={handleLogoUpload}
+                    disabled={uploading}
+                  />
+                  <small className="form-text text-muted">
+                    {uploading ? 'Uploading...' : 'Choose a logo image file (max 5MB)'}
+                  </small>
                 </div>
               </div>
             </div>
