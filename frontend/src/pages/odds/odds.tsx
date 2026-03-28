@@ -434,7 +434,7 @@ const Odds = () => {
                 // src={`${tvUrl}${currentMatch?.matchId}`}
                 // src={`https://playg3.livestream11.com/user/526414545/unknown/27.0.178.13/c590458e-6d81-450e-8a6d-119bc2234267`}
                 // src={`https://livestream-v3-iframe.akamaized.uk/?eventid=${currentMatch?.matchId}`}
-                src={stv?`https://live.cricketid.xyz/directStream?gmid=${currentMatch?.matchId}&key=dijbfuwd719e12rqhfbjdqdnkqnd11eqdqd`:""}
+                src={stv?`https://live.cricketid.xyz/directStream?gmid=${currentMatch?.matchId}&key=dijbfuwd719e12rqhfbjdqdnkqnd11eqdqdnkanknakn`:""}
                 
               ></iframe>
               LIVE TV 
@@ -447,7 +447,7 @@ const Odds = () => {
                 // src={`${tvUrl}${currentMatch?.matchId}`}
                 // src={`https://score.hr08bets.in/api?eventid=${currentMatch?.matchId}`}
                 // src={`https://livestream-v3-iframe.akamaized.uk/?eventid=${currentMatch?.matchId}`}
-                src={stv?`https://live.cricketid.xyz/directStream?gmid=${currentMatch?.matchId}&key=dijbfuwd719e12rqhfbjdqdnkqnd11eqdqd`:""}
+                src={stv?`https://live.cricketid.xyz/directStream?gmid=${currentMatch?.matchId}&key=dijbfuwd719e12rqhfbjdqdnkqnd11eqdqdnkanknakn`:""}
 
               ></iframe>
           

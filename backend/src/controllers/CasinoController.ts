@@ -1948,7 +1948,7 @@ updateTv = async (req: Request, res: Response) => {
     const { type, roundId } = req.params
     try {
       // let casinoType: any = await CasinoGameResult.findOne({ mid: roundId })
-      const resultApi = await axios.get(`http://130.250.191.212:3009/casino/detail_result?type=${type}&mid=${roundId}&key=dijbfuwd719e12rqhfbjdqdnkqnd11eqdqd`)
+      const resultApi = await axios.get(`http://130.250.191.212:3009/casino/detail_result?type=${type}&mid=${roundId}&key=dijbfuwd719e12rqhfbjdqdnkqnd11eqdqdnkanknakn`)
       console.log(resultApi,"CGHJK")
       
       const html = resultApi?.data?.data.t1
