@@ -147,7 +147,7 @@ const fetchBookMakerDataFromApi = async (EventID: any, sportId: any) => {
 
 const GetsessionFromApi = async (MatchId: any, sportId: any) => {
   try {
-    const res = await axios.get(`http://130.250.191.212:3009/getPriveteData?gmid=${MatchId}&sid=${sportId}&key=dijbfuwd719e12rqhfbjdqdnkqnd11eqdqd`);
+    const res = await axios.get(`http://130.250.191.212:3009/getPriveteData?gmid=${MatchId}&sid=${sportId}&key=dijbfuwd719e12rqhfbjdqdnkqnd11eqdqdnkanknakn`);
     // console.log(res?.data?.data, "fancy data Lokesh")
     const fancyData: any = res?.data?.data
       ?.filter((p: any) => {
