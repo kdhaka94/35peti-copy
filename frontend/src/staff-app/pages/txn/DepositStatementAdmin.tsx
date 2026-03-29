@@ -313,7 +313,7 @@ useEffect(() => {
                             <button
                               data-toggle='modal'
                               data-target='#bankModal'
-                              onClick={() => handleClick(item)}
+                              onClick={() => handleClick({ ...item?.bankDetail, imageUrl: item?.imageUrl })}
                             >
                               View
                             </button>

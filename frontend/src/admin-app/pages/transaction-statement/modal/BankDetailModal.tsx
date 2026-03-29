@@ -26,8 +26,7 @@ const BankDetailModal = ({ bankDetails }: { bankDetails: any }) => {
                 <div className='row m-b-20'>
                   <div className='col-md-12'>
                     <img
-                   
-                        src={`${process.env.REACT_APP_API_BACKURL}${bankDetails?.imageUrl || bankDetails?.qrImageUrl}`}
+                        src={`${process.env.REACT_APP_API_BASEURL}${bankDetails?.imageUrl || bankDetails?.qrImageUrl}`}
                       alt='image'
                       style={{ height: 'auto', width: '100%' }}
                     />

@@ -1,17 +1,18 @@
 import React, { useEffect, useState } from 'react'
-import { isMobile } from 'react-device-detect'
-import mobileSubheader from '../_layout/elements/mobile-subheader'
-import CustomAutoComplete from '../../components/CustomAutoComplete'
-import moment from 'moment'
-import userService from '../../../services/user.service'
 import depositWithdrawService from '../../../services/deposit-withdraw.service'
+import userService from '../../../services/user.service'
 import ReactPaginate from 'react-paginate'
-import BankDetailModal from './modal/BankDetailModal'
+import moment from 'moment'
 import { toast } from 'react-toastify'
+import CustomAutoComplete from '../../../components/custom-autocomplete/custom-autocomplete'
+import BankDetailModal from './modal/BankDetailModal'
+import { mobileSubheader } from '../../../utils/common'
+import { isMobile } from 'react-device-detect'
 import RejectedModal from './modal/RejectedModal'
 import { useParams } from 'react-router-dom'
+
 const DepositStatement = () => {
-  const [filterData, setFilterData] = React.useState<any>({
+  const [filterData, setFilterData] = useState<any>({
     startDate: '',
     endDate: '',
     reportType: '',
@@ -30,18 +31,11 @@ const DepositStatement = () => {
   
   console.log(payStatus,"egbdfg")
 
-  React.useEffect(() => {
-    const filterObj = filterData
-    filterObj.startDate = moment().subtract(7, 'days').format('YYYY-MM-DD')
-    filterObj.endDate = moment().format('YYYY-MM-DD')
-    setFilterData(filterObj)
-  }, [])
-
   useEffect(() => {
     if (payStatus) {
-      setFilterData((prev: any) => ({
+      setFilterData((prev:any) => ({
         ...prev,
-        reportType: payStatus,
+        reportType: payStatus, // Set reportType directly from URL
       }))
     }
   }, [payStatus])
@@ -81,16 +75,20 @@ const DepositStatement = () => {
     return userService.getUserListSuggestion({ username: value })
   }
   const onSelectUser = (username: any) => {
-    setFilterData({ ...filterData, username: username })
+    setFilterData({ ...filterData, username })
   }
+
   const getDepositUpdateStatus = async (item: any, type: string) => {
-    if (type == 'rejected') {
+    if (type === 'rejected') {
       setRejectedModal(true)
       setRejectedData(item)
     } else {
-      const obj = {
-        id: item._id,
-        narration: item.remark,
+      let obj = {
+        _id: item?._id,
+        amount: item?.amount,
+        userId: item?.userId,
+        orderId: item?.orderId,
+        remark: item?.remark,
         balanceUpdateType: 'D',
         status: type,
       }
@@ -240,7 +238,7 @@ const DepositStatement = () => {
                             <button
                               data-toggle='modal'
                               data-target='#bankModal'
-                              onClick={() => handleClick(item)}
+                              onClick={() => handleClick({ ...item?.bankDetail, imageUrl: item?.imageUrl })}
                             >
                               View
                             </button>
