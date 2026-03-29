@@ -1,4 +1,4 @@
-import React from 'react'
+import AuthenticatedImage from '../../../components/AuthenticatedImage'
 
 const BankDetailModal = ({ bankDetails }: { bankDetails: any }) => {
   return (
@@ -25,8 +25,8 @@ const BankDetailModal = ({ bankDetails }: { bankDetails: any }) => {
               <div className='container-fluid'>
                 <div className='row m-b-20'>
                   <div className='col-md-12'>
-                    <img
-                        src={`${process.env.REACT_APP_API_BASEURL}${bankDetails?.imageUrl || bankDetails?.qrImageUrl}`}
+                    <AuthenticatedImage
+                      src={`${bankDetails?.imageUrl || bankDetails?.qrImageUrl}`}
                       alt='image'
                       style={{ height: 'auto', width: '100%' }}
                     />
