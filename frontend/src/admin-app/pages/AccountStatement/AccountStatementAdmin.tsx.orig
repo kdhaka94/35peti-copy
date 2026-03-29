@@ -705,7 +705,7 @@ const AccountStatementAdmin = () => {
       // }
 
         if (filterdata.reportType === 'change') {
-       let username = filterdata.username || (userState.user.role == "admin" ? 'loom1234' : userState.user.username);
+       let username =   userState.user.role == "admin" ? 'loom1234' : userState.user.username;
         const res = await betService.postsettelement2({username})
 
         operationData = res?.data?.data.operations || []
@@ -807,7 +807,7 @@ const AccountStatementAdmin = () => {
     return (
       currentItems &&
       currentItems.map((item: any, index: number) => (
-      
+
         <tr key={index} onClick={(e: any) =>getBets(e, item.row)}>
           <td>{index + 1}</td>
           <td className="wnwrap">{item?.row?.date}</td>

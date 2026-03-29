@@ -1,4 +1,8 @@
-import { configure } from 'enzyme'
-import Adapter from 'enzyme-adapter-react-16'
+import '@testing-library/jest-dom';
+import { configure } from 'enzyme';
+import Adapter from '@wojtekmaj/enzyme-adapter-react-17';
+import { TextEncoder, TextDecoder } from 'util';
+global.TextEncoder = TextEncoder;
+global.TextDecoder = TextDecoder;
 
-configure({ adapter: new Adapter() })
+configure({ adapter: new Adapter() });
