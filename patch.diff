@@ -1,0 +1,11 @@
+--- frontend/src/admin-app/pages/AccountStatement/AccountStatementAdmin.tsx
++++ frontend/src/admin-app/pages/AccountStatement/AccountStatementAdmin.tsx
+@@ -699,7 +699,7 @@
+       // }
+
+         if (filterdata.reportType === 'change') {
+-       let username =   userState.user.role == "admin" ? 'loom1234' : userState.user.username;
++       let username = filterdata.username || (userState.user.role == "admin" ? 'loom1234' : userState.user.username);
+         const res = await betService.postsettelement2({username})
+
+         operationData = res?.data?.data.operations || []
