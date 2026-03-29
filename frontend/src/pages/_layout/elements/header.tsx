@@ -487,7 +487,7 @@ const Header = () => {
                   <CustomLink className='btn btn-withdraw' to={'/withdraw'}>  <img src="/withdrawimg.webp" className="w-2 mr-1" /> Withdraw</CustomLink>
                 </div>}
 
-                <WhatsAppButton phoneNumber={whiteLabel?.whatsappNumber || userParentAlldata?.parent?.phone || (isDefaultDomain ? "911234567890" : undefined)} />
+                <WhatsAppButton mode={whiteLabel?.mode} phoneNumber={whiteLabel?.whatsappNumber || userParentAlldata?.parent?.phone || (isDefaultDomain ? "911234567890" : undefined)} />
                 {!isMobile ? (
                   <>
                     <li className='search float-left row'>

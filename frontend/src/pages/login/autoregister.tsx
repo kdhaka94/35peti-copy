@@ -180,7 +180,7 @@ const RegisterAuto = () => {
           </form>
         </div>
       </div>
-      <WhatsAppButton phoneNumber={whiteLabel?.whatsappNumber || (isDefaultDomain ? "911234567890" : undefined)} />
+      <WhatsAppButton mode={whiteLabel?.mode} phoneNumber={whiteLabel?.whatsappNumber || (isDefaultDomain ? "911234567890" : undefined)} />
     </div>
   )
 }

@@ -2,10 +2,11 @@ import React from 'react';
 
 interface WhatsAppButtonProps {
   phoneNumber?: string;
+  mode?: string;
 }
 
-const WhatsAppButton: React.FC<WhatsAppButtonProps> = ({ phoneNumber }) => {
-  if (!phoneNumber) return null;
+const WhatsAppButton: React.FC<WhatsAppButtonProps> = ({ phoneNumber, mode }) => {
+  if (!phoneNumber || mode !== 'auto') return null;
 
   const handleWhatsAppClick = (e: React.MouseEvent) => {
     e.preventDefault();
