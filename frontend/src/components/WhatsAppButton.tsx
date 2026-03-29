@@ -6,7 +6,7 @@ interface WhatsAppButtonProps {
 }
 
 const WhatsAppButton: React.FC<WhatsAppButtonProps> = ({ phoneNumber, mode }) => {
-  if (!phoneNumber || mode !== 'auto') return null;
+  if (!phoneNumber || mode !== 'manual') return null;
 
   const handleWhatsAppClick = (e: React.MouseEvent) => {
     e.preventDefault();
