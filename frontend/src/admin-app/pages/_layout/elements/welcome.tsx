@@ -43,7 +43,7 @@ const Marqueemessge = (props: any) => {
         ''
       )}
       <div className='marqueeN' style={{ color: "#fff" ,background:"#ffffff45" }}>
-        <p>{"Welcome to 35PETI.COM"}</p>
+        <p>{"Welcome to " + window.location.hostname.replace("www.", "").toUpperCase()}</p>
       </div>
     </div>
   )
