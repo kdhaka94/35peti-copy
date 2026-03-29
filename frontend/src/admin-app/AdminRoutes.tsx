@@ -124,8 +124,10 @@ const AdminRoutes = () => {
             { path: "deleted-bets", element: <DeletedBetsUndo /> },
             { path: "login-reports", element: <OperationAdmin /> },
              {path: 'update-tv',element:<TvSettings/>},
-            { path: 'white-label', element: <WhiteLabelConfig /> },
-            { path: 'super-white-labels', element: <SuperAdminWhiteLabels /> },
+            ...(userState.user.role === RoleType.admin ? [
+              { path: 'white-label', element: <WhiteLabelConfig /> },
+              { path: 'super-white-labels', element: <SuperAdminWhiteLabels /> },
+            ] : []),
 
             // { path: "client-ledger", element: <ClientLedger/>}
 
