@@ -100,8 +100,8 @@ UPI: ${item.bankDetail.upiId || "N/A"}
   const onSuggestionsFetchRequested = ({ value }: any) => {
     return userService.getUserListSuggestion({ username: value })
   }
-  const onSelectUser = (username: any) => {
-    setFilterData({ ...filterData, username: username })
+  const onSelectUser = (user: any) => {
+    setFilterData({ ...filterData, username: user.username })
   }
 
   const getDepositUpdateStatus = async (item: any, type: string) => {
@@ -144,7 +144,7 @@ UPI: ${item.bankDetail.upiId || "N/A"}
                     <label className='label'>User</label>
                     <CustomAutoComplete
                       onSuggestionsFetchRequested={onSuggestionsFetchRequested}
-                      onChangeSelectValue={onSelectUser}
+                      onSelectUser={onSelectUser}
                     />
                   </div>
                   <div className='col-6 col-lg-2 mbc-5'>

@@ -61,9 +61,11 @@ const DepositStatement = () => {
   }
 
   const handleformchange = (event: any) => {
-    const filterObj = filterData
-    filterObj[event.target.name] = event.target.value
-    setFilterData(filterObj)
+    const { name, value } = event.target
+    setFilterData((prev: any) => ({
+      ...prev,
+      [name]: value,
+    }))
   }
 
   const handleSubmitform = (event: any) => {
@@ -74,8 +76,8 @@ const DepositStatement = () => {
   const onSuggestionsFetchRequested = ({ value }: any) => {
     return userService.getUserListSuggestion({ username: value })
   }
-  const onSelectUser = (username: any) => {
-    setFilterData({ ...filterData, username })
+  const onSelectUser = (user: any) => {
+    setFilterData({ ...filterData, username: user.username })
   }
 
   const getDepositUpdateStatus = async (item: any, type: string) => {

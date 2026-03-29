@@ -52,9 +52,11 @@ const GameReportAdmin = () => {
       })
   }
   const handleformchange = (event: any) => {
-    const filterObj = filterdata
-    filterObj[event.target.name] = event.target.value
-    setfilterdata(filterObj)
+    const { name, value } = event.target
+    setfilterdata((prev: any) => ({
+      ...prev,
+      [name]: value,
+    }))
   }
   const handleSubmitform = (event: any) => {
     event.preventDefault()
