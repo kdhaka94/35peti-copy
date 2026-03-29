@@ -4,9 +4,9 @@ import userService from '../../../services/user.service'
 import ReactPaginate from 'react-paginate'
 import moment from 'moment'
 import { toast } from 'react-toastify'
-import CustomAutoComplete from '../../../components/custom-autocomplete/custom-autocomplete'
+import CustomAutoComplete from '../../components/CustomAutoComplete'
 import BankDetailModal from './modal/BankDetailModal'
-import { mobileSubheader } from '../../../utils/common'
+import mobileSubheader from '../_layout/elements/mobile-subheader'
 import { isMobile } from 'react-device-detect'
 import RejectedModal from './modal/RejectedModal'
 import { useParams } from 'react-router-dom'
@@ -120,7 +120,7 @@ const DepositStatement = () => {
                     <label className='label'>User</label>
                     <CustomAutoComplete
                       onSuggestionsFetchRequested={onSuggestionsFetchRequested}
-                      onChangeSelectValue={onSelectUser}
+                      onSelectUser={onSelectUser}
                     />
                   </div>
                   <div className='col-6 col-lg-2 mbc-5'>
