@@ -13,8 +13,12 @@ class Statics {
     // Load Statics
     _express.use('/', express.static(path.join(__dirname, '../../public'), options))
     _express.use('/uploads', express.static(path.join(__dirname, '../../uploads')))
+    _express.use('/api/uploads', express.static(path.join(__dirname, '../../uploads')))
     _express.use(
       '/uploads-settings',
+      express.static(path.join(__dirname, '../../uploads-settings')),)
+    _express.use(
+      '/api/uploads-settings',
       express.static(path.join(__dirname, '../../uploads-settings')),)
     // Load NPM Statics
     _express.use('/vendor', express.static(path.join(__dirname, '../../node_modules'), options))
