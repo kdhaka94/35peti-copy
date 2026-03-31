@@ -167,29 +167,42 @@ const AccountStatement = () => {
 
   var getAccountStmt = async (page: number) => {
     try {
+      if (filterdata.reportType == "thcgame") {
+        return alert('Third Party Casino is not Avaiable')
+      }
 
+      let operationData: any[] = []
+      let formattedAccount: any[] = []
+      const totalPages = 1 // default
 
-        if(filterdata.reportType == "thcgame"){
-      return alert('Third Party Casino is not Avaiable')
-    }
-  const res = await accountService.getAccountList(page, filterdata)
+      if (filterdata.reportType === 'change') {
+        const data = await authService.getUser()
+        const username = data.data.data.user?.username
+        const res = await betService.postsettelement2({ username })
+        operationData = res?.data?.data.operations || []
+
+        const merged = mergeAccountAndOperation([], operationData)
+        setMergedList(merged)
+        setparseAccountStmt(merged)
+        setCurrentItems(merged)
+        setPage(page)
+        setPageCount(1)
+        return
+      }
+
+      const res = await accountService.getAccountList(page, filterdata)
       const items = res?.data?.data?.items || []
       const openingBalance = res?.data?.data?.openingBalance || 0
-      const totalPages = res?.data?.data?.totalPages || 1
+      const resTotalPages = res?.data?.data?.totalPages || 1
       setOpenBalance(openingBalance)
 
-      const formattedAccount = dataformat(items, openingBalance)
+      formattedAccount = dataformat(items, openingBalance)
 
-      // 🔥 Operation API call (username required)
-      let operationData: any[] = []
       const data = await authService.getUser()
       console.log(data.data.data.user, "FGHJK")
-      //   const username = filterdata?.username
       const username = data.data.data.user?.username
-      // console.log(user, "dfghjkl")
       const opRes = await betService.postsettelement2({ username })
       operationData = opRes?.data?.data?.operations || []
-
 
       const merged = mergeAccountAndOperation(formattedAccount, operationData)
 
@@ -197,7 +210,7 @@ const AccountStatement = () => {
       setparseAccountStmt(merged)
       setCurrentItems(merged)
       setPage(page)
-      setPageCount(totalPages) 
+      setPageCount(resTotalPages)
 
     } catch (err) {
       toast.error('Error loading data')
@@ -456,6 +469,7 @@ const AccountStatement = () => {
                       <option value='chip'>Deposit/Withdraw </option>
                       <option value='cgame'>Casino Report</option>
                       <option value='sgame'>Sport Report </option>
+                      <option value='change'>Change Password Report</option>
                        <option value='thcgame'>Third Party Casino Report </option>
                     </select>
                   </div>
